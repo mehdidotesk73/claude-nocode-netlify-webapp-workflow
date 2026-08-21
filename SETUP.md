@@ -1,50 +1,33 @@
 # Setup Guide: Connect GitHub & Netlify
 
-**⚠️ Prerequisites:** You must have already created a **new, empty GitHub repository** for this project. This guide assumes Claude Code has guided you through that step. This is NOT for integrating into an existing repo.
-
-This guide walks you through connecting your new project to GitHub and Netlify so you can preview changes and deploy to production. No technical experience required — just follow the steps.
+**You normally don't need this guide.** Claude Code does all of this for you when you paste the
+template prompt from the [README](./README.md) — it creates your project on GitHub, fills in your
+details, and walks you through the rest. This guide is here as a reference for the few clicks that
+have to happen on a website Claude can't click for you, and as a manual fallback if something fails.
 
 ## Before You Start
 
 You'll need:
-- A GitHub account (free at https://github.com)
-- A Netlify account (free at https://netlify.com, connect via GitHub)
-- This repo cloned locally (or a fresh copy on your computer)
+- A GitHub account (free at https://github.com) — this is where your project lives
+- A Netlify account (free at https://netlify.com, sign in with GitHub) — this gives you preview links
 
-## Step 1: Create a GitHub Repository
+## Step 1: Your project on GitHub
 
-### On GitHub (Web)
+**Claude Code does this for you.** After you answer its questions about your app, it creates the
+project on GitHub and puts all the starting files in place. You'll get a link like
+`https://github.com/your-username/your-app-name`.
+
+<details>
+<summary>Manual fallback — only if Claude says it couldn't create the project</summary>
 
 1. Go to https://github.com/new
-2. **Repository name:** Enter your project name (e.g., `my-awesome-app`)
-3. **Description:** Optional — describe what your app does
-4. **Public or Private:** Choose based on your preference
-5. **Click "Create repository"**
+2. **Repository name:** your app name (e.g., `grocery-assistant`)
+3. **Description:** optional
+4. Leave "Add a README file" **unchecked**
+5. Click **Create repository**
+6. Copy the page URL and paste it back to Claude
 
-### On Your Computer
-
-1. Open a terminal in this repo folder
-2. Remove the old git history:
-   ```
-   rm -rf .git
-   git init
-   ```
-3. Add the GitHub repo as your origin (replace `<your-username>` and `<repo-name>`):
-   ```
-   git remote add origin https://github.com/<your-username>/<repo-name>.git
-   git branch -M main
-   ```
-4. Add and commit:
-   ```
-   git add .
-   git commit -m "Initial commit: scaffold template"
-   ```
-5. Push to GitHub:
-   ```
-   git push -u origin main
-   ```
-
-**Verify:** Go to your GitHub repo URL (https://github.com/your-username/repo-name) — you should see all the files there.
+</details>
 
 ## Step 2: Enable GitHub Pages for Production
 
