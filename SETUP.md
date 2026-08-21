@@ -1,5 +1,7 @@
 # Setup Guide: Connect GitHub & Netlify
 
+**⚠️ Prerequisites:** You must have already created a **new, empty GitHub repository** for this project. This guide assumes Claude Code has guided you through that step. This is NOT for integrating into an existing repo.
+
 This guide walks you through connecting your new project to GitHub and Netlify so you can preview changes and deploy to production. No technical experience required — just follow the steps.
 
 ## Before You Start

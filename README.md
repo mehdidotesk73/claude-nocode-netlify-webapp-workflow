@@ -2,6 +2,17 @@
 
 A Vue 3 + TypeScript + Vite template for building progressive web apps (PWAs) that deploy to GitHub Pages (production) and Netlify (preview). Designed for use with Claude Code — no coding experience required.
 
+## ⚠️ Important: This Creates a NEW Repository
+
+**This template is designed to create a brand-new, separate GitHub repository.** It is NOT meant to be cloned into an existing project.
+
+When you paste the prompt below into Claude Code:
+1. You will create a **new, empty GitHub repository** (e.g., `grocery-assistant`, `weather-tracker`, etc.)
+2. Claude will clone this template scaffold into your new repo
+3. Your webapp will live in its own separate project
+
+**Do NOT try to integrate this template into an existing repo** — Claude Code will guide you through creating a new one.
+
 ## Quick Start
 
 1. **Copy this exact prompt** and paste it into Claude Code:
