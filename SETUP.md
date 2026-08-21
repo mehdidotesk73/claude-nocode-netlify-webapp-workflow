@@ -90,9 +90,27 @@ to merge anything at all. Turn it on only once someone else is actually reviewin
 
 Skipping this step entirely is fine too — it's a safety rail, not a requirement.
 
-### Every Time You Push a Branch
+## What the Build Loop Looks Like
 
-Netlify automatically creates a **Deploy Preview** for every branch and PR. You'll see a comment on your PR with a link like `https://deploy-preview-1--your-site-name.netlify.app/` — this is a live preview of your changes before merging.
+Once setup is done, every change follows the same rhythm. You don't need to remember any of it —
+Claude drives it and hands you links — but this is what's happening:
+
+1. **You describe a change.** Plain language, or a screenshot with "this bit is wrong."
+2. **Claude writes the code** on a side branch, so your live site is never touched mid-change.
+3. **Claude gives you a preview link** — `https://deploy-preview-3--your-site-name.netlify.app`.
+   Open it on your phone and see the change for real. If it's not right, say so and Claude
+   revises; you'll get a new link each round.
+4. **Claude gives you a merge link** when you're happy — a GitHub page with a green
+   **Merge pull request** button. Click it, then **Confirm merge**. That's you approving the
+   change; nothing reaches your live site until you do.
+5. **Your live site updates** a minute or two later at your GitHub Pages URL.
+
+Two things are worth knowing:
+
+- **The preview link and the merge link are different.** The preview is where you *look* at the
+  change; the merge page is where you *accept* it. Claude will label which is which.
+- **If a change doesn't appear on the preview,** it's almost always the app serving you a cached
+  copy. Tap **Reload latest** in the footer, or open the link in a private/incognito tab.
 
 ## Step 5: Local Development
 

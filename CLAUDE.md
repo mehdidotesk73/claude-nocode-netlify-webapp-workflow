@@ -232,6 +232,9 @@ The user previews on a **phone** (mobile Safari), so favour mobile-friendly layo
    (`deploy-preview-<n>--<REF:Netlify-app-name>.netlify.app`). The user tests there on
    their phone. The footer shows the live `build <sha>`; confirm it matches the
    commit you pushed.
+   - **Always paste the preview URL into the chat** as soon as the deploy is
+     green. The user is on a phone and will not go hunting for it in the PR's
+     comment thread.
    - **Service-worker cache caveat:** this is a PWA, so an old bundle can keep
      serving. If a change "doesn't show," it's almost always the cache — have
      the user tap **Reload latest** in the footer, or open the URL in a
@@ -243,9 +246,28 @@ The user previews on a **phone** (mobile Safari), so favour mobile-friendly layo
    - Use the GitHub MCP tools (`mcp__github__*`) — there is **no `gh` CLI** and
      no direct API. Prefer MCP for PRs/branches/files when local pushes fail.
    - Do **not** merge — the user merges. Keep PR comments frugal.
+   - **Hand the user the PR link and tell them what to click.** They cannot
+     merge what they cannot find, and they may never have seen a PR page. End
+     the turn with both links and a plain instruction, e.g.:
+
+     > **Preview:** https://deploy-preview-4--grocery-assistant.netlify.app
+     > — open this on your phone and check the new category filter works.
+     >
+     > **Ready to merge:** https://github.com/<owner>/<repo>/pull/4
+     > — open that link and click the green **Merge pull request** button, then
+     > **Confirm merge**. Tell me once it's merged and I'll verify the live site.
+
+     Preview link first: they should look at the change before merging it.
+     Never say "merge when ready" without the URL attached.
 
 6. **Merge + test production.** The user merges in the GitHub UI. Merging to
    `main` triggers the **GitHub Pages** production deploy (see Deploys).
+   - If they report the merge button is greyed out, check the PR page for the
+     reason before changing any settings — usually a merge conflict, a failing
+     check, or an approval requirement that shouldn't be on (see SETUP.md
+     Step 4).
+   - After they confirm the merge, watch the Pages deploy and give them the
+     production URL once it's green.
 
 7. **Checkpoint the docs (every merge / branch removal).** Four surfaces are the
    project's memory — keep the ones a branch touches current:
