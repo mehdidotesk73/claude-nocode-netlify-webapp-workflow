@@ -8,7 +8,12 @@ Track feature development, improvements, and known issues here. Move completed w
 
 ## Next (Current Sprint)
 
-(What are you working on next?)
+One-time setup — tick these off as they're done:
+
+- [ ] Enable GitHub Pages (SETUP.md Step 2) — production deploys
+- [ ] Connect Netlify (SETUP.md Step 3) — preview links on every branch
+
+(Then: what are you working on next?)
 
 ## Code
 

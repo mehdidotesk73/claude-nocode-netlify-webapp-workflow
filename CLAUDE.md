@@ -114,20 +114,56 @@ Answer in plain language — Claude summarizes and auto-fills the references abo
 
 ### Step 3: Set up the scaffold in their new repo
 
-6. **Copy template → their new repo** — use GitHub MCP tools to:
-   - `add_repo` on the newly-created repo with push access
-   - Push this template's files into it with `mcp__github__push_files` (commit message: "Initial scaffold from template")
-   - Auto-fill CLAUDE.md with their project details (the 4 answers they gave) before pushing
-   - Everything targets the NEW repo — never the repo this session started in
+6. **Copy template → their new repo** — `add_repo` on their new repo with push access, then push
+   the template's files with `mcp__github__push_files` (commit message: "Initial scaffold from
+   template"). Everything targets the NEW repo — never the repo this session started in.
+
+7. **Transform the template files into their project's files before pushing.** The scaffold that
+   lands in their repo must read as *their project*, with no trace of the template bootstrap. Three
+   files change:
+
+   - **`README.md` — rewrite completely.** Drop everything about using the template (the quick-start
+     prompt, "what you get", template customization). Write their project's README instead: app name
+     as the title, a short description from their purpose answer, the UI shape, "Built with Vue 3 +
+     TypeScript + Vite (PWA)", local dev commands (`npm install` / `npm run dev` / `npm run build`),
+     the live and preview URLs once known, and links to `docs/`. This is the file a visitor to their
+     repo sees first — it should describe the grocery app (or whatever they're building), not this
+     template.
+
+   - **`CLAUDE.md` — strip the bootstrap, keep the lifecycle.** Delete every section from the top of
+     the file through the end of "Initial Setup (Claude Code First Run)", plus the References
+     fill-in instructions and the Bitcoin example block. Keep and fill in: "What this is" (with
+     their `<REF:*>` values substituted inline — no placeholders left anywhere in the file), the
+     development lifecycle, Build & verify, Deploys, Repo structure, Conventions & gotchas,
+     Debugging on device, Reference docs. **This is the step that prevents a future session from
+     re-running the bootstrap on an already-created project** — an unstripped CLAUDE.md would tell
+     it to go create another repo.
+
+   - **`SETUP.md` — keep only what's still pending.** Step 1 (creating the repo) is done by now;
+     remove it. Keep the GitHub Pages and Netlify sections until those are done too.
+
+8. **Seed `docs/TODO.md` with the remaining one-time setup**, under **Next**, so the state lives in
+   the project's own memory rather than only in this conversation:
+
+   ```
+   ## Next (Current Sprint)
+
+   - [ ] Enable GitHub Pages (SETUP.md Step 2) — production deploys
+   - [ ] Connect Netlify (SETUP.md Step 3) — preview links on every branch
+   - [ ] First feature: <their first described feature>
+   ```
+
+   Tick these off as they're completed. If the session ends before setup finishes, the next session
+   picks up from this list.
 
 ### Step 4: Optional Netlify setup
 
-7. **Offer Netlify setup** — "Would you like to set up Netlify for preview deploys? (Optional, but recommended)" 
-   - If yes: walk through SETUP.md Step 2-3
+9. **Offer Netlify setup** — "Would you like to set up Netlify for preview deploys? (Optional, but recommended)"
+   - If yes: walk through SETUP.md Step 2-3, then tick the TODO items off
 
 ### Step 5: Ready to build
 
-8. **Ready to build** — "Your project is all set! Now tell me what your app should look like. You can describe it in words, show me a screenshot, or tell me what you want users to be able to do."
+10. **Ready to build** — "Your project is all set! Now tell me what your app should look like. You can describe it in words, show me a screenshot, or tell me what you want users to be able to do."
 
 ## What this is
 
