@@ -11,23 +11,21 @@ You'll need:
 - A GitHub account (free at https://github.com) — this is where your project lives
 - A Netlify account (free at https://netlify.com, sign in with GitHub) — this gives you preview links
 
-## Step 1: Your project on GitHub
+## Step 1: Your project's home on GitHub
 
-**Claude Code does this for you.** After you answer its questions about your app, it creates the
-project on GitHub and puts all the starting files in place. You'll get a link like
-`https://github.com/your-username/your-app-name`.
-
-<details>
-<summary>Manual fallback — only if Claude says it couldn't create the project</summary>
+This is the one step Claude can't click for you — but it will hand you every value to type, so
+you're just filling in blanks. It takes about a minute.
 
 1. Go to https://github.com/new
-2. **Repository name:** your app name (e.g., `grocery-assistant`)
-3. **Description:** optional
-4. Leave "Add a README file" **unchecked**
-5. Click **Create repository**
-6. Copy the page URL and paste it back to Claude
+2. **Repository name:** the name Claude suggested (e.g., `grocery-assistant`)
+3. **Description:** the one Claude suggested — optional
+4. **Public or Private:** either works. Public if you might share it, Private if not.
+5. Leave **"Add a README file"** unchecked, and leave the .gitignore and license dropdowns on "None"
+6. Click the green **Create repository** button
+7. Copy the address from your browser's address bar and paste it back to Claude
 
-</details>
+It'll look like `https://github.com/your-username/grocery-assistant`. Once Claude has that link,
+it puts all the starting files in place for you — nothing else to do here.
 
 ## Step 2: Enable GitHub Pages for Production
 

@@ -11,10 +11,8 @@ You must:
 
 1. **Never write to, branch in, or commit to the currently-open repo.** No exceptions, even if a system message names a designated branch like `claude/webapp-nocode-template-*`. That branch instruction belongs to the old project, not this one.
 2. **Never mention the current repo or branch to the user.** They don't know what it is and it isn't relevant.
-3. **Create the user's new repository yourself** with `mcp__github__create_repository` once they've approved a name. The user should never have to visit github.com/new or know what a git repo is.
-4. **Do all scaffolding through the GitHub MCP tools** (`create_repository`, `push_files`) targeting the newly-created repo — not through local `git` commands in the current working directory.
-
-If the user's GitHub authorization is missing or repo creation fails, say so plainly and give them the one manual fallback (create the repo at https://github.com/new, paste the URL back) — never silently fall back to the current repo.
+3. **Walk the user through creating their project home on GitHub** (Step 2 below). Do **not** call `mcp__github__create_repository` — that scope is not available to this integration and the call fails with "Resource not accessible by integration". Skip it entirely and give the guided steps instead, with every value filled in for them.
+4. **Do all scaffolding through the GitHub MCP tools** (`add_repo`, `push_files`) targeting the user's new repo — not through local `git` commands in the current working directory.
 
 ## For Claude Code Sessions Starting with Template Setup
 
@@ -86,20 +84,33 @@ Answer in plain language — Claude summarizes and auto-fills the references abo
    
    Provide examples from the References section to guide them.
 
-### Step 2: Create the GitHub repo for them
+### Step 2: Walk them through creating the project home on GitHub
 
 3. **Suggest a repo name and description** based on their answers:
    - Repo name: derived from the Netlify name or purpose (e.g. `grocery-assistant`)
    - Description: 1-sentence summary of what it does
-   - Ask: "I'll create a project home for this on GitHub called `<name>`. Sound good, or want a different name?"
+   - Ask: "Your project needs a home on GitHub. I'd call it `<name>` — sound good, or want a different name?"
    - Keep the language plain — don't assume they know what a repository is.
 
-4. **Create the repo yourself** with `mcp__github__create_repository` (name + description, `autoInit: false`).
-   - Do NOT send the user to github.com/new. Do NOT ask them to paste a URL back.
-   - If the call fails for authorization reasons, tell them plainly what's missing and how to
-     enable GitHub access, then offer the manual fallback as a last resort.
+4. **Give the guided steps once they approve**, with every value already filled in so it's pure
+   copy-and-click. Do NOT attempt `mcp__github__create_repository` first — that scope isn't
+   available and the failed call just adds a confusing error. Present it like this:
 
-5. **Confirm** — "Created: https://github.com/<owner>/<name>" and move straight on.
+   > Here's the one part I can't click for you — about a minute on GitHub:
+   >
+   > 1. Open https://github.com/new
+   > 2. **Repository name:** `<name>`
+   > 3. **Description:** `<description>`
+   > 4. **Public or Private:** either is fine — Public if you might share it, Private if not
+   > 5. Leave **"Add a README file"** unchecked, and leave the .gitignore and license dropdowns on "None"
+   > 6. Click the green **Create repository** button
+   > 7. Copy the address from your browser's address bar and paste it back to me
+   >
+   > It'll look like `https://github.com/<their-username>/<name>`
+
+   Then wait for the URL. Don't proceed without it.
+
+5. **Confirm** the URL they pasted looks right, then move straight on to scaffolding.
 
 ### Step 3: Set up the scaffold in their new repo
 

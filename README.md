@@ -23,8 +23,9 @@ I want to build a webapp based on this template https://github.com/mehdidotesk73
 
 2. **Claude Code will guide you through everything:**
    - Ask what you want to build (purpose, UI layout, external data, site name)
-   - Create a new GitHub repository for you (with your authorization)
-   - Clone the scaffold into that repo
+   - Suggest a name for your project and walk you through the one-minute GitHub step
+     (Claude gives you every value to fill in — you just click and paste the link back)
+   - Set up the scaffold in your new project
    - Auto-fill all your project details
    - Optionally set up Netlify for preview deploys
 3. **Describe your app** — what should it look like? what features should it have?
