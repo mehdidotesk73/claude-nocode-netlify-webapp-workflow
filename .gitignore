@@ -12,6 +12,12 @@ node_modules
 dist
 dist-ssr
 
+# TypeScript incremental build state
+*.tsbuildinfo
+
+# NOTE: package-lock.json is intentionally NOT ignored — CI runs `npm ci`,
+# which fails without a committed lockfile.
+
 # IDE
 .vscode
 .idea

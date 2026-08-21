@@ -275,9 +275,20 @@ The user previews on a **phone** (mobile Safari), so favour mobile-friendly layo
 ## Deploys
 
 - **Production = GitHub Pages**, built by `.github/workflows/deploy.yml` on push
-  to `main`. It bakes the repo name into the asset base path, so a repo rename
-  needs a fresh deploy. URL: `https://<owner>.github.io/<repo-name>/`.
+  to `main`. Pages serves from a sub-path, so the workflow passes
+  `VITE_BASE=/<repo-name>/` and `vite.config.ts` picks it up as Vite's `base`.
+  A repo rename therefore needs a fresh deploy. URL:
+  `https://<owner>.github.io/<repo-name>/`.
 - **Netlify = preview only** (`netlify.toml`) — per-PR/branch Deploy Previews.
+  It leaves `VITE_BASE` unset, so `base` falls back to `/`, which is what
+  Netlify and `npm run dev` both serve from.
+- **Asset paths must stay base-relative.** Don't hard-code a leading `/` on
+  asset URLs (`/logo.png`) — it resolves to the domain root and 404s on Pages.
+  Use `./logo.png` in `index.html`, relative `src` values in the PWA manifest,
+  or import the asset so Vite rewrites it.
+- **`package-lock.json` is committed and must stay that way** — CI runs
+  `npm ci`, which fails outright without a lockfile in sync with
+  `package.json`. Commit the lockfile whenever you change dependencies.
 
 ## Repo structure
 
@@ -286,6 +297,7 @@ src/
   App.vue                  header/footer shell (see docs/system-design.md §2) + tab/page content
   main.ts, pwa.ts          bootstrap; service-worker auto-update + reload
   debug.ts                 logDebug() → on-screen log (mobile has no console)
+  env.d.ts                 ambient types: vite/client, PWA virtual module, __BUILD_ID__/__BUILD_TIME__
   api/                     external data fetch modules, if <REF:external-deps> apply
   lib/                     pure computation — plain functions over fetched data
   components/
@@ -296,8 +308,11 @@ docs/
   experience.md            what didn't work + per-merge version history
   system-design.md         developer/system docs (§2 has wrapper template)
   concepts/*.md            per-page user docs (rendered into the Help modal)
+public/
+  favicon.svg, logo-192.png, logo-512.png   placeholder icons — replace with real branding
 .github/workflows/deploy.yml   production deploy (GH Pages)
 netlify.toml                   preview-deploy config (Netlify)
+package-lock.json              committed — CI runs `npm ci` and needs it
 ```
 
 ## Conventions & gotchas

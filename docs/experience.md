@@ -26,6 +26,26 @@ On a **category x-axis**, `visualMap` (color ranges) and per-segment `lineStyle`
 
 Logic lives in `src/lib/` as plain functions over already-fetched arrays. They recompute instantly with no API refetch. Keep components thin — they should mostly render. This separation makes logic testable and reusable without rebuild cycles.
 
+### Absolute Asset Paths Break GitHub Pages
+
+GitHub Pages serves from `https://<owner>.github.io/<repo-name>/`, not the domain root. Any asset URL written with a leading slash (`/logo-192.png`, `/manifest.json`) resolves to the domain root and 404s in production — while working perfectly on Netlify and in local dev, so it's easy to miss. Use `./favicon.svg` in `index.html`, relative `src` values in the PWA manifest icons, or import assets so Vite rewrites them. The Pages workflow passes `VITE_BASE=/<repo-name>/`, which `vite.config.ts` reads as Vite's `base`; Netlify and dev leave it unset and fall back to `/`.
+
+### Don't Hand-Write a Static `public/manifest.json`
+
+`vite-plugin-pwa` generates `manifest.webmanifest` and injects its own `<link rel="manifest">`. A second static `public/manifest.json` linked from `index.html` produces two competing manifest links in the built HTML, and the static one wins in some browsers — pointing at icons the build never processed. Define the manifest once, in the `VitePWA({ manifest: ... })` block.
+
+### `npm ci` Needs a Committed Lockfile
+
+The Pages workflow runs `npm ci`, which fails outright ("can only install packages when your package.json and package-lock.json are in sync") if `package-lock.json` isn't committed. It's tempting to gitignore lockfiles; don't. Commit it whenever dependencies change.
+
+### `declaration: true` in an App's tsconfig
+
+Emitting declarations for an *app* makes `vue-tsc` demand exported names for every type used in a component's public surface — a `defineProps` interface that isn't exported fails with `TS4082: Default export of the module has or is using private name 'Props'`. Declarations matter for libraries, not apps. Dropping `declaration`/`declarationMap` is the fix, not exporting every internal interface.
+
+### Ambient Types for Build-Time Constants
+
+`__BUILD_ID__` and `__BUILD_TIME__` are injected by Vite's `define`, and `virtual:pwa-register` only exists at build time. TypeScript knows about none of them without an `src/env.d.ts` declaring the constants and referencing `vite/client` and `vite-plugin-pwa/client`. Without it the build fails with `TS2304: Cannot find name '__BUILD_ID__'`.
+
 ## Version History
 
 (Record major releases here as you merge features. Example format below.)
