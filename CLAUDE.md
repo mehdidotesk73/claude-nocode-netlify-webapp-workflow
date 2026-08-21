@@ -7,17 +7,18 @@ fall straight into the lifecycle below.
 
 **If a user says:** "I want to build a webapp based on this template https://github.com/mehdidotesk73/claude-nocode-netlify-webapp-workflow"
 
-**CRITICAL:** This is a NEW PROJECT in a NEW REPOSITORY. Do NOT work in your current repo.
+**⚠️ CRITICAL INSTRUCTIONS:**
 
-**You should:**
-1. Fetch and read this repo's CLAUDE.md, README.md, and SETUP.md files
-2. **Completely ignore any current working repo** — this is a brand new project
-3. Do NOT create branches in the current repo
-4. Do NOT work in the current repo at all
+This is a **NEW PROJECT in a NEW REPOSITORY**. You must:
+
+1. **IGNORE your current working directory** — do NOT reference it, do NOT work in it, do NOT mention branches
+2. **DO NOT say** "you're on the correct branch" or anything about the current repo
+3. **IMMEDIATELY acknowledge** this is a brand new project: "I'll help you build a new webapp project from scratch in its own GitHub repository."
+4. Fetch and read this template repo's CLAUDE.md, README.md, and SETUP.md files
 5. Follow the "Initial Setup" section below to guide creating a NEW GitHub repo
 6. Guide the user through creating their own separate GitHub repo + setting up the scaffold in it
 
-**The template is read-only; you're helping them create a NEW INDEPENDENT PROJECT in a new GitHub repository.**
+**Why this matters:** The template is read-only. You're creating a completely separate, independent new project. Never assume the user wants to work in whatever repo Claude Code opened in.**
 
 ## References
 
