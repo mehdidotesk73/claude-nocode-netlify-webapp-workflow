@@ -52,13 +52,35 @@ Answer in plain language — Claude summarizes and auto-fills the references abo
 
 ## Initial Setup (Claude Code First Run)
 
-**When you first open this in Claude Code:**
+**When a user sends:** "I want to build a webapp based on this template https://github.com/mehdidotesk73/claude-nocode-netlify-webapp-workflow"
 
-1. **Greet the user** — "Welcome! I'll help you build your webapp. Let me ask a few questions to set things up."
-2. **Ask the 4 questions above** (purpose, UI shape, external deps, Netlify name) — provide the examples from this section to guide them
-3. **Update the placeholders** — fill in the References section above with their answers
-4. **Confirm GitHub + Netlify setup** — ask if they've created their GitHub repo yet; if not, walk through SETUP.md step 1
-5. **Start building** — once references are filled, they can describe their app and you start iterating
+**This is a NEW PROJECT workflow. Follow this exactly:**
+
+1. **Greet the user** — "Great! I'll help you build your webapp. Let me ask a few questions to set things up."
+
+2. **Ask the 4 project definition questions** (do NOT ask where to build — assume new project):
+   - "What is your app's purpose? (What problem does it solve? What does it help users do?)"
+   - "How should the UI be organized? (e.g., tabs, pages, sections, dashboard layout)"
+   - "What external data sources does it need? (e.g., APIs, databases, or none if self-contained)"
+   - "What should your Netlify site be called?" (e.g., my-awesome-app, weather-tracker)
+   
+   Provide examples from the References section above to guide them.
+
+3. **Update the References section** — fill in the 4 placeholders with their answers
+
+4. **Guide GitHub setup** — "Now let's set up your GitHub repository..."
+   - Ask: "Do you have a GitHub account?" (if not, direct to github.com)
+   - Walk through SETUP.md Step 1: Create a new empty GitHub repo
+   - Get the repo link from them (e.g., https://github.com/username/my-awesome-app)
+
+5. **Clone scaffold → their repo** — use GitHub MCP tools to:
+   - Clone this template into their new repo
+   - Auto-fill CLAUDE.md with their project details
+   - Commit and push the initial scaffold
+
+6. **Confirm Netlify** — walk through SETUP.md Step 2-3 (connect Netlify if they want preview deploys)
+
+7. **Ready to build** — "Your project is set up! What should your app look like? Describe it or show me a screenshot."
 
 ## What this is
 
