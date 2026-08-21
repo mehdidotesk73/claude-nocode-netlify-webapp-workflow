@@ -3,6 +3,18 @@
 Guidance for any Claude session working in this repo. Read this first, then
 fall straight into the lifecycle below.
 
+## For Claude Code Sessions Starting with Template Setup
+
+**If a user says:** "I want to build a webapp based on this template https://github.com/mehdidotesk73/claude-nocode-netlify-webapp-workflow"
+
+**You should:**
+1. Fetch and read this repo's CLAUDE.md, README.md, and SETUP.md files
+2. Ignore any current working repo — focus entirely on the template
+3. Follow the "Initial Setup" section below
+4. Guide the user through creating their own GitHub repo + setting up the scaffold in it
+
+**Do NOT** assume the user wants to work in the template repo itself. The template is read-only; you're helping them clone it into their own new project.
+
 ## References
 
 Fill in these values for your project. Examples from the bitcoin price-explorer app are shown below.
