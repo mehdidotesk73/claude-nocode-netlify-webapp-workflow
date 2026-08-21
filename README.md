@@ -15,11 +15,18 @@ When you paste the prompt below into Claude Code:
 
 ## Quick Start
 
-1. **Copy this exact prompt** and paste it into Claude Code:
+1. **Open Claude Code in a fresh session** (do NOT point to any existing repository):
+   - Start a new Claude Code session
+   - Do NOT clone or open any repo
+   - Just have a blank workspace ready
+
+2. **Copy this exact prompt** and paste it into Claude Code:
 
 ```
 I want to build a webapp based on this template https://github.com/mehdidotesk73/claude-nocode-netlify-webapp-workflow
 ```
+
+(Starting in a fresh session ensures Claude follows the template workflow, not any system branch instructions from an existing repo.)
 
 2. **Claude Code will guide you through everything:**
    - Ask what you want to build (purpose, UI layout, external data, site name)
