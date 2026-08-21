@@ -4,22 +4,21 @@ A Vue 3 + TypeScript + Vite template for building progressive web apps (PWAs) th
 
 ## Quick Start
 
-1. **Create a new GitHub repo** for your project (see [SETUP.md](./SETUP.md) for Step 1 instructions)
-2. **Copy this exact prompt** and paste it into Claude Code:
+1. **Copy this exact prompt** and paste it into Claude Code:
 
 ```
 I want to build a webapp based on this template https://github.com/mehdidotesk73/claude-nocode-netlify-webapp-workflow
 ```
 
-3. **Claude Code will:**
-   - Read the template's CLAUDE.md and README
-   - Ask you about your project (purpose, UI structure, external APIs, Netlify site name)
-   - Ask for your GitHub repo link (the one you created in step 1)
+2. **Claude Code will guide you through everything:**
+   - Ask what you want to build (purpose, UI layout, external data, site name)
+   - Suggest a GitHub repo name based on your project
+   - Guide you through creating that repo ([SETUP.md](./SETUP.md) Step 1)
    - Clone the scaffold into your new repo
-   - Auto-fill all the project details
-   - Guide you through connecting GitHub + Netlify
-4. **Describe your app** — what should it look like? what should it do?
-5. **Iterate** — Claude handles code changes, you review via Netlify preview links
+   - Auto-fill all your project details
+   - Optionally set up Netlify for preview deploys
+3. **Describe your app** — what should it look like? what features should it have?
+4. **Iterate** — Claude handles code changes, you review via Netlify preview links
 
 ## What You Get
 
@@ -102,14 +101,15 @@ npm run preview       # Test production build locally
 
 ## Next Steps
 
-1. **Create your GitHub repo** — follow [SETUP.md](./SETUP.md) Step 1 (takes 2 minutes)
-2. **Copy the prompt** from the Quick Start section above
-3. **Paste into Claude Code** and hit submit
-4. **Answer Claude's questions** about your project (purpose, UI layout, external data, site name)
-5. **Provide your GitHub repo link** when asked
-6. **Claude Code sets everything up** — clones scaffold, fills in details, guides GitHub + Netlify setup
-7. **Describe your app** — tell Claude what you want it to look like
-8. **Watch it build** — Netlify preview links update as you iterate
+1. **Copy the prompt** from the Quick Start section above
+2. **Paste into Claude Code** and hit submit
+3. **Answer Claude's questions** about your project (what it does, how it's organized, external data, site name)
+4. **Approve the suggested GitHub repo name** (or suggest changes)
+5. **Create the GitHub repo** — Claude will guide you through it (5 minutes, uses [SETUP.md](./SETUP.md) Step 1)
+6. **Provide the repo link** when Claude asks
+7. **Claude Code sets everything up** — clones scaffold, fills in details, optionally sets up Netlify
+8. **Describe your app** — tell Claude what you want it to look like
+9. **Watch it build** — Netlify preview links update as you iterate
 
 ---
 
