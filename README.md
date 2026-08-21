@@ -4,10 +4,14 @@ A Vue 3 + TypeScript + Vite template for building progressive web apps (PWAs) th
 
 ## Quick Start
 
-1. **Clone this repo** to start your project
-2. **Read [SETUP.md](./SETUP.md)** — step-by-step guide to connect GitHub and Netlify
-3. **Customize [CLAUDE.md](./CLAUDE.md)** — fill in project details at the top
-4. **Use Claude Code** — open this repo in Claude Code and describe what you want to build
+1. **Create a new GitHub repo** for your project (see [SETUP.md](./SETUP.md) for instructions)
+2. **Open Claude Code** and ask: "I want to build a webapp based on this template" + paste the link to this repo
+3. **Claude Code will:**
+   - Clone this scaffold into your new GitHub repo
+   - Ask you about your project (purpose, UI structure, external APIs)
+   - Auto-fill the project details
+   - Connect GitHub + Netlify for you
+4. **Describe your app** — what do you want it to do?
 5. **Iterate** — Claude handles code changes, you review via Netlify preview links
 
 ## What You Get
@@ -39,14 +43,16 @@ docs/
   concepts/overview.md User-facing help docs
 ```
 
-## Customize for Your Project
+## How Claude Code Customizes This Template
 
-Before starting, fill in these placeholders in `CLAUDE.md`:
+When you first open this in Claude Code, it will ask you questions about your project:
 
-- `<REF:purpose>` — What does your app do?
-- `<REF:UI-shape>` — How is it organized? (tabs, pages, etc.)
-- `<REF:Netlify-app-name>` — Your Netlify site name (no spaces/underscores)
-- `<REF:external-deps>` — Any external APIs or data sources?
+- **Purpose** — What does your app do?
+- **UI structure** — How is it organized? (tabs, pages, sections, etc.)
+- **External data** — Does it fetch from any APIs or data sources?
+- **Netlify site name** — What should your preview/production sites be called?
+
+Claude Code automatically fills these details into `CLAUDE.md` and all the docs. **No manual editing required** — just answer in plain language.
 
 ## Development Workflow
 
@@ -89,10 +95,12 @@ npm run preview       # Test production build locally
 
 ## Next Steps
 
-1. Read [SETUP.md](./SETUP.md) to connect GitHub and Netlify
-2. Customize [CLAUDE.md](./CLAUDE.md) with your project details
-3. Open this repo in Claude Code and start describing your app
-4. Watch Netlify preview URLs update as Claude iterates the code
+1. **Create your project repo** — follow the instructions in [SETUP.md](./SETUP.md) step 1 (create a new GitHub repo)
+2. **Open Claude Code** and paste this repo's link + your new repo's link
+3. **Tell Claude Code:** "I want to build a webapp based on this template. [Your project idea]"
+4. **Claude Code will set everything up** — GitHub, Netlify, project details
+5. **Describe your app** — what should it look like? what should it do?
+6. **Watch it build** — Netlify preview updates as you iterate
 
 ---
 

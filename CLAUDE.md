@@ -30,7 +30,23 @@ Two tabs:
 - `<REF:Netlify-app-name>` = ```bitcoin-analysis```
 - `<REF:external-deps>` = ```Binance price API, CoinMarketCap historical data```
 
-**How to fill these in:** For a new project, Claude will ask clarifying questions. Answer in plain language — describe your app's purpose, how it's organized (tabs, pages, etc.), and any external data it needs. Claude will summarize your answers into the placeholders above.
+**How this works:** On first setup, Claude Code will ask you clarifying questions about your project:
+1. "What is your app's purpose/main goal?" → fills `<REF:purpose>`
+2. "How is the UI organized? (e.g., tabs, pages, sections)" → fills `<REF:UI-shape>`
+3. "What external APIs or data sources does it need?" → fills `<REF:external-deps>`
+4. "What should your Netlify site be called?" → fills `<REF:Netlify-app-name>`
+
+Answer in plain language — Claude summarizes and auto-fills the references above. See the Examples section for the level of detail expected.
+
+## Initial Setup (Claude Code First Run)
+
+**When you first open this in Claude Code:**
+
+1. **Greet the user** — "Welcome! I'll help you build your webapp. Let me ask a few questions to set things up."
+2. **Ask the 4 questions above** (purpose, UI shape, external deps, Netlify name) — provide the examples from this section to guide them
+3. **Update the placeholders** — fill in the References section above with their answers
+4. **Confirm GitHub + Netlify setup** — ask if they've created their GitHub repo yet; if not, walk through SETUP.md step 1
+5. **Start building** — once references are filled, they can describe their app and you start iterating
 
 ## What this is
 
