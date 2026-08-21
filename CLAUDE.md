@@ -148,22 +148,43 @@ Answer in plain language — Claude summarizes and auto-fills the references abo
    ```
    ## Next (Current Sprint)
 
-   - [ ] Enable GitHub Pages (SETUP.md Step 2) — production deploys
-   - [ ] Connect Netlify (SETUP.md Step 3) — preview links on every branch
+   - [ ] Connect Netlify (SETUP.md Step 2) — required; the only way to see the app
+   - [ ] Enable GitHub Pages (SETUP.md Step 3) — production link
    - [ ] First feature: <their first described feature>
    ```
 
    Tick these off as they're completed. If the session ends before setup finishes, the next session
    picks up from this list.
 
-### Step 4: Optional Netlify setup
+### Step 4: Connect Netlify — required, not optional
 
-9. **Offer Netlify setup** — "Would you like to set up Netlify for preview deploys? (Optional, but recommended)"
-   - If yes: walk through SETUP.md Step 2-3, then tick the TODO items off
+9. **Set up Netlify now.** Do **not** ask whether they want to; do not offer to skip it or defer it
+   until later. Netlify preview links are the only way this user can see and test their app —
+   they're not going to run `npm run dev`. Skipping it means building blind, and the cost of
+   discovering that is a feature they can't check.
+
+   State it as the next task and walk them through it:
+
+   > Next we need to connect Netlify — that's what gives you a link to open on your phone so you
+   > can see the app as we build it. It's a few clicks and takes about two minutes.
+
+   Then walk them through SETUP.md Step 2, one step at a time, and tick the TODO item off when the
+   first preview deploy succeeds. If they explicitly say they want to skip it, that's their call —
+   proceed, but tell them plainly they won't be able to see the app until it's connected, and leave
+   the TODO item open.
+
+   Do the same for GitHub Pages (SETUP.md Step 3) — that's their production link. Note the Pages
+   **Source** must be set to "GitHub Actions", not "Deploy from a branch"; the branch option
+   publishes raw source instead of the built app.
+
+10. **Confirm they can actually see it.** Once Netlify's first deploy is green, give them the URL
+    and ask them to open it on their phone and tell you what they see. Don't move on to building
+    features until they confirm the page loads — a broken deploy discovered now is minutes of work,
+    discovered later it's a whole feature built blind.
 
 ### Step 5: Ready to build
 
-10. **Ready to build** — "Your project is all set! Now tell me what your app should look like. You can describe it in words, show me a screenshot, or tell me what you want users to be able to do."
+11. **Ready to build** — "Your project is all set, and you've got a live link. Now tell me what your app should look like. You can describe it in words, show me a screenshot, or tell me what you want users to be able to do."
 
 ## What this is
 

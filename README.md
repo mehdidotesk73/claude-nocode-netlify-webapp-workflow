@@ -27,23 +27,14 @@ I want to build a webapp based on this template https://github.com/mehdidotesk73
      (Claude gives you every value to fill in — you just click and paste the link back)
    - Set up the scaffold in your new project
    - Auto-fill all your project details
-   - Optionally set up Netlify for preview deploys
+   - Connect Netlify, so you get a link you can open on your phone to see the app
 3. **Describe your app** — what should it look like? what features should it have?
-4. **Iterate** — Claude handles code changes, you review via Netlify preview links
+4. **Iterate** — Claude changes the code, you look at the preview link and say what to fix
 
 **Prerequisites:**
 - GitHub account (free at https://github.com)
+- Netlify account (free at https://netlify.com — sign in with GitHub)
 - Claude Code with GitHub authorization enabled
-
-2. **Claude Code will guide you through everything:**
-   - Ask what you want to build (purpose, UI layout, external data, site name)
-   - Suggest a GitHub repo name based on your project
-   - Guide you through creating that repo ([SETUP.md](./SETUP.md) Step 1)
-   - Clone the scaffold into your new repo
-   - Auto-fill all your project details
-   - Optionally set up Netlify for preview deploys
-3. **Describe your app** — what should it look like? what features should it have?
-4. **Iterate** — Claude handles code changes, you review via Netlify preview links
 
 ## What You Get
 
@@ -132,9 +123,10 @@ npm run preview       # Test production build locally
 4. **Approve the suggested GitHub repo name** (or suggest changes)
 5. **Create the GitHub repo** — Claude will guide you through it (5 minutes, uses [SETUP.md](./SETUP.md) Step 1)
 6. **Provide the repo link** when Claude asks
-7. **Claude Code sets everything up** — clones scaffold, fills in details, optionally sets up Netlify
-8. **Describe your app** — tell Claude what you want it to look like
-9. **Watch it build** — Netlify preview links update as you iterate
+7. **Claude Code sets everything up** — scaffold, your project details, and Netlify
+8. **Open your preview link** — confirm the page loads on your phone before building features
+9. **Describe your app** — tell Claude what you want it to look like
+10. **Watch it build** — the preview link updates as you iterate
 
 ---
 

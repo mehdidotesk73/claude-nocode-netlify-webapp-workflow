@@ -27,50 +27,59 @@ you're just filling in blanks. It takes about a minute.
 It'll look like `https://github.com/your-username/grocery-assistant`. Once Claude has that link,
 it puts all the starting files in place for you — nothing else to do here.
 
-## Step 2: Enable GitHub Pages for Production
+## Step 2: Connect Netlify — this is how you'll see your app
+
+**Do this one.** Netlify gives you a link you can open on your phone to see the app as it's being
+built. Without it there's no way to look at your own app, and you'd be describing changes you can't
+check. It takes about two minutes.
+
+### On Netlify (Web)
+
+1. Go to https://netlify.com
+2. **Sign up or log in** — choose "Sign up with GitHub", it's the fastest path
+3. Click **Add new site** → **Import an existing project**
+4. Click **GitHub** and authorize Netlify when it asks
+5. Find and select your project in the list
+6. Leave the build settings as they are — Netlify reads them from the project already
+7. Click **Deploy site**
+
+**Verify:** Netlify builds for a minute, then shows a URL like `https://your-site-name.netlify.app/`.
+Open it on your phone. You should see the app's header and footer. Tell Claude what you see.
+
+You can rename the site under **Site configuration → Change site name** if you want a tidier URL.
+
+## Step 3: Enable GitHub Pages for Production
+
+This is your permanent public link, updated whenever changes are merged.
 
 ### On GitHub (Web)
 
-1. Go to your repo
-2. Click **Settings** (top right)
-3. Scroll to **Pages** (left sidebar)
-4. Under "Build and deployment":
-   - **Source:** Select "Deploy from a branch"
-   - **Branch:** Select "main" and "/root" folder
-5. Click **Save**
-6. Wait 1-2 minutes for the build
+1. Go to your project on GitHub
+2. Click **Settings** (top of the page)
+3. Click **Pages** (left sidebar)
+4. Under "Build and deployment" → **Source**, select **GitHub Actions**
+   - Not "Deploy from a branch" — this project builds itself with a workflow, and picking the
+     branch option will publish the raw source files instead of the built app
+5. That's it — there's no Save button on this setting
 
-**Verify:** After the build completes, you'll see a URL like `https://your-username.github.io/repo-name/` — your production site is live there.
+**Verify:** Go to the **Actions** tab. After the next push to `main` you'll see a "Deploy to GitHub
+Pages" run; when it goes green your site is live at `https://your-username.github.io/your-repo-name/`.
 
-## Step 3: Set Up GitHub Branch Protection (Optional but Recommended)
+## Step 4: Branch Protection (Optional)
 
-This prevents accidental pushes to `main` and forces code review via pull requests.
+Prevents accidental direct pushes to `main`, forcing changes through a pull request. Useful if
+others will work on the project; skippable if it's just you.
 
 ### On GitHub (Web)
 
 1. Go to your repo → **Settings** → **Branches** (left sidebar)
 2. Under "Branch protection rules," click **Add rule**
 3. **Branch name pattern:** Enter `main`
-4. Check:
-   - "Require a pull request before merging"
-   - "Require approvals" (set to 1)
+4. Check "Require a pull request before merging"
 5. Click **Create**
 
-Now all changes must go through a pull request — safer for team workflows.
-
-## Step 4: Connect Netlify for Preview Builds
-
-### On Netlify (Web)
-
-1. Go to https://netlify.com
-2. **Sign up or log in** (use your GitHub account for easiest setup)
-3. Click **Add new site** → **Import an existing project**
-4. Click **GitHub** to authorize Netlify
-5. Select your GitHub repo (the one you created in Step 1)
-6. Accept default build settings (Netlify auto-detects Vue + Vite)
-7. Click **Deploy site**
-
-**Verify:** Netlify will build and deploy. You'll see a URL like `https://your-site-name.netlify.app/` — this is your preview site.
+Note: if you turn on "Require approvals" and you're working solo, you won't be able to approve your
+own pull requests — leave it unchecked unless someone else is reviewing.
 
 ### Every Time You Push a Branch
 

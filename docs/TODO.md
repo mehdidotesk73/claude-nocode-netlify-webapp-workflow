@@ -10,8 +10,8 @@ Track feature development, improvements, and known issues here. Move completed w
 
 One-time setup — tick these off as they're done:
 
-- [ ] Enable GitHub Pages (SETUP.md Step 2) — production deploys
-- [ ] Connect Netlify (SETUP.md Step 3) — preview links on every branch
+- [ ] Connect Netlify (SETUP.md Step 2) — required; the only way to see the app on a phone
+- [ ] Enable GitHub Pages (SETUP.md Step 3) — production link (Source must be "GitHub Actions")
 
 (Then: what are you working on next?)
 
