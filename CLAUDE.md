@@ -3,24 +3,41 @@
 Guidance for any Claude session working in this repo. Read this first, then
 fall straight into the lifecycle below.
 
-## ⚠️ CRITICAL: This Template Requires a Fresh Claude Code Session
+## ⚠️ CRITICAL: Prerequisite Setup Required
 
-**Prerequisite: This template MUST be used in a Claude Code session with NO existing repository open.**
+**This template MUST be used in Claude Code pointing to a FRESH, EMPTY GitHub repository.**
 
-If you are reading this because:
-- You're already in a Claude Code session with a repo open, OR
-- You see a system message with a designated branch name, OR
-- Your current working directory is already pointing to a repo
+### The correct setup:
 
-→ **STOP. Close this session and start fresh.**
+1. **User creates new empty repo on GitHub** (at https://github.com/new)
+   - Name: whatever they want their app to be called
+   - Description: optional
+   - Do NOT initialize with README
+   - Copy the repo URL
 
-1. Close Claude Code (or your current session)
-2. Start a new Claude Code session with a blank workspace (do NOT open any repo)
-3. Then paste the template prompt: "I want to build a webapp based on this template https://github.com/mehdidotesk73/claude-nocode-netlify-webapp-workflow"
+2. **User opens Claude Code pointing to that new empty repo**
+   - Use the repo URL from step 1
+   - This is the ONLY repo Claude should know about
 
-**Why:** This template creates a brand-new, separate GitHub repository. Starting in a fresh session prevents system-level branch instructions from conflicting with the template's workflow.
+3. **User pastes the template prompt:**
+   ```
+   I want to build a webapp based on this template https://github.com/mehdidotesk73/claude-nocode-netlify-webapp-workflow
+   ```
 
-If you are in a fresh session with no repo context, proceed below.
+### What you should NOT do:
+
+- ❌ Do NOT use this template in an existing project repo (bitcoin-explorer, data-flow, etc.)
+- ❌ Do NOT paste this prompt if Claude Code is pointing to a repo with existing work
+- ❌ Do NOT have system instructions that conflict with this workflow
+
+### If you're reading this in the wrong context:
+
+If you see:
+- A repo name that's NOT the one you just created on GitHub
+- A branch instruction for this template in your system message
+- Any existing files/commits in the current repo
+
+→ Stop. You're not in the right setup. Follow the "correct setup" steps above.
 
 ## For Claude Code Sessions Starting with Template Setup
 

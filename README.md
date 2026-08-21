@@ -15,18 +15,33 @@ When you paste the prompt below into Claude Code:
 
 ## Quick Start
 
-1. **Open Claude Code in a fresh session** (do NOT point to any existing repository):
-   - Start a new Claude Code session
-   - Do NOT clone or open any repo
-   - Just have a blank workspace ready
+### Step 1: Create a new GitHub repository (2 minutes)
 
-2. **Copy this exact prompt** and paste it into Claude Code:
+First, you must create an empty repository on GitHub for your new webapp:
+
+1. Go to https://github.com/new
+2. **Repository name:** Enter your app name (e.g., `grocery-assistant`, `weather-tracker`)
+3. **Description:** Optional
+4. **Public or Private:** Your choice
+5. **Click "Create repository"** (do NOT initialize with README)
+6. Copy the repository URL (e.g., `https://github.com/your-username/grocery-assistant`)
+
+### Step 2: Open Claude Code and paste the template prompt
+
+1. Open Claude Code and point it to your **new empty repository** (the one you just created)
+2. Copy and paste this prompt into Claude Code:
 
 ```
 I want to build a webapp based on this template https://github.com/mehdidotesk73/claude-nocode-netlify-webapp-workflow
 ```
 
-(Starting in a fresh session ensures Claude follows the template workflow, not any system branch instructions from an existing repo.)
+Claude will then:
+- Ask you 4 questions about your app
+- Clone the template scaffold into your new repo
+- Auto-fill all your project details
+- Guide you through setup
+
+**Note:** Claude Code requires pointing to a repository, so we create the new repo first, then point Claude to it.
 
 2. **Claude Code will guide you through everything:**
    - Ask what you want to build (purpose, UI layout, external data, site name)
