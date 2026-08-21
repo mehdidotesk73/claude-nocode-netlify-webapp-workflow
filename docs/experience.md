@@ -38,6 +38,14 @@ GitHub Pages serves from `https://<owner>.github.io/<repo-name>/`, not the domai
 
 Under Settings → Pages, the Source dropdown defaults to "Deploy from a branch". That's wrong for this project — it publishes the repo's raw source files, so visitors get the unbuilt `index.html` with a bare `<div id="app">` and no bundle. The project builds itself in `.github/workflows/deploy.yml`, so Source must be **GitHub Actions**. The failure is confusing because the deploy "succeeds" and the URL loads; it's just a blank page.
 
+### Branch Protection: "Require Approvals" Is a Trap for Solo Projects
+
+GitHub does not let anyone approve their own pull request — on your own PR, "Approve" is greyed out and only "Comment" is available. So "Require approvals: 1" on a one-person project is a rule that cannot be satisfied.
+
+How bad that is depends on a second setting. "Do not allow bypassing the above settings" is unchecked by default, which means repo admins are exempt from branch protection entirely — you can still merge (with a red "bypass branch protections" warning) and still push directly to `main`. Check it, and the bypass is gone: with approvals required you're genuinely stuck and have to edit the rule to merge anything.
+
+The combination that works for a solo project is "Require a pull request before merging" + "Do not allow bypassing the above settings", with approvals **off**. That enforces PR-only changes to `main` for everyone including the owner, while imposing no requirement the owner can't meet — opening and merging a PR satisfies the rule on its own.
+
 ### `npm ci` Needs a Committed Lockfile
 
 The Pages workflow runs `npm ci`, which fails outright ("can only install packages when your package.json and package-lock.json are in sync") if `package-lock.json` isn't committed. It's tempting to gitignore lockfiles; don't. Commit it whenever dependencies change.

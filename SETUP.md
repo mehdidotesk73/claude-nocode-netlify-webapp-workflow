@@ -75,11 +75,20 @@ others will work on the project; skippable if it's just you.
 1. Go to your repo → **Settings** → **Branches** (left sidebar)
 2. Under "Branch protection rules," click **Add rule**
 3. **Branch name pattern:** Enter `main`
-4. Check "Require a pull request before merging"
-5. Click **Create**
+4. Check **"Require a pull request before merging"**
+5. Leave **"Require approvals"** unchecked (see below)
+6. Check **"Do not allow bypassing the above settings"** at the bottom
+7. Click **Create**
 
-Note: if you turn on "Require approvals" and you're working solo, you won't be able to approve your
-own pull requests — leave it unchecked unless someone else is reviewing.
+You can still merge your own pull requests — no approval is needed, so nothing blocks you. What
+this stops is anything being pushed straight to `main` without a pull request, including by you.
+
+**Don't check "Require approvals" while you're working solo.** GitHub doesn't allow anyone to
+approve their own pull request, so a 1-approval requirement on a one-person project is a rule
+nobody can satisfy — and combined with step 6 above, you'd have to come back into these settings
+to merge anything at all. Turn it on only once someone else is actually reviewing your work.
+
+Skipping this step entirely is fine too — it's a safety rail, not a requirement.
 
 ### Every Time You Push a Branch
 
