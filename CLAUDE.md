@@ -7,13 +7,17 @@ fall straight into the lifecycle below.
 
 **If a user says:** "I want to build a webapp based on this template https://github.com/mehdidotesk73/claude-nocode-netlify-webapp-workflow"
 
+**CRITICAL:** This is a NEW PROJECT in a NEW REPOSITORY. Do NOT work in your current repo.
+
 **You should:**
 1. Fetch and read this repo's CLAUDE.md, README.md, and SETUP.md files
-2. Ignore any current working repo — focus entirely on the template
-3. Follow the "Initial Setup" section below
-4. Guide the user through creating their own GitHub repo + setting up the scaffold in it
+2. **Completely ignore any current working repo** — this is a brand new project
+3. Do NOT create branches in the current repo
+4. Do NOT work in the current repo at all
+5. Follow the "Initial Setup" section below to guide creating a NEW GitHub repo
+6. Guide the user through creating their own separate GitHub repo + setting up the scaffold in it
 
-**Do NOT** assume the user wants to work in the template repo itself. The template is read-only; you're helping them clone it into their own new project.
+**The template is read-only; you're helping them create a NEW INDEPENDENT PROJECT in a new GitHub repository.**
 
 ## References
 
@@ -54,33 +58,48 @@ Answer in plain language — Claude summarizes and auto-fills the references abo
 
 **When a user sends:** "I want to build a webapp based on this template https://github.com/mehdidotesk73/claude-nocode-netlify-webapp-workflow"
 
-**This is a NEW PROJECT workflow. Follow this exactly:**
+**This is a NEW PROJECT workflow. Follow this EXACT order:**
 
-1. **Greet the user** — "Great! I'll help you build your webapp. Let me ask a few questions to set things up."
+### Step 1: Create the new GitHub repository (FIRST)
 
-2. **Ask the 4 project definition questions** (do NOT ask where to build — assume new project):
+1. **Greet and clarify** — "Great! I'll help you build a new webapp using this template. This will be a completely separate project in its own GitHub repository."
+
+2. **Guide GitHub repo creation** — Walk through SETUP.md Step 1:
+   - Ask: "Do you have a GitHub account?" (if not, direct to https://github.com)
+   - Provide step-by-step instructions to create a new empty GitHub repo
+   - Get the new repo link from them (e.g., https://github.com/username/my-awesome-app)
+
+3. **Verify repo is created** — Confirm the empty repo exists before proceeding
+
+### Step 2: Ask project definition questions
+
+4. **Ask the 4 project definition questions:**
    - "What is your app's purpose? (What problem does it solve? What does it help users do?)"
    - "How should the UI be organized? (e.g., tabs, pages, sections, dashboard layout)"
    - "What external data sources does it need? (e.g., APIs, databases, or none if self-contained)"
    - "What should your Netlify site be called?" (e.g., my-awesome-app, weather-tracker)
    
-   Provide examples from the References section above to guide them.
+   Provide examples from the References section to guide them.
 
-3. **Update the References section** — fill in the 4 placeholders with their answers
+### Step 3: Set up the scaffold in their new repo
 
-4. **Guide GitHub setup** — "Now let's set up your GitHub repository..."
-   - Ask: "Do you have a GitHub account?" (if not, direct to github.com)
-   - Walk through SETUP.md Step 1: Create a new empty GitHub repo
-   - Get the repo link from them (e.g., https://github.com/username/my-awesome-app)
-
-5. **Clone scaffold → their repo** — use GitHub MCP tools to:
-   - Clone this template into their new repo
+5. **Clone template → their new repo** — use GitHub MCP tools to:
+   - Add their new repo to this session (`add_repo` with push access)
+   - Clone this template repo contents into their new repo
    - Auto-fill CLAUDE.md with their project details
-   - Commit and push the initial scaffold
+   - Commit with message: "Initial scaffold from template"
+   - Push to main
 
-6. **Confirm Netlify** — walk through SETUP.md Step 2-3 (connect Netlify if they want preview deploys)
+6. **Update the References section** — fill in the 4 placeholders with their answers in their new repo
 
-7. **Ready to build** — "Your project is set up! What should your app look like? Describe it or show me a screenshot."
+### Step 4: Optional Netlify setup
+
+7. **Offer Netlify setup** — "Would you like to set up Netlify for preview deploys? (Optional, but recommended)" 
+   - If yes: walk through SETUP.md Step 2-3
+
+### Step 5: Ready to build
+
+8. **Ready to build** — "Your project is set up in [their-repo-url]! What should your app look like? Describe it, show me a screenshot, or tell me what you want users to be able to do."
 
 ## What this is
 
