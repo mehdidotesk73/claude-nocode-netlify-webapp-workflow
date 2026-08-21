@@ -60,37 +60,40 @@ Answer in plain language — Claude summarizes and auto-fills the references abo
 
 **This is a NEW PROJECT workflow. Follow this EXACT order:**
 
-### Step 1: Create the new GitHub repository (FIRST)
+### Step 1: Understand the project (ask the 4 questions first)
 
-1. **Greet and clarify** — "Great! I'll help you build a new webapp using this template. This will be a completely separate project in its own GitHub repository."
+1. **Greet the user** — "Great! I'll help you build a new webapp using this template. Let me ask a few questions to understand what you want to create."
 
-2. **Guide GitHub repo creation** — Walk through SETUP.md Step 1:
-   - Ask: "Do you have a GitHub account?" (if not, direct to https://github.com)
-   - Provide step-by-step instructions to create a new empty GitHub repo
-   - Get the new repo link from them (e.g., https://github.com/username/my-awesome-app)
-
-3. **Verify repo is created** — Confirm the empty repo exists before proceeding
-
-### Step 2: Ask project definition questions
-
-4. **Ask the 4 project definition questions:**
+2. **Ask the 4 project definition questions:**
    - "What is your app's purpose? (What problem does it solve? What does it help users do?)"
    - "How should the UI be organized? (e.g., tabs, pages, sections, dashboard layout)"
    - "What external data sources does it need? (e.g., APIs, databases, or none if self-contained)"
-   - "What should your Netlify site be called?" (e.g., my-awesome-app, weather-tracker)
+   - "What should the Netlify site be called?" (e.g., my-awesome-app, weather-tracker, Note: this can change later)
    
    Provide examples from the References section to guide them.
 
+### Step 2: Suggest GitHub repo and create it
+
+3. **Suggest a GitHub repo name and description** based on their answers:
+   - Repo name: (e.g., based on Netlify name or purpose)
+   - Description: (e.g., 1-sentence summary of what it does)
+   - Ask: "Does this look good, or would you like to change it?"
+
+4. **Guide GitHub repo creation** — Walk through SETUP.md Step 1:
+   - Ask: "Do you have a GitHub account?" (if not, direct to https://github.com)
+   - Provide step-by-step instructions using the suggested name/description
+   - Get the new repo link from them (e.g., https://github.com/username/my-awesome-app)
+
+5. **Verify repo is created** — Confirm the empty repo exists before proceeding
+
 ### Step 3: Set up the scaffold in their new repo
 
-5. **Clone template → their new repo** — use GitHub MCP tools to:
+6. **Clone template → their new repo** — use GitHub MCP tools to:
    - Add their new repo to this session (`add_repo` with push access)
    - Clone this template repo contents into their new repo
-   - Auto-fill CLAUDE.md with their project details
+   - Auto-fill CLAUDE.md with their project details (the 4 answers they gave)
    - Commit with message: "Initial scaffold from template"
    - Push to main
-
-6. **Update the References section** — fill in the 4 placeholders with their answers in their new repo
 
 ### Step 4: Optional Netlify setup
 
@@ -99,7 +102,7 @@ Answer in plain language — Claude summarizes and auto-fills the references abo
 
 ### Step 5: Ready to build
 
-8. **Ready to build** — "Your project is set up in [their-repo-url]! What should your app look like? Describe it, show me a screenshot, or tell me what you want users to be able to do."
+8. **Ready to build** — "Your project is all set! Now tell me what your app should look like. You can describe it in words, show me a screenshot, or tell me what you want users to be able to do."
 
 ## What this is
 
