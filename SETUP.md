@@ -40,8 +40,22 @@ check. It takes about two minutes.
 3. Click **Add new site** → **Import an existing project**
 4. Click **GitHub** and authorize Netlify when it asks
 5. Find and select your project in the list
+   - **If it says "No repositories found"** — expected, see just below. Fix it and come back here.
 6. Leave the build settings as they are — Netlify reads them from the project already
 7. Click **Deploy site**
+
+### "No repositories found" — the common snag
+
+Netlify only sees repositories you've explicitly granted it. Your project was created *after* you
+authorized Netlify, so it isn't in that grant yet. Nothing is wrong with your project.
+
+1. Click the **Configure Netlify on GitHub** button on that same screen
+2. GitHub opens the Netlify app's settings
+3. Under **Repository access**, pick one:
+   - **All repositories** — simplest, and future projects appear automatically
+   - **Only select repositories** → **Select repositories** → add your project by name
+4. Click **Save** (GitHub may ask for your password)
+5. You're returned to Netlify — your project is now in the list. Refresh the page if it isn't.
 
 **Verify:** Netlify builds for a minute, then shows a URL like `https://your-site-name.netlify.app/`.
 Open it on your phone. You should see the app's header and footer. Tell Claude what you see.

@@ -34,6 +34,14 @@ GitHub Pages serves from `https://<owner>.github.io/<repo-name>/`, not the domai
 
 `vite-plugin-pwa` generates `manifest.webmanifest` and injects its own `<link rel="manifest">`. A second static `public/manifest.json` linked from `index.html` produces two competing manifest links in the built HTML, and the static one wins in some browsers — pointing at icons the build never processed. Define the manifest once, in the `VitePWA({ manifest: ... })` block.
 
+### Netlify's "No repositories found" on a Freshly Created Repo
+
+Netlify installs as a GitHub App with a repository-access grant, and that grant is fixed at authorization time. A repo created afterwards isn't in it, so Netlify's import screen shows "No repositories found" — with the search box holding exactly the name you typed and nothing beneath it. It reads like the repo was never created, or was created somewhere else.
+
+The fix is on that same screen: **Configure Netlify on GitHub** → **Repository access** → either **All repositories**, or add the new one under "Only select repositories" → **Save**.
+
+This is guaranteed to hit anyone whose project is created during setup, which for this template is everyone. Warn about it before they open Netlify rather than waiting for them to report being stuck — an unexplained empty list is exactly the kind of thing that makes a non-technical user think they've broken something and back out.
+
 ### GitHub Pages Source Must Be "GitHub Actions"
 
 Under Settings → Pages, the Source dropdown defaults to "Deploy from a branch". That's wrong for this project — it publishes the repo's raw source files, so visitors get the unbuilt `index.html` with a bare `<div id="app">` and no bundle. The project builds itself in `.github/workflows/deploy.yml`, so Source must be **GitHub Actions**. The failure is confusing because the deploy "succeeds" and the URL loads; it's just a blank page.

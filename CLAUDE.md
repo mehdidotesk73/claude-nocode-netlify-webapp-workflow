@@ -173,6 +173,13 @@ Answer in plain language — Claude summarizes and auto-fills the references abo
    proceed, but tell them plainly they won't be able to see the app until it's connected, and leave
    the TODO item open.
 
+   **Warn them about "No repositories found" before they hit it.** Their project was created after
+   they authorized Netlify, so it won't be in Netlify's GitHub grant and the repo list comes up
+   empty — with the search box showing exactly what they typed and nothing under it, which reads
+   like the project failed to get created. Say up front that if they see this, it's expected: click
+   **Configure Netlify on GitHub**, set **Repository access** to All repositories (or add this one),
+   Save, and the project appears. Full steps in SETUP.md Step 2.
+
    Do the same for GitHub Pages (SETUP.md Step 3) — that's their production link. Note the Pages
    **Source** must be set to "GitHub Actions", not "Deploy from a branch"; the branch option
    publishes raw source instead of the built app.
