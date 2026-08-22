@@ -1,20 +1,69 @@
 ---
 name: finish-setup
-description: Connect Netlify and protect the main branch — the one-time hosting setup that gives the user a preview link, a live production site, and a pull-request workflow. Use right after a project is scaffolded from the template, or any time setup was left unfinished (check the setup checklist in docs/TODO.md).
+description: Personalize a freshly scaffolded project (README, CLAUDE.md, docs), connect Netlify, and protect the main branch — the one-time setup that gives the user a project that reads as their own, a preview link, a live production site, and a pull-request workflow. Use right after a project is scaffolded from the template, or any time setup was left unfinished (check the setup checklist in docs/TODO.md).
 ---
 
-# Finish setting up hosting
+# Finish setting up the project
 
-Two things, in this order. Each is required — skipping either silently removes something the user
-depends on:
+Three things, in this order. Each is required — skipping any one silently leaves something broken
+or missing for the user:
 
 | Step | Gives them | If skipped |
 |---|---|---|
+| Personalize the scaffold | A project that reads as theirs, not the template | Raw template docs forever; an unstripped `CLAUDE.md` tells a future session to bootstrap a second repo |
 | Netlify | A preview link on every change, AND their real production site — one host does both | They can't see changes before they're live, and have no live site at all |
 | Branch protection | Changes arrive as pull requests | No preview links at all — work lands straight on the live site |
 
 **Resuming?** Check the setup checklist under **Next** in `docs/TODO.md` and do only what's still
-unticked. Tick each item off as it completes, so an interrupted session can pick up cleanly.
+unticked. Tick each item off as it completes, so an interrupted session can pick up cleanly. If
+`docs/TODO.md` doesn't have a setup checklist yet, personalization (below) hasn't run — start there.
+
+## 0. Personalize the scaffold
+
+**Do this before Netlify or branch protection, not after.** `main` is still unprotected at this
+point in setup — this is the last moment a direct commit to `main` is possible, so this step should
+be one push, not a branch and PR. Use the purpose, UI shape, site name, and external-deps answers
+already established earlier in this conversation; don't re-ask for them.
+
+- **`README.md` — rewrite completely.** Drop everything about using the template (the quick-start
+  prompt, "what you get", template customization). Write the project's own README instead: app name
+  as the title, a short description from the purpose answer, the UI shape, "Built with Vue 3 +
+  TypeScript + Vite (PWA)", local dev commands (`npm install` / `npm run dev` / `npm run build`),
+  the live and preview URLs once known, and links to `docs/`. This is the file a visitor to the repo
+  sees first — it should describe their app, not this template.
+
+- **`CLAUDE.md` — delete the bootstrap, fill in the rest.** Keep the title and one-line intro at the
+  very top. Remove everything from "⚠️ CRITICAL: Leave the Session's Current Repo Alone" through the
+  end of "Step 5: Reload skills, then hand off to `finish-setup`", plus the References fill-in
+  instructions and the Bitcoin example block. Keep and fill in: "What this is" (with every
+  `<REF:*>` value substituted inline — no placeholders left anywhere), Development lifecycle,
+  Build & verify, Deploys, Repo structure, Conventions & gotchas, Debugging on device, Reference
+  docs. **This is what stops a future session re-running the bootstrap on an already-created
+  project** — an unstripped CLAUDE.md would tell it to go create another repo.
+
+- **`docs/experience.md` — keep only these sections, remove everything else:** Mobile-First Design
+  Constraints, Service-Worker Caching & Stale Builds, ECharts Gotchas, Pure Logic vs. Components,
+  Don't Hand-Write a Static `public/manifest.json`, `npm ci` Needs a Committed Lockfile,
+  `declaration: true` in an App's tsconfig, Ambient Types for Build-Time Constants, and Version
+  History (reset to the placeholder format, not the template's own history). Everything else in
+  this template's copy is a record of building *the template itself* — onboarding flow, Netlify UX,
+  skills design — and has no bearing on a project that will never re-run that bootstrap. Shipping it
+  verbatim would hand every project a confusing journal about a different piece of software.
+
+- **`docs/TODO.md` — seed the one-time setup checklist** under **Next**:
+
+  ```
+  ## Next (Current Sprint)
+
+  - [ ] Connect Netlify (finish-setup) — required; gives previews AND the production site
+  - [ ] Protect `main` (finish-setup) — required; makes changes arrive as PRs with previews
+  - [ ] First feature: <their first described feature>
+  ```
+
+- **`.claude/skills/` — leave untouched.** Already generic; nothing to personalize.
+
+Verify `npm run build` passes, commit (e.g. "Personalize scaffold for `<project name>`"), and push
+directly to `main`.
 
 ## How to give every step
 

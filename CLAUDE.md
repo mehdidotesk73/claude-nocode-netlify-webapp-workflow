@@ -2,7 +2,7 @@
 
 Guidance for any Claude session working in this repo. Read this first. The
 repeatable procedures live in `.claude/skills/` — `finish-setup` for one-time
-hosting setup, `ship-feature` for every change after that.
+setup, `ship-feature` for every change after that.
 
 ## ⚠️ CRITICAL: Leave the Session's Current Repo Alone
 
@@ -207,70 +207,32 @@ that it didn't happen. Every guided step follows this shape:
    From here on, "the repo" means theirs. Don't read, write, branch, commit, or push anywhere else
    for the rest of setup, and don't mention the old repo to the user.
 
-### Step 4: Set up the scaffold in their new repo
+### Step 4: Push the scaffold, unmodified
 
-9. **Copy the template's files into the new clone**, then transform them (next item) before
-   committing. Work locally rather than pushing files straight through the API — you need to run
-   `npm install && npm run build` and see it pass before anything reaches their repo. A scaffold
-   that doesn't compile is worse than no scaffold; they can't tell whether they broke it.
+9. **Copy the template's files into the new clone exactly as they are — no edits.** Verify
+   `npm install && npm run build` passes before anything reaches their repo; a scaffold that
+   doesn't compile is worse than no scaffold, since they can't tell whether they broke it. Commit
+   as "Initial scaffold from template" and push to `main`.
 
-   Commit as "Initial scaffold from template" and push to `main`.
+   **Don't rewrite README.md, CLAUDE.md, or the docs — leave that to `finish-setup`.** This step's
+   only job is getting a working scaffold onto `main` while it's still safe to push there directly.
+   The personalization step is long and content-heavy; keeping it out of this bootstrap means it
+   runs reliably once loaded as a skill in Step 5, rather than depending on you still holding all
+   its detail in context after several tool calls of cloning, building, and pushing.
 
-10. **Transform the template files into their project's files before committing.** The scaffold that
-   lands in their repo must read as *their project*, with no trace of the template bootstrap. Three
-   files change:
-
-   - **`README.md` — rewrite completely.** Drop everything about using the template (the quick-start
-     prompt, "what you get", template customization). Write their project's README instead: app name
-     as the title, a short description from their purpose answer, the UI shape, "Built with Vue 3 +
-     TypeScript + Vite (PWA)", local dev commands (`npm install` / `npm run dev` / `npm run build`),
-     the live and preview URLs once known, and links to `docs/`. This is the file a visitor to their
-     repo sees first — it should describe the grocery app (or whatever they're building), not this
-     template.
-
-     Don't mention GitHub Pages or Netlify independence here — that's the `add-github-pages` skill's
-     job, triggered if the user ever asks for it. Nothing needs to be written into the README for it
-     up front.
-
-   - **`CLAUDE.md` — delete the bootstrap, fill in the rest.** Keep the title and the one-line intro
-     at the very top of the file. Remove everything from "⚠️ CRITICAL: Leave the Session's Current
-     Repo Alone" through the end of "Step 5: Hand off to the `finish-setup` skill", plus the
-     References fill-in instructions and the Bitcoin example block. Keep and fill in: "What this is" (with
-     their `<REF:*>` values substituted inline — no placeholders left anywhere in the file),
-     Development lifecycle, Build & verify, Deploys, Repo structure, Conventions & gotchas,
-     Debugging on device, Reference docs. **This is what stops a future session re-running the
-     bootstrap on an already-created project** — an unstripped CLAUDE.md would tell it to go create
-     another repo.
-
-   - **`.claude/skills/` — copy as-is, change nothing.** `finish-setup` and `ship-feature` are the
-     project's working procedures from here on; the next step invokes the first of them. Everything
-     needed to run Netlify and branch-protection setup already lives in `finish-setup` — there's no
-     separate SETUP.md in this template; don't create one.
-
-11. **Seed `docs/TODO.md` with the remaining one-time setup**, under **Next**, so the state lives in
-   the project's own memory rather than only in this conversation:
-
-   ```
-   ## Next (Current Sprint)
-
-   - [ ] Connect Netlify (finish-setup) — required; gives previews AND the production site
-   - [ ] Protect `main` (finish-setup) — required; makes changes arrive as PRs with previews
-   - [ ] First feature: <their first described feature>
-   ```
-
-   Tick these off as they're completed. If the session ends before setup finishes, the next session
-   picks up from this list.
 ### Step 5: Reload skills, then hand off to `finish-setup`
 
-12. **The scaffold you just pushed contains `.claude/skills/`, but *this* session started before
-    those files existed on disk, so they aren't invocable yet.** Run **`/reload-skills`** — it
-    re-scans skill directories mid-session and makes newly-added `SKILL.md` files invocable without
+10. **Run `/reload-skills`.** The scaffold you just pushed contains `.claude/skills/`, but this
+    session started before those files existed on disk, so they aren't invocable yet.
+    `/reload-skills` re-scans skill directories mid-session and makes them invocable without
     starting over. This is a command *you* run, not something to ask the user to do.
 
-    After running it, invoke the **`finish-setup`** skill. It covers Netlify (which serves both
-    preview and production — see Deploys below) and branch protection, driven by the setup checklist
-    in `docs/TODO.md` so an interrupted session can resume cleanly, and it ends by handing off to
-    `ship-feature` for the first feature.
+11. **Invoke the `finish-setup` skill.** Its first action personalizes the scaffold you just pushed
+    (README, CLAUDE.md, docs) using the purpose/UI-shape/name/deps established in Step 1 of this
+    conversation — do this now, while `main` is still unprotected, so it's one direct commit rather
+    than a branch and PR. It then covers Netlify and branch protection, driven by the setup checklist
+    it seeds in `docs/TODO.md` so an interrupted session can resume cleanly, and ends by handing off
+    to `ship-feature` for the first feature.
 
     If `/reload-skills` isn't available (older Claude Code version) or `finish-setup` still isn't
     invocable afterward, fall back to reading `.claude/skills/finish-setup/SKILL.md` directly and
@@ -353,7 +315,7 @@ src/
     HelpModal.vue          renders docs/concepts/*.md into the Help modal
     <feature components>   e.g. one component per tab/page — see <REF:UI-shape>
 .claude/skills/
-  finish-setup/SKILL.md    one-time hosting setup: Netlify, branch protection
+  finish-setup/SKILL.md    scaffold personalization + one-time hosting setup
   ship-feature/SKILL.md    the change loop: branch → build → PR → links → doc gate
   add-github-pages/SKILL.md   optional: a Netlify-independent production mirror, on request
 docs/
@@ -392,7 +354,7 @@ package-lock.json              committed — CI runs `npm ci` and needs it
 
 ## Reference docs
 
-- `.claude/skills/finish-setup/SKILL.md` — one-time hosting setup (resumable).
+- `.claude/skills/finish-setup/SKILL.md` — scaffold personalization + one-time hosting setup (resumable).
 - `.claude/skills/ship-feature/SKILL.md` — the loop for every change.
 - `.claude/skills/add-github-pages/SKILL.md` — optional Netlify-independent mirror, on request.
 - `docs/TODO.md` — current backlog and what's been done.
