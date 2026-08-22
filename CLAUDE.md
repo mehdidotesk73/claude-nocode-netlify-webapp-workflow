@@ -261,11 +261,12 @@ that it didn't happen. Every guided step follows this shape:
 ### Step 5: Hand off to a fresh session — this is what makes skills real
 
 12. **The scaffold you just pushed contains `.claude/skills/`, but *this* session started before
-    those files existed.** Skills are discovered at session start, not re-scanned mid-conversation,
-    so `finish-setup` and `ship-feature` likely aren't triggerable here yet — you'd only be able to
-    read the file and follow it by hand. That's exactly the "remember to do it" pattern the whole
-    point of skills was to get away from: if this session never reloads, `ship-feature` would need
-    to be manually re-read on every future request in this conversation, which is a rule to
+    those files existed.** Skills are discovered once at session start; nothing rescans them mid-
+    conversation — not `/clear`, not `/compact`, nothing. So `finish-setup` and `ship-feature` are
+    not triggerable in this session, full stop; the only way to use them here is to read the file
+    and follow it by hand. That's exactly the "remember to do it" pattern the whole point of skills
+    was to get away from: without a genuinely new session, `ship-feature` would need to be manually
+    re-read on every future request in this conversation for the rest of its life — a rule to
     remember, not something enforced. **Recommend a fresh session, and make it the default, not a
     fallback for when something goes wrong.**
 
