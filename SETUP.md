@@ -172,8 +172,15 @@ go straight live with nothing to review.
      completely set up while doing nothing at all.
 5. **Bypass list:** leave it empty — that's what makes the rule apply to everyone, you included
 6. **Target branches** → **Add target** → **Include default branch**
-7. Under **Branch rules**, check **Require a pull request before merging**
-   - Set **Required approvals** to **0** (see below)
+7. Under **Branch rules**, check these three:
+   - **Require a pull request before merging** — under *Show additional settings*, leave
+     **Required approvals** at **0** (see below)
+   - **Require status checks to pass** — under *Show additional settings*, click **Add checks**,
+     type `build`, and select it. This is the automatic check that compiles your app on every
+     change; requiring it means a version that doesn't build can never reach your live site.
+     - Leave **Require branches to be up to date before merging** unchecked — it creates extra
+       work on every change for little benefit on a solo project.
+   - **Block force pushes** — usually already checked; leave it on
 8. Click **Create**
 
 You can still merge your own pull requests — no approval is needed, so nothing blocks you. What
@@ -189,6 +196,10 @@ exactly what you want. Every change it makes comes to you as a preview link firs
 
 **Verify it's on:** the ruleset should be listed as **Active**. If it says Disabled, open it and
 change Enforcement status.
+
+**If `build` isn't in the checks list**, type the name in anyway — GitHub accepts checks that
+haven't run yet, and it'll match once your first pull request runs one. If it still doesn't appear
+after that, tell Claude: it means the check is named something else in your project.
 
 <details>
 <summary>If your GitHub only shows "Add classic branch protection rule"</summary>

@@ -1,0 +1,25 @@
+name: CI
+
+# Type-check + build every pull request, so a change that doesn't compile
+# can't reach `main`. The job name (`build`) is what you select as a required
+# status check in the branch ruleset — see SETUP.md Step 4.
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build

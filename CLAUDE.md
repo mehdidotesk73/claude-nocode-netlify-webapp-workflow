@@ -340,8 +340,14 @@ that it didn't happen. Every guided step follows this shape:
 
     Use a **branch ruleset** (GitHub's current system — the green "Add branch ruleset" button),
     not the classic rule beside it. Settings: **Enforcement status: Active**, **bypass list empty**,
-    target **default branch**, **Require a pull request before merging** ✅ with **Required
-    approvals: 0** (they can't approve their own PRs — see SETUP.md Step 4).
+    target **default branch**, and three rules — **Require a pull request before merging** ✅ with
+    **Required approvals: 0** (they can't approve their own PRs — see SETUP.md Step 4), **Require
+    status checks to pass** ✅ with `build` added, and **Block force pushes** ✅.
+
+    The `build` check comes from `.github/workflows/ci.yml`, which type-checks and builds every PR.
+    Requiring it is what stops a non-compiling change reaching `main` — worth more here than on a
+    normal project, since the user can't run the app locally to notice. Leave **Require branches to
+    be up to date** off; it forces a rebase on every change for little gain solo.
 
     Two things to watch. Enforcement status starts at **Disabled**, so a ruleset can be created and
     quietly do nothing — have them confirm it lists as Active. And the empty bypass list is what
@@ -496,7 +502,11 @@ The user previews on a **phone** (mobile Safari), so favour mobile-friendly layo
   This is the gate — it catches TS errors _and_ Vue template parse errors.
   **Run it before every commit.** A broken build has reached history before
   because nothing ran it; don't let that happen.
-- There is **no test suite and no CI build gate** on PRs yet. `npm run build` passing locally is the bar.
+- **CI runs the same build on every PR** (`.github/workflows/ci.yml`, check name `build`), and the
+  branch ruleset requires it to pass before merge. That's a backstop, not a substitute: run
+  `npm run build` locally before pushing rather than letting CI find it — a red check on the user's
+  PR is noise they have to interpret.
+- There is **no test suite** yet. A passing build is the bar.
 - If this project has external data dependencies (<REF:external-deps>), they're typically **not reachable from this sandbox** (host allowlist), so you
   cannot run the live app or reproduce data-dependent results here. Reason about
   algorithms from the code, and lean on the user's on-device screenshots/logs to
@@ -540,6 +550,7 @@ docs/
   concepts/*.md            per-page user docs (rendered into the Help modal)
 public/
   favicon.svg, logo-192.png, logo-512.png   placeholder icons — replace with real branding
+.github/workflows/ci.yml       build check on every PR (required by the branch ruleset)
 .github/workflows/deploy.yml   production deploy (GH Pages)
 netlify.toml                   preview-deploy config (Netlify)
 package-lock.json              committed — CI runs `npm ci` and needs it

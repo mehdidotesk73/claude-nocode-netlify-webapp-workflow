@@ -110,6 +110,16 @@ Recovery is easy but should happen immediately: **Project configuration → Chan
 
 Under Settings → Pages, the Source dropdown defaults to "Deploy from a branch". That's wrong for this project — it publishes the repo's raw source files, so visitors get the unbuilt `index.html` with a bare `<div id="app">` and no bundle. The project builds itself in `.github/workflows/deploy.yml`, so Source must be **GitHub Actions**. The failure is confusing because the deploy "succeeds" and the URL loads; it's just a blank page.
 
+### Requiring a Status Check Needs a Check That Actually Runs on PRs
+
+The obvious ruleset to copy from a working project includes **Require status checks to pass** with a `build` check. That only works if a workflow produces that check *on pull requests*. `deploy.yml` runs on pushes to `main`, so it never reports on a PR — requiring it would leave every PR blocked forever on a check that cannot arrive, which is the worst kind of lockout for a user who doesn't know what a status check is.
+
+Hence `.github/workflows/ci.yml`: same `npm ci && npm run build`, triggered on `pull_request`, job named `build` so the check name is `build`.
+
+It earns its place beyond the usual reasons. This template's users can't run the app locally, so a change that doesn't compile would otherwise be discovered as a blank preview page they have no way to diagnose. The check turns that into a red mark on the PR with a log Claude can read.
+
+Two mechanics worth knowing: the check name is the **job** name, not the workflow name; and a check can be added to a ruleset before it has ever run — type the name and GitHub matches it later.
+
 ### Branch Rulesets Replaced Classic Protection, and Default to Disabled
 
 GitHub's Settings → Branches page now leads with **Add branch ruleset** and demotes **Add classic branch protection rule** to a secondary link. Instructions written against the classic flow ("Add rule" → "Branch name pattern") no longer match what the user sees.
