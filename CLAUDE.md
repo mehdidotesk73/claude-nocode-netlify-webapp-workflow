@@ -209,10 +209,23 @@ that it didn't happen. Every guided step follows this shape:
 
 ### Step 4: Push the scaffold, unmodified
 
-9. **Copy the template's files into the new clone exactly as they are — no edits.** Verify
-   `npm install && npm run build` passes before anything reaches their repo; a scaffold that
-   doesn't compile is worse than no scaffold, since they can't tell whether they broke it. Commit
-   as "Initial scaffold from template" and push to `main`.
+9. **Copy the template's files into the new clone exactly as they are — no edits.** Use:
+
+   ```
+   cd <template-clone> && git archive HEAD | tar -x -C <their-clone>
+   ```
+
+   Not `rsync` (absent from this sandbox) and not `cp -R <template>/* <their-clone>/` — a `*` glob
+   skips dotfiles, which silently drops **`.claude/`** and leaves their project with no skills at
+   all. `git archive` copies exactly the committed files, keeps dotfiles, and excludes `.git` and
+   `node_modules` without needing an exclude list.
+
+   **Confirm `.claude/skills/` arrived** before committing — `ls -A` the destination. Everything
+   after this step depends on it.
+
+   Then verify `npm install && npm run build` passes before anything reaches their repo; a scaffold
+   that doesn't compile is worse than no scaffold, since they can't tell whether they broke it.
+   Commit as "Initial scaffold from template" and push to `main`.
 
    **Leave the `<REF:*>` placeholders and every file exactly as copied — don't fill them in here,**
    even though the values are fresh from Step 1 and the placeholders are sitting right there in the
@@ -220,17 +233,27 @@ that it didn't happen. Every guided step follows this shape:
 
 ### Step 5: Reload skills, then hand off to `finish-setup`
 
-10. **Run `/reload-skills`.** The scaffold you just pushed contains `.claude/skills/`, but this
-    session started before those files existed on disk, so they aren't invocable yet.
-    `/reload-skills` re-scans skill directories mid-session and makes them invocable without
-    starting over. This is a command *you* run, not something to ask the user to do.
+10. **Ask the user to send `/reload-skills`.** The scaffold you just pushed contains
+    `.claude/skills/`, but this session started before those files existed, so they aren't
+    invocable yet. `/reload-skills` re-scans skill directories mid-session and fixes that.
+
+    **You cannot run it yourself** — it's a Claude Code CLI command, meaning user input, not a tool
+    in your toolset. Don't go looking for a matching tool, conclude it doesn't exist, and fall
+    through to the manual workaround: that's the failure this step exists to prevent. Just ask:
+
+    > Quick one for you: send `/reload-skills` as your next message. It lets me pick up the
+    > checklists I just added to your project. Nothing else needed — I'll carry on from there.
+
+    Wait for it. It's one message from them, and it's the difference between the rest of this
+    conversation having working skills or not.
 
 11. **Invoke the `finish-setup` skill.**
 
-    If `/reload-skills` isn't available (older Claude Code version) or `finish-setup` still isn't
-    invocable afterward, fall back to reading `.claude/skills/finish-setup/SKILL.md` directly and
-    following it by hand — and mention to the user that later features in this same conversation may
-    need the same manual read, since `ship-feature` won't auto-trigger either.
+    Only if it's *still* not invocable after they've sent `/reload-skills` — an older Claude Code
+    without that command, say — fall back to reading `.claude/skills/finish-setup/SKILL.md` directly
+    and following it by hand. Tell the user that later changes this conversation will need the same
+    manual read, since `ship-feature` won't auto-trigger either. Don't reach for this fallback
+    before asking them; it costs the whole session's skill support.
 
     Your bootstrap job is done here — `finish-setup` takes over.
 

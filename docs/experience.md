@@ -30,6 +30,22 @@ Logic lives in `src/lib/` as plain functions over already-fetched arrays. They r
 
 `vite-plugin-pwa` generates `manifest.webmanifest` and injects its own `<link rel="manifest">`. A second static `public/manifest.json` linked from `index.html` produces two competing manifest links in the built HTML, and the static one wins in some browsers — pointing at icons the build never processed. Define the manifest once, in the `VitePWA({ manifest: ... })` block.
 
+### Claude Can't Run Slash Commands — They're User Input
+
+The bootstrap told Claude to run `/reload-skills` itself, with the explicit note "this is a command *you* run, not something to ask the user to do." That was wrong. Slash commands are Claude Code CLI affordances typed by the user; Claude's toolset has no matching entry. In testing, Claude looked, correctly reported "no explicit `/reload-skills` tool is available in this environment," and fell through to reading `finish-setup` by hand. The user then typed `/reload-skills` themselves and the session picked up normally.
+
+The error came from confirming the command *exists* without asking *who can invoke it*. A previous agent lookup had established it as a real "core CLI slash command" — accurate, and I read that as "available to Claude" when it meant the opposite: core CLI commands are specifically the ones that aren't skills and can't be invoked programmatically.
+
+The fallback is worse than it looks, which is why this matters more than one skipped step: without a successful reload, `ship-feature` never auto-triggers either, so every subsequent change in that conversation needs the same manual file read. One message from the user buys working skills for the whole session.
+
+General rule: **when an instruction says "run X", check that X is something you can actually invoke.** Tools, yes. Slash commands, no — those get asked for.
+
+### Copy the Scaffold With `git archive`, Not `rsync` or `cp -R`
+
+Testing surfaced `rsync: command not found` — it isn't in this sandbox. But the more dangerous alternative is the one that *appears* to work: `cp -R <template>/* <dest>/` uses a shell glob, and globs skip dotfiles. That silently omits **`.claude/`**, so the user's project ends up with no `finish-setup` and no `ship-feature` — setup looks fine and the skills simply never exist.
+
+`git archive HEAD | tar -x -C <dest>` is the right call: exactly the committed files, dotfiles included, `.git` and `node_modules` excluded by construction rather than by an exclude list you have to remember. Worth an `ls -A` on the destination to confirm `.claude/` landed, since everything downstream depends on it and nothing else would reveal its absence until much later.
+
 ### Mobile Autocapitalization Silently Breaks Exact-Match Identifiers
 
 Told to add a required status check named `build`, a user on iOS typed it into GitHub's search box and got `Build` — the keyboard capitalized the first letter, as mobile keyboards do by default in text fields. GitHub duly offered **+ Add Build · Any source**.
