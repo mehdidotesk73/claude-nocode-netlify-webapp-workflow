@@ -258,18 +258,42 @@ that it didn't happen. Every guided step follows this shape:
 
    Tick these off as they're completed. If the session ends before setup finishes, the next session
    picks up from this list.
-### Step 5: Hand off to the `finish-setup` skill
+### Step 5: Hand off to a fresh session — this is what makes skills real
 
-12. **The scaffold you just pushed contains `.claude/skills/`, so the rest of setup now lives in the
-    project itself.** Invoke the `finish-setup` skill (or read
-    `.claude/skills/finish-setup/SKILL.md` in the clone if it isn't registered yet — skills added
-    mid-session may not be discoverable until the session reloads).
+12. **The scaffold you just pushed contains `.claude/skills/`, but *this* session started before
+    those files existed.** Skills are discovered at session start, not re-scanned mid-conversation,
+    so `finish-setup` and `ship-feature` likely aren't triggerable here yet — you'd only be able to
+    read the file and follow it by hand. That's exactly the "remember to do it" pattern the whole
+    point of skills was to get away from: if this session never reloads, `ship-feature` would need
+    to be manually re-read on every future request in this conversation, which is a rule to
+    remember, not something enforced. **Recommend a fresh session, and make it the default, not a
+    fallback for when something goes wrong.**
 
-    It covers Netlify, GitHub Pages, and branch protection, and it's driven by the setup checklist
-    in `docs/TODO.md` so an interrupted session can resume cleanly.
+    Tell them plainly, in non-technical terms:
 
-    That skill ends by handing off to `ship-feature` for the first feature. Your bootstrap job is
-    done once `finish-setup` takes over.
+    > The last piece of setup is making sure I can follow this project's own checklists properly.
+    > The easiest way is to start a new chat pointed at your project — takes ten seconds and nothing
+    > is lost, I'll pick up exactly where we are.
+    >
+    > Click **+New**, then choose **`<name>`** as the repository (branch: `main`). Paste this in to
+    > pick up right where we left off:
+    >
+    > `Continue setup for <name> — connect Netlify, enable GitHub Pages, and protect main.`
+
+    Gate on `AskUserQuestion`:
+    - **"Done — I'm in a new session on `<name>` and pasted that in"**
+    - **"I'd rather keep going in this chat"** — honor it, but say plainly that `ship-feature` may
+      not auto-trigger later in this same conversation, so re-check `.claude/skills/` by hand if a
+      future change in this chat skips the branch/PR/preview-link loop.
+    - **"I don't see how to do that"** — screenshot, then walk them through it directly.
+
+    If they continue here: read `.claude/skills/finish-setup/SKILL.md` and follow it directly. It
+    covers Netlify, GitHub Pages, and branch protection, driven by the setup checklist in
+    `docs/TODO.md` so an interrupted session can resume cleanly, and it ends by handing off to
+    `ship-feature` for the first feature.
+
+    Either way, your bootstrap job is done here — the new session (or this one, if they chose to
+    stay) picks it up from `finish-setup`.
 
 ## What this is
 
