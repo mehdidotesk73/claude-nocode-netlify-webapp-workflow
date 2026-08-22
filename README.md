@@ -1,6 +1,6 @@
 # Claude No-Code Netlify Webapp Workflow
 
-A Vue 3 + TypeScript + Vite template for building progressive web apps (PWAs) that deploy to GitHub Pages (production) and Netlify (preview). Designed for use with Claude Code — no coding experience required.
+A Vue 3 + TypeScript + Vite template for building progressive web apps (PWAs), deployed on Netlify (production and preview). Designed for use with Claude Code — no coding experience required.
 
 ## ⚠️ Important: This Creates a NEW Repository
 
@@ -45,8 +45,7 @@ I want to build a webapp based on this template https://github.com/mehdidotesk73
 - ✅ **Service-worker caching** — smart reload/update affordances
 - ✅ **Help modal** — document your app's features
 - ✅ **Debug panel** — on-device logging (mobile-friendly)
-- ✅ **GitHub Pages** — free production hosting
-- ✅ **Netlify preview** — live preview on every branch/PR
+- ✅ **Netlify** — production site and a live preview on every branch/PR, one host
 
 ## Project Structure
 

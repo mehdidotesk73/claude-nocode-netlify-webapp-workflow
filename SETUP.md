@@ -108,6 +108,9 @@ Netlify read the build settings out of your project. There is **one empty field 
 **Published** label and a URL — `https://grocery-assistant.netlify.app` (your name, not the
 example). Open it on your phone. You should see the app's header and footer.
 
+**This URL is your real site, not a test page.** Netlify treats `main` as production — every time a
+change gets merged, this same URL updates. There's no separate "go live" step later.
+
 Tell Claude the URL and what you see on the page.
 
 <details>
@@ -137,24 +140,7 @@ account than the one that owns your project.
 
 </details>
 
-## Step 3: Enable GitHub Pages for Production
-
-This is your permanent public link, updated whenever changes are merged.
-
-### On GitHub (Web)
-
-1. Go to your project on GitHub
-2. Click **Settings** (top of the page)
-3. Click **Pages** (left sidebar)
-4. Under "Build and deployment" → **Source**, select **GitHub Actions**
-   - Not "Deploy from a branch" — this project builds itself with a workflow, and picking the
-     branch option will publish the raw source files instead of the built app
-5. That's it — there's no Save button on this setting
-
-**Verify:** Go to the **Actions** tab. After the next push to `main` you'll see a "Deploy to GitHub
-Pages" run; when it goes green your site is live at `https://your-username.github.io/your-repo-name/`.
-
-## Step 4: Protect your live site
+## Step 3: Protect your live site
 
 **Do this one too.** It's what makes every change arrive as a pull request — which is what gives you
 a preview link to check on your phone before the change reaches your live site. Skip it and changes
@@ -236,7 +222,8 @@ Claude drives it and hands you links — but this is what's happening:
 4. **Claude gives you a merge link** when you're happy — a GitHub page with a green
    **Merge pull request** button. Click it, then **Confirm merge**. That's you approving the
    change; nothing reaches your live site until you do.
-5. **Your live site updates** a minute or two later at your GitHub Pages URL.
+5. **Your live site updates** a minute or two later — the same Netlify URL from Step 2, now serving
+   the merged change.
 
 Two things are worth knowing:
 
@@ -248,7 +235,7 @@ Two things are worth knowing:
 - **If a change doesn't appear on the preview,** it's almost always the app serving you a cached
   copy. Tap **Reload latest** in the footer, or open the link in a private/incognito tab.
 
-## Step 5: Local Development
+## Step 4: Local Development
 
 ### First Time Setup
 
@@ -277,59 +264,23 @@ git push -u origin claude/feature-name
 
 Then go to GitHub and open a pull request.
 
-## Step 6: First Deploy
-
-1. **Push to a branch** (from Step 5)
-2. **Check Netlify preview** — a link appears in your GitHub PR or at https://app.netlify.com
-3. **Test on phone** — open the preview URL on your phone and verify it looks right
-4. **Merge the PR** on GitHub (if branch protection is enabled, you'll need an approval first)
-5. **Check production** — after merging to `main`, GitHub Pages deploys automatically (2-5 min)
-6. **Verify** — go to `https://your-username.github.io/repo-name/` and confirm your changes are live
-
-## Customizing Your Project
-
-Before you start building, edit **CLAUDE.md** and fill in the placeholders at the top:
-
-```
-- <REF:purpose> = "What does your app do?"
-- <REF:UI-shape> = "How is it organized?"
-- <REF:Netlify-app-name> = "your-site-name"
-- <REF:external-deps> = "Any APIs or data sources?"
-```
-
-Then read **CLAUDE.md** fully — it explains the development workflow and conventions.
-
-## Using Claude Code
-
-Once GitHub and Netlify are set up, open this repo in [Claude Code](https://claude.ai/code) and describe what you want to build. Claude will:
-
-1. Create a branch
-2. Make code changes
-3. Push to GitHub
-4. Generate a Netlify preview link
-5. Iterate based on your feedback
-
-You interact via **screenshots and descriptions** — no coding needed.
-
 ## Troubleshooting
 
 ### "Build failed" on Netlify?
 - Check the build logs in Netlify's dashboard
 - Common fix: `npm install` locally and verify `npm run build` works before pushing
 
-### "Netlify preview URL not updating"?
-- Netlify can take 2-5 minutes to build
-- Check Netlify's deployment status in your dashboard (https://app.netlify.com)
-
-### "GitHub Pages not showing my changes"?
-- GitHub Pages can take 1-2 minutes to deploy
-- Open your repo **Settings → Pages** and check "View deployment" to see status
+### "Netlify preview or production URL not updating"?
+- Builds can take a couple of minutes — check status at https://app.netlify.com
+- If it's still not showing after that, tell Claude — a build that "succeeds" but shows old content
+  is almost always the PWA's cache, not a deploy problem (see below)
 
 ### "PWA cache showing old version"?
 - This is normal — the app caches aggressively
-- Tap "Reload latest" in the footer (or open in private/incognito tab)
+- Tap "Reload latest" in the footer, or open the link in a private/incognito tab
 - See **CLAUDE.md** for more details
 
 ---
 
-**Next:** Customize [CLAUDE.md](./CLAUDE.md), then open this repo in Claude Code and start building!
+**Next:** open this repo in [Claude Code](https://claude.ai/code) and describe what you want to
+build. You interact via screenshots and descriptions — no coding needed.

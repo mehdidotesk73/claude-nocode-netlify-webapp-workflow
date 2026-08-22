@@ -26,10 +26,6 @@ On a **category x-axis**, `visualMap` (color ranges) and per-segment `lineStyle`
 
 Logic lives in `src/lib/` as plain functions over already-fetched arrays. They recompute instantly with no API refetch. Keep components thin — they should mostly render. This separation makes logic testable and reusable without rebuild cycles.
 
-### Absolute Asset Paths Break GitHub Pages
-
-GitHub Pages serves from `https://<owner>.github.io/<repo-name>/`, not the domain root. Any asset URL written with a leading slash (`/logo-192.png`, `/manifest.json`) resolves to the domain root and 404s in production — while working perfectly on Netlify and in local dev, so it's easy to miss. Use `./favicon.svg` in `index.html`, relative `src` values in the PWA manifest icons, or import assets so Vite rewrites them. The Pages workflow passes `VITE_BASE=/<repo-name>/`, which `vite.config.ts` reads as Vite's `base`; Netlify and dev leave it unset and fall back to `/`.
-
 ### Don't Hand-Write a Static `public/manifest.json`
 
 `vite-plugin-pwa` generates `manifest.webmanifest` and injects its own `<link rel="manifest">`. A second static `public/manifest.json` linked from `index.html` produces two competing manifest links in the built HTML, and the static one wins in some browsers — pointing at icons the build never processed. Define the manifest once, in the `VitePWA({ manifest: ... })` block.
@@ -106,11 +102,9 @@ Also worth an explicit handoff at the end of setup: the first feature is the mom
 
 ### Don't Schedule a Check-In for a Two-Minute Deploy
 
-Waiting on a GitHub Pages build by scheduling a background check-in produced the worst available shape: the turn ended on "I'll check back in a couple of minutes", the conversation stalled, and the user — sitting right there — got bored and checked manually. The deploy had already succeeded. The automation added latency and dead air to something that takes ninety seconds.
+Waiting on a deploy (this happened with the GitHub Pages build the template used to have) by scheduling a background check-in produced the worst available shape: the turn ended on "I'll check back in a couple of minutes", the conversation stalled, and the user — sitting right there — got bored and checked manually. The deploy had already succeeded. The automation added latency and dead air to something that takes ninety seconds.
 
-Poll it in-turn instead, or hand the check to the user as an ordinary confirmation gate ("takes about two minutes, tell me when the run goes green"). Both beat a promise that parks the conversation. Background scheduling earns its place on long or unattended waits; during an interactive setup the user is a faster and more reliable signal than a timer.
-
-Related: deploy runs from before Pages was enabled fail, so re-trigger the workflow once the Source is set rather than waiting for the next push to come along.
+Poll it in-turn instead, or hand the check to the user as an ordinary confirmation gate ("takes about two minutes, tell me when the run goes green"). Both beat a promise that parks the conversation. Background scheduling earns its place on long or unattended waits; during an interactive setup the user is a faster and more reliable signal than a timer. Still applies to Netlify's own builds now that they're the only deploy pipeline.
 
 ### Netlify Site Names Are a Global Namespace
 
@@ -130,13 +124,17 @@ Two lessons, and the second is the more general one:
 
 Recovery is easy but should happen immediately: **Project configuration → Change project name**.
 
-### GitHub Pages Source Must Be "GitHub Actions"
+### GitHub Pages Was Dropped — Netlify Was Already Doing the Job
 
-Under Settings → Pages, the Source dropdown defaults to "Deploy from a branch". That's wrong for this project — it publishes the repo's raw source files, so visitors get the unbuilt `index.html` with a bare `<div id="app">` and no bundle. The project builds itself in `.github/workflows/deploy.yml`, so Source must be **GitHub Actions**. The failure is confusing because the deploy "succeeds" and the URL loads; it's just a blank page.
+The original design (carried over from the source project this template generalized) was Netlify for previews, GitHub Pages for production — mirroring a setup where Pages predated Netlify's adoption. But connecting a GitHub repo to Netlify makes it deploy `main` as **production** automatically, with zero extra config: that's Netlify's default behavior for whatever branch is marked as the repo's default. So by the time GitHub Pages setup was even reached, Netlify was already serving the exact same content as "production" at its own URL. GitHub Pages wasn't providing anything Netlify didn't; it was a second copy of the same job, on a separate pipeline, that could drift from the first one if either half broke independently — which is exactly what the "Source must be GitHub Actions" and "asset paths must be base-relative" gotchas were: failure modes of the redundant copy, not of the thing users actually needed.
+
+Once spotted, the fix was subtraction: delete `.github/workflows/deploy.yml`, drop the `VITE_BASE`/`base` logic from `vite.config.ts` (Netlify always serves from root, so there's no sub-path to bake in), remove the Pages step from `finish-setup` and `SETUP.md`, and simplify the three-link PR handoff to point at the Netlify URL for "live site" instead of a `github.io` one. Two asset-path and Pages-source gotchas in this file were deleted outright rather than kept as history, since they describe a failure mode that can no longer occur — a gotcha about a component that no longer exists isn't a lesson, it's a false alarm waiting to confuse a future reader who goes looking for `deploy.yml`.
+
+The general lesson: **before wiring up a second piece of infrastructure, check what the first one already does by default.** Netlify's production-on-`main` behavior wasn't hidden or undocumented, it's just easy not to think to check when you're focused on the piece you're actively setting up (Pages, in this case). One question — "does Netlify already do this?" — would have caught it before any of the Pages-specific tooling was ever written.
 
 ### Requiring a Status Check Needs a Check That Actually Runs on PRs
 
-The obvious ruleset to copy from a working project includes **Require status checks to pass** with a `build` check. That only works if a workflow produces that check *on pull requests*. `deploy.yml` runs on pushes to `main`, so it never reports on a PR — requiring it would leave every PR blocked forever on a check that cannot arrive, which is the worst kind of lockout for a user who doesn't know what a status check is.
+The obvious ruleset to copy from a working project includes **Require status checks to pass** with a `build` check. That only works if a workflow produces that check *on pull requests*. Deploy workflows (production or preview) trigger on pushes to a branch, not on PRs, so a check drawn from one never reports on a PR — requiring it would leave every PR blocked forever on a check that cannot arrive, which is the worst kind of lockout for a user who doesn't know what a status check is.
 
 Hence `.github/workflows/ci.yml`: same `npm ci && npm run build`, triggered on `pull_request`, job named `build` so the check name is `build`.
 
@@ -150,7 +148,7 @@ GitHub's Settings → Branches page now leads with **Add branch ruleset** and de
 
 Rulesets are the better target anyway: the bypass list starts **empty**, so the rule applies to repo admins by default — the thing classic protection gets wrong and needs an easily-missed "Do not allow bypassing the above settings" checkbox to fix.
 
-But rulesets have their own trap: **Enforcement status defaults to Disabled**. A ruleset can be fully configured, listed on the page, and enforcing nothing. That's the same silent-success failure as the GitHub Pages source setting — it looks done, and only reveals itself much later when something that should have been blocked isn't. Always have the user confirm the ruleset shows as **Active**.
+But rulesets have their own trap: **Enforcement status defaults to Disabled**. A ruleset can be fully configured, listed on the page, and enforcing nothing. That's a silent-success failure — it looks done, and only reveals itself much later when something that should have been blocked isn't. Always have the user confirm the ruleset shows as **Active**.
 
 Also: branch protection on private repos requires a paid plan. If the controls are greyed out, that's why — make the repo public or proceed by convention, but say which.
 
@@ -164,7 +162,7 @@ The combination that works for a solo project is "Require a pull request before 
 
 ### `npm ci` Needs a Committed Lockfile
 
-The Pages workflow runs `npm ci`, which fails outright ("can only install packages when your package.json and package-lock.json are in sync") if `package-lock.json` isn't committed. It's tempting to gitignore lockfiles; don't. Commit it whenever dependencies change.
+The CI workflow runs `npm ci`, which fails outright ("can only install packages when your package.json and package-lock.json are in sync") if `package-lock.json` isn't committed. It's tempting to gitignore lockfiles; don't. Commit it whenever dependencies change.
 
 ### `declaration: true` in an App's tsconfig
 
@@ -180,7 +178,7 @@ Emitting declarations for an *app* makes `vue-tsc` demand exported names for eve
 
 ### v0.1.0 — [Date]
 - **Added:** Initial scaffold, header/footer wrapper, Help modal
-- **Infrastructure:** GitHub Pages + Netlify preview deploys
+- **Infrastructure:** Netlify (production + preview deploys), branch-protected `main`
 - **Docs:** TODO, experience, system-design, concepts scaffold
 
 ---

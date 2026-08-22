@@ -109,7 +109,7 @@ that it didn't happen. Every guided step follows this shape:
    - **Or hand the check to them** as a normal confirmation gate: say it takes about two minutes,
      say exactly what "done" looks like, and let them tell you. Fine when they're engaged anyway.
 
-   Background scheduling is for genuinely long or unattended waits, not for a Pages build during a
+   Background scheduling is for genuinely long or unattended waits, not for a Netlify deploy during a
    setup conversation.
 
 ### Step 1: Understand the project (one open question, then confirm)
@@ -242,7 +242,7 @@ that it didn't happen. Every guided step follows this shape:
      project's working procedures from here on; the next step invokes the first of them.
 
    - **`SETUP.md` — keep only what's still pending.** Step 1 (creating the repo) is done by now;
-     remove it. Keep Netlify, Pages and branch protection — `finish-setup` drives from them.
+     remove it. Keep Netlify and branch protection — `finish-setup` drives from them.
 
 11. **Seed `docs/TODO.md` with the remaining one-time setup**, under **Next**, so the state lives in
    the project's own memory rather than only in this conversation:
@@ -250,9 +250,8 @@ that it didn't happen. Every guided step follows this shape:
    ```
    ## Next (Current Sprint)
 
-   - [ ] Connect Netlify (SETUP.md Step 2) — required; the only way to see the app
-   - [ ] Enable GitHub Pages (SETUP.md Step 3) — production link
-   - [ ] Protect `main` (SETUP.md Step 4) — required; makes changes arrive as PRs with previews
+   - [ ] Connect Netlify (SETUP.md Step 2) — required; gives previews AND the production site
+   - [ ] Protect `main` (SETUP.md Step 3) — required; makes changes arrive as PRs with previews
    - [ ] First feature: <their first described feature>
    ```
 
@@ -265,9 +264,10 @@ that it didn't happen. Every guided step follows this shape:
     re-scans skill directories mid-session and makes newly-added `SKILL.md` files invocable without
     starting over. This is a command *you* run, not something to ask the user to do.
 
-    After running it, invoke the **`finish-setup`** skill. It covers Netlify, GitHub Pages, and
-    branch protection, driven by the setup checklist in `docs/TODO.md` so an interrupted session can
-    resume cleanly, and it ends by handing off to `ship-feature` for the first feature.
+    After running it, invoke the **`finish-setup`** skill. It covers Netlify (which serves both
+    preview and production — see Deploys below) and branch protection, driven by the setup checklist
+    in `docs/TODO.md` so an interrupted session can resume cleanly, and it ends by handing off to
+    `ship-feature` for the first feature.
 
     If `/reload-skills` isn't available (older Claude Code version) or `finish-setup` still isn't
     invocable afterward, fall back to reading `.claude/skills/finish-setup/SKILL.md` directly and
@@ -326,18 +326,12 @@ Two rules that hold regardless:
 
 ## Deploys
 
-- **Production = GitHub Pages**, built by `.github/workflows/deploy.yml` on push
-  to `main`. Pages serves from a sub-path, so the workflow passes
-  `VITE_BASE=/<repo-name>/` and `vite.config.ts` picks it up as Vite's `base`.
-  A repo rename therefore needs a fresh deploy. URL:
-  `https://<owner>.github.io/<repo-name>/`.
-- **Netlify = preview only** (`netlify.toml`) — per-PR/branch Deploy Previews.
-  It leaves `VITE_BASE` unset, so `base` falls back to `/`, which is what
-  Netlify and `npm run dev` both serve from.
-- **Asset paths must stay base-relative.** Don't hard-code a leading `/` on
-  asset URLs (`/logo.png`) — it resolves to the domain root and 404s on Pages.
-  Use `./logo.png` in `index.html`, relative `src` values in the PWA manifest,
-  or import the asset so Vite rewrites it.
+- **Netlify does both jobs** (`netlify.toml`): pushes to `main` build the **production** site at
+  `https://<REF:Netlify-app-name>.netlify.app`; every other branch/PR gets its own **Deploy Preview**
+  at `deploy-preview-<n>--<REF:Netlify-app-name>.netlify.app`. One host, one build pipeline — nothing
+  else to configure for hosting.
+- **`.github/workflows/ci.yml` only runs the build check on PRs** — it doesn't deploy anything. Its
+  sole job is the `build` status check the branch ruleset requires (see Build & verify).
 - **`package-lock.json` is committed and must stay that way** — CI runs
   `npm ci`, which fails outright without a lockfile in sync with
   `package.json`. Commit the lockfile whenever you change dependencies.
@@ -356,7 +350,7 @@ src/
     HelpModal.vue          renders docs/concepts/*.md into the Help modal
     <feature components>   e.g. one component per tab/page — see <REF:UI-shape>
 .claude/skills/
-  finish-setup/SKILL.md    one-time hosting setup: Netlify, Pages, branch protection
+  finish-setup/SKILL.md    one-time hosting setup: Netlify, branch protection
   ship-feature/SKILL.md    the change loop: branch → build → PR → links → doc gate
 docs/
   TODO.md                  living backlog (Done / Next branch / Housekeeping)
@@ -366,7 +360,6 @@ docs/
 public/
   favicon.svg, logo-192.png, logo-512.png   placeholder icons — replace with real branding
 .github/workflows/ci.yml       build check on every PR (required by the branch ruleset)
-.github/workflows/deploy.yml   production deploy (GH Pages)
 netlify.toml                   preview-deploy config (Netlify)
 package-lock.json              committed — CI runs `npm ci` and needs it
 ```

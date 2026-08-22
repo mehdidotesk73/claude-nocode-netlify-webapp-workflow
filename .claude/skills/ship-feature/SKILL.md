@@ -71,7 +71,7 @@ while they try the change.
 > **Preview (the change):** https://deploy-preview-4--<site>.netlify.app
 > — open this on your phone and check the new category filter works.
 >
-> **Live site (unchanged):** https://<owner>.github.io/<repo>/
+> **Live site (unchanged):** https://<site>.netlify.app
 > — still the old version, and stays that way until you merge.
 >
 > **Ready to merge:** https://github.com/<owner>/<repo>/pull/4
@@ -82,12 +82,12 @@ Preview first — they should look before merging. Never say "merge when ready" 
 
 ## 7. After the merge
 
-Merging to `main` triggers the GitHub Pages production deploy. Watch it and give them the production
-URL once it's green.
+Merging to `main` triggers Netlify's production deploy of the same site. Watch it and confirm the
+live URL now shows the change.
 
 If they report the merge button greyed out, read the reason off the PR page before changing any
 settings — usually a merge conflict, a failing `build` check, or an approval requirement that
-shouldn't be on (see SETUP.md Step 4).
+shouldn't be on (see SETUP.md Step 3).
 
 ## Reverts
 

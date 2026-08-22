@@ -11,8 +11,7 @@ This is a Vue 3 + TypeScript + Vite single-page app (SPA) that works as a progre
 - **Mobile-first UX** — responsive, touch-optimized, no hover-only interactions
 - **Pure computation layer** (`src/lib/`) — reusable logic separated from UI
 - **Hot reload in dev** — instant feedback on code changes
-- **GitHub Pages production** — free hosting, one-command deploy
-- **Netlify preview** — live preview on every branch/PR
+- **Netlify** — production site and a live preview on every branch/PR, one host
 
 ### Architecture Diagram
 
@@ -122,9 +121,9 @@ src/components/
 
 **Build before commit:** `npm run build` (catches TS errors + template parse errors)
 
-**Production:** GitHub Pages on `main` push (see `.github/workflows/deploy.yml`)
+**Production and preview, both via Netlify** (see `netlify.toml`): `main` pushes build production; every other branch/PR gets its own Deploy Preview.
 
-**Preview:** Netlify per-branch Deploy Previews (see `netlify.toml`)
+**PR build check:** `.github/workflows/ci.yml` runs `npm run build` on every PR — this is the `build` status check the branch ruleset requires. It doesn't deploy anything.
 
 **Conventions:**
 - Components: PascalCase, one per file

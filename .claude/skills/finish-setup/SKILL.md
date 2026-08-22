@@ -1,17 +1,16 @@
 ---
 name: finish-setup
-description: Connect Netlify, enable GitHub Pages, and protect the main branch — the one-time hosting setup that gives the user a preview link, a live site, and a pull-request workflow. Use right after a project is scaffolded from the template, or any time setup was left unfinished (check the setup checklist in docs/TODO.md).
+description: Connect Netlify and protect the main branch — the one-time hosting setup that gives the user a preview link, a live production site, and a pull-request workflow. Use right after a project is scaffolded from the template, or any time setup was left unfinished (check the setup checklist in docs/TODO.md).
 ---
 
 # Finish setting up hosting
 
-Three things, in this order. Each is required — skipping any one silently removes something the
-user depends on:
+Two things, in this order. Each is required — skipping either silently removes something the user
+depends on:
 
 | Step | Gives them | If skipped |
 |---|---|---|
-| Netlify | A preview link to open on their phone | They can't see changes before they're live |
-| GitHub Pages | Their real, public site | Nowhere for finished work to go |
+| Netlify | A preview link on every change, AND their real production site — one host does both | They can't see changes before they're live, and have no live site at all |
 | Branch protection | Changes arrive as pull requests | No preview links at all — work lands straight on the live site |
 
 **Resuming?** Check the setup checklist under **Next** in `docs/TODO.md` and do only what's still
@@ -91,16 +90,11 @@ see the collapsed section at the end of SETUP.md Step 2.
 open it on their phone and say what they see. Don't move on until they confirm the page loads — a
 broken deploy found now costs minutes; found later it's a whole feature built blind.
 
-## 2. GitHub Pages (SETUP.md Step 3)
+This same first deploy of `main` is also their **production site** — Netlify serves both from one
+project, so there's no separate hosting step. The URL from Part C (`https://<name>.netlify.app`) is
+what to hand them going forward as "your live site."
 
-Their production link. **Source must be "GitHub Actions"**, not "Deploy from a branch" — the branch
-option publishes raw source instead of the built app, and the deploy still goes green, so it fails
-as a blank page rather than an error.
-
-Deploy runs from before Pages was enabled will have failed, so re-trigger the workflow once the
-Source is set rather than waiting for the next push. Watch it to completion in this turn.
-
-## 3. Protect `main` (SETUP.md Step 4)
+## 2. Protect `main` (SETUP.md Step 3)
 
 This is what makes every change arrive as a pull request, and a pull request is what produces a
 Netlify deploy preview. Without it, work goes straight onto `main` with no preview link and nothing
@@ -128,7 +122,7 @@ offer making it public, or proceed by convention and say plainly that nothing is
 
 ## Done
 
-Confirm all three TODO items are ticked, then hand off:
+Confirm both TODO items are ticked, then hand off:
 
 > Your project is all set, and you've got a live link. Now tell me what your app should look like —
 > describe it, show me a screenshot, or tell me what you want people to be able to do.
