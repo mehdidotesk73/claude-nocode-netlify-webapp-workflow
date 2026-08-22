@@ -58,13 +58,12 @@ Two tabs:
 - `<REF:Netlify-app-name>` = ```bitcoin-analysis```
 - `<REF:external-deps>` = ```Binance price API, CoinMarketCap historical data```
 
-**How this works:** On first setup, Claude Code will ask you clarifying questions about your project:
-1. "What is your app's purpose/main goal?" → fills `<REF:purpose>`
-2. "How is the UI organized? (e.g., tabs, pages, sections)" → fills `<REF:UI-shape>`
-3. "What external APIs or data sources does it need?" → fills `<REF:external-deps>`
-4. "What should your Netlify site be called?" → fills `<REF:Netlify-app-name>`
+**How this works:** On first setup, Claude Code asks you to describe your app in your own words —
+one open question, not a form. You write a paragraph about what you want; Claude reads the four
+values above out of it, shows you what it understood, and asks you to confirm or correct.
 
-Answer in plain language — Claude summarizes and auto-fills the references above. See the Examples section for the level of detail expected.
+You don't need to know what "UI shape" or "external deps" mean, and you shouldn't have to sort your
+idea into those boxes. Describing the app the way you'd describe it to a person is enough.
 
 ## Initial Setup (Claude Code First Run)
 
@@ -100,23 +99,48 @@ that it didn't happen. Every guided step follows this shape:
    Ask for a screenshot if their description is ambiguous — they can paste one straight into chat,
    and it's usually faster than three rounds of questions.
 
-### Step 1: Understand the project (ask the 4 questions first)
+### Step 1: Understand the project (one open question, then confirm)
 
-1. **Greet the user** — "Great! I'll help you build a new webapp using this template. Let me ask a few questions to understand what you want to create."
+1. **Ask one open question and let them write freely.** Do **not** interrogate them with a
+   four-part form — most people describe an app in a paragraph that already contains everything you
+   need, and asking them to sort their own idea into "purpose / UI shape / external data" makes
+   them do your parsing for you in vocabulary they don't have. Ask something like:
 
-2. **Ask the 4 project definition questions:**
-   - "What is your app's purpose? (What problem does it solve? What does it help users do?)"
-   - "How should the UI be organized? (e.g., tabs, pages, sections, dashboard layout)"
-   - "What external data sources does it need? (e.g., APIs, databases, or none if self-contained)"
-   - "What should the Netlify site be called?" (e.g., my-awesome-app, weather-tracker — this
-     becomes their web address, `https://<name>.netlify.app`, and can be changed later)
+   > Great — I'll help you build this. Tell me about the app you want, in your own words: what it's
+   > for, who'd use it, and what they should be able to do with it. A paragraph is plenty, and don't
+   > worry about being precise or technical — I'll ask about anything I need.
 
-   Provide examples from the References section to guide them.
+   Then wait for their reply in the chat. Don't use `AskUserQuestion` here: it's built around
+   picking from options, and this is the one moment that has to be genuinely open-ended.
 
-   **Their answer to question 4 is `<REF:Netlify-app-name>`, and you must actually use it** — it's
-   the Project name they type during Netlify setup (Step 4, Part C) and the host in every preview
-   URL you hand them. Collecting it and then not passing it through is how sites end up with names
-   like `dreamy-yeot-7cce7c`.
+2. **Derive the four references from what they wrote**, inferring rather than asking wherever you
+   reasonably can:
+   - `<REF:purpose>` — what the app is for, in one line
+   - `<REF:UI-shape>` — the screens/tabs/sections implied by what they described. They will rarely
+     state this outright; propose a structure from the features they listed.
+   - `<REF:external-deps>` — usually "none, self-contained" unless they mentioned live data.
+     Don't ask about APIs; someone who needs one will have said so.
+   - `<REF:Netlify-app-name>` — a short, hyphenated name derived from the app. Only the web address
+     depends on it, and it can change later.
+
+3. **Reflect it back and confirm before building anything.** Show what you understood in plain
+   language — no `<REF:*>` labels, no jargon — then gate on `AskUserQuestion`:
+   - **"Yes, that's right — go ahead"**
+   - **"Close, but something's off"** (free text for the correction)
+
+   Keep the summary short enough to check at a glance. State the site name and the address it
+   produces (`https://grocery-assistant.netlify.app`) so they can object to it now rather than
+   after it's live.
+
+4. **Ask targeted follow-ups only for genuine gaps** — something you couldn't infer and that
+   changes what you'd build. One or two at most, in plain language, and only after the summary.
+   A vague description is not a gap: build the obvious reading and let them correct it once they
+   can see it on their phone. That's faster for them than answering questions about software they
+   haven't seen yet.
+
+   **`<REF:Netlify-app-name>` must actually reach the user** — it's the Project name they type
+   during Netlify setup (Step 4, Part C) and the host in every preview URL you hand them. Deriving
+   it and then not passing it through is how sites end up named `dreamy-yeot-7cce7c`.
 
 ### Step 2: Walk them through creating the project home on GitHub
 

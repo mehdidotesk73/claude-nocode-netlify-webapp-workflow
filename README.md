@@ -22,7 +22,8 @@ I want to build a webapp based on this template https://github.com/mehdidotesk73
 ```
 
 2. **Claude Code will guide you through everything:**
-   - Ask what you want to build (purpose, UI layout, external data, site name)
+   - Ask you to describe the app in your own words — one paragraph, no form to fill in
+   - Show you what it understood and let you correct it
    - Suggest a name for your project and walk you through the one-minute GitHub step
      (Claude gives you every value to fill in — you just click and paste the link back)
    - Set up the scaffold in your new project
@@ -67,14 +68,21 @@ docs/
 
 ## How Claude Code Customizes This Template
 
-When you first open this in Claude Code, it will ask you questions about your project:
+Claude Code asks you one open question: **describe the app you want, in your own words.** Write a
+paragraph the way you'd explain it to a friend — what it's for, who'd use it, what they should be
+able to do. There's no form and nothing technical to fill in.
 
-- **Purpose** — What does your app do?
-- **UI structure** — How is it organized? (tabs, pages, sections, etc.)
-- **External data** — Does it fetch from any APIs or data sources?
-- **Netlify site name** — What should your preview/production sites be called?
+For example, this is a complete answer:
 
-Claude Code automatically fills these details into `CLAUDE.md` and all the docs. **No manual editing required** — just answer in plain language.
+> A simple grocery list manager. Users can add, remove and edit items, optionally tag them with a
+> category like produce or frozen, and note which stores they prefer to buy each item from. They
+> should be able to start a shopping session for the whole list or for one store, which shows the
+> items grouped by category. Duplicate items shouldn't be added — if someone tries, suggest editing
+> the existing one instead.
+
+From that, Claude works out what to build, proposes a structure, and shows you what it understood so
+you can correct it before anything is created. It fills the details into `CLAUDE.md` and the docs
+itself — **no manual editing required.**
 
 ## Development Workflow
 
@@ -119,14 +127,13 @@ npm run preview       # Test production build locally
 
 1. **Copy the prompt** from the Quick Start section above
 2. **Paste into Claude Code** and hit submit
-3. **Answer Claude's questions** about your project (what it does, how it's organized, external data, site name)
-4. **Approve the suggested GitHub repo name** (or suggest changes)
-5. **Create the GitHub repo** — Claude will guide you through it (5 minutes, uses [SETUP.md](./SETUP.md) Step 1)
-6. **Provide the repo link** when Claude asks
+3. **Describe your app in a paragraph** — your own words, no form to fill in
+4. **Check Claude's summary** — confirm it understood, or correct it
+5. **Approve the suggested project name** (or ask for a different one)
+6. **Create your project on GitHub** — Claude gives you every value to fill in ([SETUP.md](./SETUP.md) Step 1)
 7. **Claude Code sets everything up** — scaffold, your project details, and Netlify
 8. **Open your preview link** — confirm the page loads on your phone before building features
-9. **Describe your app** — tell Claude what you want it to look like
-10. **Watch it build** — the preview link updates as you iterate
+9. **Start changing things** — describe what you want, review the preview, repeat
 
 ---
 
