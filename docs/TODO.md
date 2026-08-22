@@ -10,8 +10,8 @@ Track feature development, improvements, and known issues here. Move completed w
 
 One-time setup — tick these off as they're done:
 
-- [ ] Connect Netlify (SETUP.md Step 2) — required; gives previews AND the production site
-- [ ] Protect `main` (SETUP.md Step 3) — required; this is what makes changes arrive as PRs with
+- [ ] Connect Netlify (finish-setup) — required; gives previews AND the production site
+- [ ] Protect `main` (finish-setup) — required; this is what makes changes arrive as PRs with
       preview links, instead of going straight to the live site
 
 (Then: what are you working on next?)

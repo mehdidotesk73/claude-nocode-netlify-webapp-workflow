@@ -16,12 +16,6 @@ depends on:
 **Resuming?** Check the setup checklist under **Next** in `docs/TODO.md` and do only what's still
 unticked. Tick each item off as it completes, so an interrupted session can pick up cleanly.
 
-**This skill is the operational authority — everything you need to run the conversation is below.**
-`SETUP.md` is a separate, human-readable copy of the same setup for the user to read on their own;
-you don't need to open it to execute this. The one exception: its collapsed fallback sections
-(linked below by name) hold troubleshooting detail that only lives there — open those specific
-sections if a user hits one of those failure modes.
-
 ## How to give every step
 
 These steps happen on websites you can't see. The user is your only sensor.
@@ -48,7 +42,7 @@ for a screenshot if it's ambiguous — faster than three rounds of questions.
 and the user is sitting right there. Poll the run yourself in-turn, or hand the check to them as a
 gate. Background scheduling is for long or unattended waits.
 
-## 1. Netlify (SETUP.md Step 2)
+## 1. Netlify
 
 Don't ask whether they want it — state it as the next task:
 
@@ -86,9 +80,20 @@ Wait for confirmation that Part B saved.
 - **If the final name differs from what you scaffolded with, update the docs and push before
   continuing.** The README's URLs and the deploy-preview pattern in `CLAUDE.md` were committed with
   the original name and would otherwise point at a stranger's live site.
+- **Got a random name like `dreamy-yeot-7cce7c` anyway?** The Project name field was left blank.
+  Fix it now, not later, since the name appears in every preview link: in Netlify, open the project
+  → **Project configuration** (older accounts: **Site configuration**) → **Change project name** →
+  enter the intended name → Save. URL becomes `https://<name>.netlify.app`.
 
-If they still hit "No repositories found", Part B didn't save or went to a different GitHub account —
-see SETUP.md Step 2's "Still says 'No repositories found'?" fallback.
+**If they still hit "No repositories found"** after Part B, the grant didn't save or was applied to
+a different GitHub account than the one owning the project:
+1. Click **Configure Netlify on GitHub** on that same screen
+2. Check the account name at the top matches the one that owns the project
+3. Set **Repository access** to **All repositories** → **Save**
+4. Return to Netlify and refresh the page — the list doesn't always update on its own
+
+**If the build itself fails** (not the import — an actual red build), the logs are in Netlify's
+dashboard. Usually `npm run build` failing locally will reproduce it faster than reading the log.
 
 **Then confirm they can see it.** Once the first deploy is green, give them the URL and ask them to
 open it on their phone and say what they see. Don't move on until they confirm the page loads — a
@@ -98,7 +103,7 @@ This same first deploy of `main` is also their **production site** — Netlify s
 project, so there's no separate hosting step. The URL from Part C (`https://<name>.netlify.app`) is
 what to hand them going forward as "your live site."
 
-## 2. Protect `main` (SETUP.md Step 3)
+## 2. Protect `main`
 
 This is what makes every change arrive as a pull request, and a pull request is what produces a
 Netlify deploy preview. Without it, work goes straight onto `main` with no preview link and nothing
@@ -120,9 +125,18 @@ The `build` check comes from `.github/workflows/ci.yml`, which builds every PR. 
 non-compiling change reaching `main` — worth more here than usual, since the user can't run the app
 locally to notice.
 
-If their GitHub only offers the classic rule, it needs **Do not allow bypassing the above settings**
-checked for the same effect. If the controls are unavailable, the repo is private on a free plan:
-offer making it public, or proceed by convention and say plainly that nothing is enforcing it.
+**If their GitHub only offers "Add classic branch protection rule"** (older UI, no ruleset button):
+1. Click **Add classic branch protection rule**
+2. **Branch name pattern:** `main`
+3. Check **Require a pull request before merging**
+4. Leave **Require approvals** unchecked
+5. Check **Do not allow bypassing the above settings** near the bottom — classic rules exempt repo
+   admins by default, and this is what closes that
+6. Click **Create**
+
+**If the controls are greyed out or missing entirely**, the repo is private on a free GitHub plan —
+branch protection needs a paid plan there. Offer making the repo public (Settings → General →
+bottom → Change visibility), or proceed by convention and say plainly that nothing is enforcing it.
 
 ## Done
 

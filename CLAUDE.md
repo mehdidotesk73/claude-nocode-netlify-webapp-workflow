@@ -26,7 +26,7 @@ This is a **NEW PROJECT in a NEW REPOSITORY**. You must:
 1. **IGNORE your current working directory** — do NOT reference it, do NOT work in it, do NOT mention branches
 2. **DO NOT say** "you're on the correct branch" or anything about the current repo
 3. **IMMEDIATELY acknowledge** this is a brand new project: "I'll help you build a new webapp project from scratch in its own GitHub repository."
-4. Fetch and read this template repo's CLAUDE.md, README.md, and SETUP.md files
+4. Fetch and read this template repo's CLAUDE.md and README.md
 5. Follow the "Initial Setup" section below to guide creating a NEW GitHub repo
 6. Guide the user through creating their own separate GitHub repo + setting up the scaffold in it
 
@@ -319,10 +319,9 @@ that it didn't happen. Every guided step follows this shape:
      another repo.
 
    - **`.claude/skills/` — copy as-is, change nothing.** `finish-setup` and `ship-feature` are the
-     project's working procedures from here on; the next step invokes the first of them.
-
-   - **`SETUP.md` — keep only what's still pending.** Step 1 (creating the repo) is done by now;
-     remove it. Keep Netlify and branch protection — `finish-setup` drives from them.
+     project's working procedures from here on; the next step invokes the first of them. Everything
+     needed to run Netlify and branch-protection setup already lives in `finish-setup` — there's no
+     separate SETUP.md in this template; don't create one.
 
 11. **Seed `docs/TODO.md` with the remaining one-time setup**, under **Next**, so the state lives in
    the project's own memory rather than only in this conversation:
@@ -330,8 +329,8 @@ that it didn't happen. Every guided step follows this shape:
    ```
    ## Next (Current Sprint)
 
-   - [ ] Connect Netlify (SETUP.md Step 2) — required; gives previews AND the production site
-   - [ ] Protect `main` (SETUP.md Step 3) — required; makes changes arrive as PRs with previews
+   - [ ] Connect Netlify (finish-setup) — required; gives previews AND the production site
+   - [ ] Protect `main` (finish-setup) — required; makes changes arrive as PRs with previews
    - [ ] First feature: <their first described feature>
    ```
 
@@ -470,7 +469,6 @@ package-lock.json              committed — CI runs `npm ci` and needs it
 
 - `.claude/skills/finish-setup/SKILL.md` — one-time hosting setup (resumable).
 - `.claude/skills/ship-feature/SKILL.md` — the loop for every change.
-- `SETUP.md` — the user-facing click-by-click the skills drive from.
 - `docs/TODO.md` — current backlog and what's been done.
 - `docs/experience.md` — dead ends (with reasons) + version history.
 - `docs/system-design.md` — developer/system documentation; §2 contains the wrapper template.

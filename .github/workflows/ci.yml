@@ -2,7 +2,7 @@ name: CI
 
 # Type-check + build every pull request, so a change that doesn't compile
 # can't reach `main`. The job name (`build`) is what you select as a required
-# status check in the branch ruleset — see SETUP.md Step 4.
+# status check in the branch ruleset — see the finish-setup skill.
 
 on:
   pull_request:

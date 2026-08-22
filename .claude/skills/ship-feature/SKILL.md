@@ -87,7 +87,7 @@ live URL now shows the change.
 
 If they report the merge button greyed out, read the reason off the PR page before changing any
 settings — usually a merge conflict, a failing `build` check, or an approval requirement that
-shouldn't be on (see SETUP.md Step 3).
+shouldn't be on (`finish-setup` sets **Required approvals: 0** for exactly this reason).
 
 ## Reverts
 

@@ -129,7 +129,7 @@ npm run preview       # Test production build locally
 3. **Describe your app in a paragraph** — your own words, no form to fill in
 4. **Check Claude's summary** — confirm it understood, or correct it
 5. **Approve the suggested project name** (or ask for a different one)
-6. **Create your project on GitHub** — Claude gives you every value to fill in ([SETUP.md](./SETUP.md) Step 1)
+6. **Create your project on GitHub** — Claude gives you every value to fill in
 7. **Claude Code sets everything up** — scaffold, your project details, and Netlify
 8. **Open your preview link** — confirm the page loads on your phone before building features
 9. **Start changing things** — describe what you want, review the preview, repeat

@@ -90,6 +90,14 @@ So: ask one open question, parse it, then **show the user what you understood an
 
 The narrower rule this sits under: a question is only worth asking if you can't infer the answer *and* it changes what you'd build. Anything else is better resolved by building the obvious reading and letting them react to it on their phone.
 
+### SETUP.md Removed Entirely — a Second File Was Never the Right Fix
+
+The previous entry corrected `finish-setup`'s claim that it "drives from SETUP.md" — untrue, since the skill already carried every operational detail. But leaving SETUP.md in place even as a demoted "human-readable copy" kept the actual problem alive: two files describing one procedure, with no mechanism keeping them in sync besides someone remembering to edit both. That's the exact shape of every drift bug this session hit (Netlify/Pages cross-references, step numbering, twice).
+
+Checked every section against what `finish-setup` already had before deciding: the account/repo-creation walkthroughs, the Netlify Parts A–C, and the full branch-ruleset instructions were verbatim duplicates, already present in `finish-setup` or in the CLAUDE.md bootstrap. Three things were not — the exact click-path fallbacks for a random Netlify name, "No repositories found," and classic branch protection — SETUP.md was their only home. Those got folded into `finish-setup` directly. The "What the Build Loop Looks Like" explainer and the local-dev-commands section added nothing SETUP.md alone provided either: the build-loop mechanics are already explained live, every round, by `ship-feature`'s instructed hand-off messages, and local dev commands are already slated for the project's own README by the bootstrap's transform step. Both were dropped rather than moved.
+
+The file is gone, not shrunk. A "reference copy for humans" sounds harmless, but it's still a second copy — the value of documentation a human might read standalone doesn't outweigh maintaining a duplicate that has already drifted from its skill twice. If a user wants a standalone description of what's happening, the project's own README and `docs/concepts/*.md` are the intended home for that, not a parallel setup script.
+
 ### Optional Branch Protection Silently Removed the Whole Review Loop
 
 Branch protection was written as "Step 4 (Optional)" and never appeared in the setup sequence at all, so it got skipped. Setup ended with the session sitting on `main`, and the first feature was committed straight there.
