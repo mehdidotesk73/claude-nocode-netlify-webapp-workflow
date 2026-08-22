@@ -40,15 +40,21 @@ Two things follow:
 
 **This audience types on phones, so any instruction to enter an identifier needs its casing stated.** "Type `build`" is insufficient; "type `build`, all lowercase — your phone will try to capitalize it" is the instruction. Applies to anything matched literally: check names, branch patterns, project names.
 
-**And the readback matters more than the instruction.** The user can follow "type `build`" perfectly and still end up with `Build`, because the corruption happens after they act, not during. That's what makes it different from a misread instruction — no amount of clarity in the telling prevents it. The only reliable catch is asking what's actually in the field before they commit, which is the same reason the confirmation gates restate the expected result rather than just asking "done?".
+**Better still, don't have them type it at all.** Both of the above are mitigations for an input step that turned out to be avoidable — see the entry below on triggering CI early, which makes `build` a listed option the user selects instead of an identifier they transcribe. Casing guidance and readbacks remain as the fallback, but the durable fix was removing the keystroke, not perfecting the instruction around it.
+
+**And where a readback is still needed, it matters more than the instruction.** The user can follow "type `build`" perfectly and still end up with `Build`, because the corruption happens after they act, not during. That's what makes it different from a misread instruction — no amount of clarity in the telling prevents it. The only reliable catch is asking what's actually in the field before they commit, which is the same reason the confirmation gates restate the expected result rather than just asking "done?".
 
 ### The `build` Check Won't Exist Yet When You Configure the Ruleset
 
 GitHub's "Add checks" dropdown only autocompletes checks it has already seen run in that repo. At the point branch protection is configured, the project has never had a PR — the scaffold went straight to `main` — so `ci.yml` (which triggers on `pull_request`) has never fired. The list shows "No checks have been added" and searching finds nothing.
 
-The fix is to type `build` in anyway: rulesets accept a check name that hasn't reported yet and start matching on the first PR. Backup, if the UI won't take a free-typed name: **Actions → CI → Run workflow** (`ci.yml` declares `workflow_dispatch` for exactly this) to make the check exist, then search again.
+The first fix was to warn about the empty list and have the user type `build` in anyway — rulesets accept a name that hasn't reported yet. That worked, but it left them hand-typing an identifier, which is what produced the autocapitalization lockout above.
 
-**Worth warning about before the user looks**, not after they report it. An empty list at the exact moment they're told "add the check named `build`" reads as *the thing I was told to find isn't there*, which is the same shape as the Netlify "No repositories found" trap — and lands on someone already several unfamiliar screens deep.
+**The better fix removes the typing.** `finish-setup` now fires the CI workflow via `workflow_dispatch` immediately after the personalization push, then moves on without waiting. Netlify setup takes several minutes across two websites, so by the time the user reaches the ruleset the run is long finished and `build` is a selectable entry in the picker. Same shape as making `main` unpushable rather than reminding Claude not to push it: eliminate the unsafe action rather than warn about it.
+
+It pays a second dividend. The local `npm run build` and the CI run test different things — CI does a clean `npm ci` against the committed lockfile on a fresh runner. Triggering it here surfaces a lockfile mismatch while it's still a simple fix, instead of as a mysteriously stuck first PR after `build` is already a required check.
+
+The warn-and-type path is kept as the fallback for when the run didn't happen or failed.
 
 **How this was missed is the more useful lesson.** This guidance existed in `SETUP.md` and was dropped when that file was deleted. That deletion was done carefully — every section was classified as duplicate, unique-fold-it-in, or drop — but the scan keyed on the `<details>` fallback blocks, and this one was a plain bolded paragraph in the step's body. Structure-based review misses content that doesn't match the structure you're scanning for. The check that would have caught it: diff the deleted file's *claims* against the surviving text mechanically, rather than re-reading and judging. Running that afterwards over every bolded passage in the old file surfaced this immediately, and confirmed the other 83 were genuinely covered.
 

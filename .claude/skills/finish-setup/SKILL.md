@@ -69,6 +69,24 @@ already established earlier in this conversation; don't re-ask for them.
 Verify `npm run build` passes, commit (e.g. "Personalize scaffold for `<project name>`"), and push
 directly to `main`.
 
+**Then trigger the CI workflow once, and don't wait for it.** Run `.github/workflows/ci.yml` via
+its `workflow_dispatch` trigger (`actions_run_trigger`, or the **Actions → CI → Run workflow**
+button). Fire it and move straight on to Netlify — it finishes in about a minute, long before
+branch protection needs it.
+
+Two reasons this is worth doing here rather than later:
+
+- **It makes `build` selectable instead of typeable.** GitHub's ruleset check-picker only lists
+  checks it has actually seen run. Without this, step 2 has the user hand-typing a check name on a
+  phone that autocapitalizes — the single worst failure mode in this whole setup (see step 2). One
+  run now turns that into picking an item off a list.
+- **It proves CI works before anything depends on it.** The local `npm run build` above and the CI
+  run are different tests: CI does a clean `npm ci` against the committed lockfile on a fresh
+  runner. If the lockfile is out of sync, this is where it surfaces — while it's still a simple
+  fix, rather than as a mysteriously stuck first PR.
+
+If the run fails, fix it before continuing; a red `build` becomes a required check shortly.
+
 ## How to give every step
 
 These steps happen on websites you can't see. The user is your only sensor.
@@ -201,27 +219,26 @@ The `build` check comes from `.github/workflows/ci.yml`, which builds every PR. 
 non-compiling change reaching `main` — worth more here than usual, since the user can't run the app
 locally to notice.
 
-**Expect `build` to be missing from the checks list, and warn them before they look.** The dropdown
-only autocompletes checks GitHub has already seen run, and at this point in setup the project has
-never had a PR — the scaffold went straight to `main` — so `ci.yml` has never fired. The list will
-say "No checks have been added" and the search will find nothing. Nothing is wrong.
+**Adding the `build` check: have them pick it from the list, never type it.** Because step 0
+triggered a CI run, `build` is already a check GitHub has seen, so searching the **Add checks**
+box surfaces it as a selectable result. Tell them to select the existing entry.
 
-- Have them **type `build` into the search box anyway** — a ruleset accepts a check name that
-  hasn't reported yet, and it starts matching on their first PR. GitHub offers it as
-  **+ Add build · Any source**; that's the right thing to click.
-- **Say "all lowercase" explicitly, and have them confirm what's actually in the box before they
-  click Add.** The user is on a phone, and iOS autocapitalizes the first letter of a text field —
-  they will get `Build` without touching the shift key. Check names match literally, so a rule
-  requiring `Build` waits forever on a check that reports as `build`. With the bypass list empty
-  that blocks every PR they will ever open, on a ruleset that looks correctly configured. It is the
-  same lockout **Required approvals: 0** exists to prevent, reached by a different route.
-  - Already added the wrong one? Open the ruleset, delete the bad entry from **Status checks that
-    are required**, add `build`, and Save.
-- If typing it offers nothing selectable, fall back to making the check exist: **Actions** tab →
-  **CI** → **Run workflow** (`ci.yml` declares `workflow_dispatch` for exactly this), then return
-  to the ruleset and search again.
-- If `build` still doesn't appear after a real PR has run, the job name differs from what this
-  skill assumes — read the actual name off the PR's checks and use that.
+**Do not let them hand-type the name.** They're on a phone, iOS capitalizes the first letter of a
+text field, and check names match literally — a rule requiring `Build` waits forever on a check
+that reports as `build`. With the bypass list empty, that makes every PR they ever open
+unmergeable, on a ruleset that looks perfectly configured. It's the same lockout **Required
+approvals: 0** exists to prevent, reached by a different route. Selecting a listed entry avoids
+the whole class of problem, which is exactly why step 0 runs CI early.
+
+If `build` isn't listed anyway:
+- The step-0 CI run didn't happen or failed — check the **Actions** tab. Re-run it (**CI → Run
+  workflow**), then search again.
+- If they must type it, say **"all lowercase"** explicitly and have them read back what's in the
+  field before clicking Add. GitHub offers it as **+ Add build · Any source**.
+- If a real PR has since run and `build` still doesn't appear, the job name differs from what this
+  skill assumes — read the actual name off that PR's checks and use it.
+- **Already saved the wrong one?** Open the ruleset, delete the bad entry from **Status checks
+  that are required**, add `build`, Save.
 
 **If their GitHub only offers "Add classic branch protection rule"** (older UI, no ruleset button):
 1. Click **Add classic branch protection rule**
