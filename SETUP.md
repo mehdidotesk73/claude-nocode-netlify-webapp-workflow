@@ -33,32 +33,58 @@ it puts all the starting files in place for you — nothing else to do here.
 built. Without it there's no way to look at your own app, and you'd be describing changes you can't
 check. It takes about two minutes.
 
-### On Netlify (Web)
+Do these three parts in order. Part B is the one people skip, and skipping it makes Part C show an
+empty list with your project nowhere in it.
+
+### Part A — Create your Netlify account
 
 1. Go to https://netlify.com
-2. **Sign up or log in** — choose "Sign up with GitHub", it's the fastest path
-3. Click **Add new site** → **Import an existing project**
-4. Click **GitHub** and authorize Netlify when it asks
-5. Find and select your project in the list
-   - **If it says "No repositories found"** — expected, see just below. Fix it and come back here.
-6. Leave the build settings as they are — Netlify reads them from the project already
-7. Click **Deploy site**
+2. Click **Sign up** and choose **Sign up with GitHub** (fastest, and it links the two accounts)
+3. Approve the permissions screen GitHub shows you
 
-### "No repositories found" — the common snag
+Already have a Netlify account? Just log in and move on.
 
-Netlify only sees repositories you've explicitly granted it. Your project was created *after* you
-authorized Netlify, so it isn't in that grant yet. Nothing is wrong with your project.
+### Part B — Give Netlify access to your project
 
-1. Click the **Configure Netlify on GitHub** button on that same screen
-2. GitHub opens the Netlify app's settings
-3. Under **Repository access**, pick one:
-   - **All repositories** — simplest, and future projects appear automatically
-   - **Only select repositories** → **Select repositories** → add your project by name
-4. Click **Save** (GitHub may ask for your password)
-5. You're returned to Netlify — your project is now in the list. Refresh the page if it isn't.
+Netlify can only see projects you've explicitly given it access to, and that list is set once —
+a project created later isn't added automatically. Yours was just created, so do this now.
+
+1. Go to **https://github.com/apps/netlify**
+2. Look at the button on the right:
+   - It says **Install** → you haven't connected Netlify to GitHub yet. Click it.
+   - It says **Configure** → Netlify is already connected. Click it.
+3. If asked which account, choose your own username
+4. Under **Repository access**, choose **All repositories**
+   - This is the option that saves you from repeating this step for every future project.
+   - Prefer to be selective? Choose **Only select repositories** → **Select repositories** → pick
+     your project by name. Just remember you'll come back here each time you start a new one.
+5. Click **Save** (or **Install**). GitHub may ask for your password.
+
+Tell Claude when this is done, and mention which button you saw — Install or Configure.
+
+### Part C — Import your project
+
+1. Back on https://netlify.com, click **Add new site** → **Import an existing project**
+2. Click **GitHub**
+3. Your project is in the list — select it
+4. Leave the build settings exactly as they are — Netlify reads them from the project already
+5. Click **Deploy site**
 
 **Verify:** Netlify builds for a minute, then shows a URL like `https://your-site-name.netlify.app/`.
 Open it on your phone. You should see the app's header and footer. Tell Claude what you see.
+
+<details>
+<summary>Still says "No repositories found"?</summary>
+
+Part B didn't take effect. Either the grant didn't save, or it was applied to a different GitHub
+account than the one that owns your project.
+
+1. Click **Configure Netlify on GitHub** on that same screen — it goes straight to the right place
+2. Check the account name at the top matches the one that owns your project
+3. Set **Repository access** to **All repositories** → **Save**
+4. Return to Netlify and **refresh the page** — the list doesn't always update on its own
+
+</details>
 
 You can rename the site under **Site configuration → Change site name** if you want a tidier URL.
 

@@ -168,17 +168,28 @@ Answer in plain language — Claude summarizes and auto-fills the references abo
    > Next we need to connect Netlify — that's what gives you a link to open on your phone so you
    > can see the app as we build it. It's a few clicks and takes about two minutes.
 
-   Then walk them through SETUP.md Step 2, one step at a time, and tick the TODO item off when the
-   first preview deploy succeeds. If they explicitly say they want to skip it, that's their call —
-   proceed, but tell them plainly they won't be able to see the app until it's connected, and leave
-   the TODO item open.
+   **Walk them through SETUP.md Step 2 as three gated parts — do not paste all of it at once.**
+   Give one part, wait for them to confirm, then give the next. A wall of seven steps spanning two
+   websites is where people lose their place.
 
-   **Warn them about "No repositories found" before they hit it.** Their project was created after
-   they authorized Netlify, so it won't be in Netlify's GitHub grant and the repo list comes up
-   empty — with the search box showing exactly what they typed and nothing under it, which reads
-   like the project failed to get created. Say up front that if they see this, it's expected: click
-   **Configure Netlify on GitHub**, set **Repository access** to All repositories (or add this one),
-   Save, and the project appears. Full steps in SETUP.md Step 2.
+   - **Part A — Netlify account.** Sign up with GitHub. Wait for "done".
+   - **Part B — repository access. This is the part that prevents the failure, so never skip or
+     reorder it.** Send them to https://github.com/apps/netlify and have them set **Repository
+     access** to **All repositories**, then Save. Ask them to tell you whether the button read
+     **Install** or **Configure** — that tells you whether Netlify was already connected with an
+     older, narrower grant, which is exactly the case where the import screen would otherwise come
+     up empty. Wait for confirmation before moving on.
+   - **Part C — import the project.** Only now send them to Netlify's "Add new site → Import an
+     existing project". With Part B done, their project is in the list.
+
+   Why the order matters: Netlify's GitHub grant is fixed when it's authorized, and their project
+   was created minutes ago. Granting access first turns a confusing empty search result into a
+   non-event. If they somehow still hit "No repositories found", it means Part B didn't save or was
+   applied to a different GitHub account — see the collapsed section at the end of SETUP.md Step 2.
+
+   Tick the TODO item off when the first preview deploy succeeds. If they explicitly say they want
+   to skip Netlify, that's their call — proceed, but tell them plainly they won't be able to see the
+   app until it's connected, and leave the TODO item open.
 
    Do the same for GitHub Pages (SETUP.md Step 3) — that's their production link. Note the Pages
    **Source** must be set to "GitHub Actions", not "Deploy from a branch"; the branch option

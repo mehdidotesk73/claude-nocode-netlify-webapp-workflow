@@ -40,7 +40,13 @@ Netlify installs as a GitHub App with a repository-access grant, and that grant 
 
 The fix is on that same screen: **Configure Netlify on GitHub** → **Repository access** → either **All repositories**, or add the new one under "Only select repositories" → **Save**.
 
-This is guaranteed to hit anyone whose project is created during setup, which for this template is everyone. Warn about it before they open Netlify rather than waiting for them to report being stuck — an unexplained empty list is exactly the kind of thing that makes a non-technical user think they've broken something and back out.
+This is guaranteed to hit anyone whose project is created during setup, which for this template is everyone.
+
+**Warning about it isn't the fix — reordering is.** Grant the access first, as its own step (`https://github.com/apps/netlify` → Repository access → All repositories → Save), and then start the import. The empty list never appears.
+
+The subtle part is why a warning alone was never going to be enough. The import flow's "authorize Netlify when it asks" step is where GitHub offers All repositories vs Only select repositories — but that screen only appears if Netlify *isn't already installed*. A returning user with an older, narrower grant is never asked, has nothing to answer, and lands on the empty list regardless of how carefully they read the instructions. Asking which button they saw — **Install** or **Configure** — distinguishes the two cases cheaply.
+
+Second-order lesson: when a setup step spans two websites, split it into parts and gate each one on the user confirming, rather than pasting the whole sequence. Someone bouncing between github.com and netlify.com loses their place in a seven-step list.
 
 ### GitHub Pages Source Must Be "GitHub Actions"
 
