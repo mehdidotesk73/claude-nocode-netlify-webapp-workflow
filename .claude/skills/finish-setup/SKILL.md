@@ -20,10 +20,19 @@ unticked. Tick each item off as it completes, so an interrupted session can pick
 
 ## 0. Personalize the scaffold
 
+**Read `docs/setup-brief.md` first — it holds everything you need.** The session that created this
+repo wrote it: repo name, Netlify site name (plus reserve alternates), purpose, UI shape, external
+deps, their first feature, and their original description verbatim. **Don't re-ask the user for any
+of it** — they described their app already, in a conversation this session can't see, and being
+asked twice is the clearest possible signal that nothing was carried over.
+
+If the brief is missing but `CLAUDE.md` still has `<REF:` placeholders, something went wrong in the
+handoff: say so and ask the user to describe their app, rather than guessing or personalizing with
+placeholder text still in place.
+
 **Do this before Netlify or branch protection, not after.** `main` is still unprotected at this
 point in setup — this is the last moment a direct commit to `main` is possible, so this step should
-be one push, not a branch and PR. Use the purpose, UI shape, site name, and external-deps answers
-already established earlier in this conversation; don't re-ask for them.
+be one push, not a branch and PR.
 
 - **`README.md` — rewrite completely.** Drop everything about using the template (the quick-start
   prompt, "what you get", template customization). Write the project's own README instead: app name
@@ -65,6 +74,11 @@ already established earlier in this conversation; don't re-ask for them.
   ```
 
 - **`.claude/skills/` — leave untouched.** Already generic; nothing to personalize.
+
+- **`docs/setup-brief.md` — delete it.** Its whole job was carrying the intake across the repo
+  switch, and that's done. Removing it is also what marks setup as no longer pending: the guard at
+  the top of `CLAUDE.md` keys off its presence, and a stripped `CLAUDE.md` plus an absent brief are
+  two independent reasons a later session won't try to re-bootstrap this project.
 
 Verify `npm run build` passes, commit (e.g. "Personalize scaffold for `<project name>`"), and push
 directly to `main`.

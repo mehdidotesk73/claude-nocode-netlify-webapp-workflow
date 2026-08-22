@@ -30,6 +30,22 @@ Logic lives in `src/lib/` as plain functions over already-fetched arrays. They r
 
 `vite-plugin-pwa` generates `manifest.webmanifest` and injects its own `<link rel="manifest">`. A second static `public/manifest.json` linked from `index.html` produces two competing manifest links in the built HTML, and the static one wins in some browsers — pointing at icons the build never processed. Define the manifest once, in the `VitePWA({ manifest: ... })` block.
 
+### Skills Load From the Session's Project Root — a Cloned Directory Never Becomes One
+
+`/reload-skills` was supposed to make a freshly-scaffolded project's `.claude/skills/` invocable mid-session. In testing it returned **"Reloaded skills: 23 skills available (no changes)"** — the base set, unchanged. The scaffold's three skills were on disk and still invisible.
+
+The reason: skills are discovered from the session's *project root*, established when the session opens. The bootstrap clones the user's repo into a new directory and calls `register_repo_root`, but that doesn't make it the root skill discovery uses. `/reload-skills` re-scans the roots the session already has, correctly finds nothing new, and reports exactly that. Confirmed independently from this session: the template's own `.claude/skills/` sits on disk in the same container and does not appear in the available-skills list, because the session is rooted elsewhere.
+
+So the fix isn't a reload — it's getting the session rooted at the new repo, which only the user can do via the repository selector. The design now asks for that, then **verifies** rather than assuming: right repo *and* skill invocable → proceed; right repo but no skills → manual read; still on the old repo → ask again rather than run setup from the wrong root.
+
+**The harder problem this created, and the fix that dissolved it.** Switching repos may re-load the new repo's `CLAUDE.md` — which, on a raw scaffold, opens by declaring "this is a NEW PROJECT in a NEW REPOSITORY, create a new repo." A session that read that could bootstrap a second repo. The obvious remedy was to personalize (and strip `CLAUDE.md`) *before* the switch, which meant hauling all the content-heavy rewrite work back into the bootstrap and making it long again — the exact problem the skills split was meant to solve.
+
+The better answer was a **staged brief**: the bootstrap adds exactly one file, `docs/setup-brief.md`, holding the intake answers plus the user's verbatim description. It does three jobs at once — carries context across the session switch as a durable artifact rather than conversation memory, survives the session dying mid-flow, and acts as a marker that `CLAUDE.md` can key a guard on: *if this file exists, you are a scaffolded project awaiting setup, run `finish-setup` and ignore the bootstrap.* With that guard, a re-read of `CLAUDE.md` after the switch isn't a hazard — it routes correctly. So personalization stays in the skill where it belongs, and the bootstrap stays thin.
+
+`finish-setup` deletes the brief as its last personalization act, so a finished project has both a stripped `CLAUDE.md` and no marker: two independent reasons a later session won't re-bootstrap it.
+
+General shape worth reusing: **when context must cross a boundary a conversation can't span, write it down as a file rather than trying to keep the conversation alive across it.** The file is more durable than the session, and its presence or absence doubles as state.
+
 ### Claude Can't Run Slash Commands — They're User Input
 
 The bootstrap told Claude to run `/reload-skills` itself, with the explicit note "this is a command *you* run, not something to ask the user to do." That was wrong. Slash commands are Claude Code CLI affordances typed by the user; Claude's toolset has no matching entry. In testing, Claude looked, correctly reported "no explicit `/reload-skills` tool is available in this environment," and fell through to reading `finish-setup` by hand. The user then typed `/reload-skills` themselves and the session picked up normally.

@@ -4,6 +4,16 @@ Guidance for any Claude session working in this repo. Read this first. The
 repeatable procedures live in `.claude/skills/` — `finish-setup` for one-time
 setup, `ship-feature` for every change after that.
 
+## ⚠️ FIRST: Is `docs/setup-brief.md` present?
+
+**Check before reading anything else.** If this repo has a `docs/setup-brief.md`, then it is
+somebody's freshly scaffolded project waiting to be set up — **not** the template, and **not** a
+project needing a new repo. Invoke the **`finish-setup`** skill and ignore the entire bootstrap
+below; it has already run. The brief holds the intake answers from the session that created this
+repo, and `finish-setup` deletes it once personalization is done.
+
+Everything below applies only when that file is absent.
+
 ## ⚠️ CRITICAL: Leave the Session's Current Repo Alone
 
 **When a user pastes the template prompt, the Claude Code session will already be pointing at some repository — whatever the user last had open. That repo is NOT the project.**
@@ -225,35 +235,65 @@ that it didn't happen. Every guided step follows this shape:
 
    Then verify `npm install && npm run build` passes before anything reaches their repo; a scaffold
    that doesn't compile is worse than no scaffold, since they can't tell whether they broke it.
-   Commit as "Initial scaffold from template" and push to `main`.
+   Don't commit yet — the brief in the next item goes in the same commit.
 
    **Leave the `<REF:*>` placeholders and every file exactly as copied — don't fill them in here,**
    even though the values are fresh from Step 1 and the placeholders are sitting right there in the
    README and CLAUDE.md you're about to push. That's `finish-setup`'s first action, next.
 
-### Step 5: Reload skills, then hand off to `finish-setup`
+10. **Write `docs/setup-brief.md` — the one file you add to the scaffold.** It carries Step 1's
+    answers across the repo switch coming in Step 5. The next session won't have this conversation,
+    so anything not written here is lost, and the user gets re-interrogated about an app they
+    already described. Its presence is also what tells that session it's a scaffolded project
+    rather than the template (see the guard at the top of this file).
 
-10. **Ask the user to send `/reload-skills`.** The scaffold you just pushed contains
-    `.claude/skills/`, but this session started before those files existed, so they aren't
-    invocable yet. `/reload-skills` re-scans skill directories mid-session and fixes that.
+    ```markdown
+    # Setup brief
 
-    **You cannot run it yourself** — it's a Claude Code CLI command, meaning user input, not a tool
-    in your toolset. Don't go looking for a matching tool, conclude it doesn't exist, and fall
-    through to the manual workaround: that's the failure this step exists to prevent. Just ask:
+    Temporary. `finish-setup` reads this, personalizes the project from it, then deletes it.
+    If you're reading this, setup hasn't finished — run the `finish-setup` skill.
 
-    > Quick one for you: send `/reload-skills` as your next message. It lets me pick up the
-    > checklists I just added to your project. Nothing else needed — I'll carry on from there.
+    - **Repo:** <owner>/<repo-name>
+    - **Netlify site name:** <name>  (reserve alternates: <alt-1>, <alt-2>)
+    - **Purpose:** <REF:purpose — one line>
+    - **UI shape:** <REF:UI-shape — the screens/tabs/sections you proposed>
+    - **External data:** <REF:external-deps — usually "none, self-contained">
+    - **First feature they described:** <the thing they most want to see working>
 
-    Wait for it. It's one message from them, and it's the difference between the rest of this
-    conversation having working skills or not.
+    ## What they said, verbatim
 
-11. **Invoke the `finish-setup` skill.**
+    > <paste their original description, unedited>
+    ```
 
-    Only if it's *still* not invocable after they've sent `/reload-skills` — an older Claude Code
-    without that command, say — fall back to reading `.claude/skills/finish-setup/SKILL.md` directly
-    and following it by hand. Tell the user that later changes this conversation will need the same
-    manual read, since `ship-feature` won't auto-trigger either. Don't reach for this fallback
-    before asking them; it costs the whole session's skill support.
+    Keep their original wording in that last block. Your summary is an interpretation; the raw text
+    is what the next session should be able to check it against.
+
+    Commit scaffold and brief together as "Initial scaffold from template", and push to `main`.
+
+### Step 5: Have the user point this session at their new repo
+
+11. **Ask them to switch the session's active repository.** Their project exists, builds, and holds
+    the brief — but this session is still rooted in whatever repo it opened in. Skills are
+    discovered from the session's project root, so `finish-setup` and `ship-feature` aren't
+    invocable until the session points at the new repo.
+
+    **`/reload-skills` does not solve this** — it re-scans the roots this session already has and
+    reports "no changes". And you can't switch repos yourself; it's a UI control only the user can
+    operate. Ask plainly:
+
+    > Your project is built and pushed. Last thing I need from you: switch this session over to it.
+    > Use the repository selector at the top of the screen — it currently shows `<old-repo>` — and
+    > pick **`<new-repo>`**, branch `main`. Tell me once you've done it.
+
+12. **Verify before continuing.** Confirm you're actually on their repo (`git remote -v` resolving
+    to `<owner>/<new-repo>`) and that `finish-setup` is invocable.
+
+    - **Both true** → invoke `finish-setup`. It reads `docs/setup-brief.md` and takes over.
+    - **Right repo, skills still not invocable** → read `.claude/skills/finish-setup/SKILL.md` and
+      follow it by hand. Tell the user later changes this conversation will need the same manual
+      read, since `ship-feature` won't auto-trigger either.
+    - **Still on the old repo** → the switch didn't take. Ask again rather than proceeding; running
+      setup from the wrong root is how work lands in someone else's project.
 
     Your bootstrap job is done here — `finish-setup` takes over.
 
