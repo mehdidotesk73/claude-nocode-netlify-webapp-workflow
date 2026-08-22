@@ -50,6 +50,22 @@ The Configure case needs one extra guardrail. The user arrives at a screen listi
 
 Second-order lesson: when a setup step spans two websites, split it into parts and gate each one on the user confirming, rather than pasting the whole sequence. Someone bouncing between github.com and netlify.com loses their place in a seven-step list.
 
+### Setup Belongs in Skills, Except the Part That Runs Before a Repo Exists
+
+The bootstrap started as one long CLAUDE.md — intake, repo creation, scaffolding, Netlify, Pages, branch protection, first feature — and every session re-read all of it, including sessions where the user just wanted a small change.
+
+The dividing line is **when the project repo starts existing**. Steps that run before it (intake, guiding repo creation, cloning and switching into it, copying the scaffold) have to be plain prose in a CLAUDE.md fetched by URL, because there's no repo to load a skill from. Everything after — Netlify, Pages, branch protection, and the whole change loop — can live in `.claude/skills/`, because copying the scaffold puts those skills in the repo the session has just moved into.
+
+Three things fall out of the split, beyond a shorter CLAUDE.md:
+
+**The project's CLAUDE.md is clean by construction.** The transform step used to surgically delete the setup workflow out of it; now there's nothing to strip except the bootstrap header, and the skills copy across untouched.
+
+**Setup becomes resumable.** `finish-setup` reads the checklist in `docs/TODO.md` and does only what's unticked, so an interrupted session — or one that skipped a step — is one `/finish-setup` away from being caught up. That was previously a bespoke recovery conversation.
+
+**A procedure loaded deliberately is followed better than a section of a long document.** Branch protection and the branch-per-feature rule were both written down and both skipped; they were prose in the middle of a file, competing with everything else in it.
+
+One caveat: skills added to a repo mid-session may not register until the session reloads, so the bootstrap tells Claude to read `.claude/skills/finish-setup/SKILL.md` directly if the skill isn't discoverable yet.
+
 ### Move Out of the Old Repo Rather Than Remembering to Avoid It
 
 Claude Code always opens pointing at a repository — whatever the user last had open — and the template's first instruction was "ignore it". That works only as long as it keeps being remembered, across a setup that spans repo creation, scaffolding, a build, two external websites and a first feature. It failed exactly that way once: a session read the template, understood the plan, and started copying the scaffold into the unrelated repo it happened to be sitting in, because a system-level branch instruction for *that* repo was also in play.
