@@ -198,8 +198,11 @@ Claude drives it and hands you links — but this is what's happening:
 
 Two things are worth knowing:
 
-- **The preview link and the merge link are different.** The preview is where you *look* at the
-  change; the merge page is where you *accept* it. Claude will label which is which.
+- **You'll get three links each round, and they do different jobs.** The *preview* is where you look
+  at the change. The *live site* is your real app, unchanged — it stays on the old version no matter
+  how many previews come and go. The *merge* page is where you accept the change and let it reach
+  the live site. Claude labels which is which; if a preview looks wrong, nothing has happened to
+  your app.
 - **If a change doesn't appear on the preview,** it's almost always the app serving you a cached
   copy. Tap **Reload latest** in the footer, or open the link in a private/incognito tab.
 

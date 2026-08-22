@@ -420,19 +420,24 @@ The user previews on a **phone** (mobile Safari), so favour mobile-friendly layo
    - Use the GitHub MCP tools (`mcp__github__*`) — there is **no `gh` CLI** and
      no direct API. Prefer MCP for PRs/branches/files when local pushes fail.
    - Do **not** merge — the user merges. Keep PR comments frugal.
-   - **Hand the user the PR link and tell them what to click.** They cannot
-     merge what they cannot find, and they may never have seen a PR page. End
-     the turn with both links and a plain instruction, e.g.:
+   - **Hand the user all three links and tell them what to click.** They cannot
+     merge what they cannot find, and they may never have seen a PR page. Always
+     include the live site alongside the preview: seeing the two side by side is
+     what makes it concrete that their working app is untouched while they try
+     the change. End the turn like this:
 
-     > **Preview:** https://deploy-preview-4--grocery-assistant.netlify.app
+     > **Preview (the change):** https://deploy-preview-4--<REF:Netlify-app-name>.netlify.app
      > — open this on your phone and check the new category filter works.
+     >
+     > **Live site (unchanged):** https://<owner>.github.io/<repo>/
+     > — still the old version, and stays that way until you merge.
      >
      > **Ready to merge:** https://github.com/<owner>/<repo>/pull/4
      > — open that link and click the green **Merge pull request** button, then
      > **Confirm merge**. Tell me once it's merged and I'll verify the live site.
 
      Preview link first: they should look at the change before merging it.
-     Never say "merge when ready" without the URL attached.
+     Never say "merge when ready" without the URLs attached.
 
 6. **Merge + test production.** The user merges in the GitHub UI. Merging to
    `main` triggers the **GitHub Pages** production deploy (see Deploys).
