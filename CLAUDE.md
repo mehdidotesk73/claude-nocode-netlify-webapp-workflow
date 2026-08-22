@@ -228,9 +228,10 @@ that it didn't happen. Every guided step follows this shape:
      repo sees first — it should describe the grocery app (or whatever they're building), not this
      template.
 
-   - **`CLAUDE.md` — delete the bootstrap, fill in the rest.** Remove everything from the top of the
-     file through the end of "Step 5: Hand off to the `finish-setup` skill", plus the References
-     fill-in instructions and the Bitcoin example block. Keep and fill in: "What this is" (with
+   - **`CLAUDE.md` — delete the bootstrap, fill in the rest.** Keep the title and the one-line intro
+     at the very top of the file. Remove everything from "⚠️ CRITICAL: Leave the Session's Current
+     Repo Alone" through the end of "Step 5: Hand off to the `finish-setup` skill", plus the
+     References fill-in instructions and the Bitcoin example block. Keep and fill in: "What this is" (with
      their `<REF:*>` values substituted inline — no placeholders left anywhere in the file),
      Development lifecycle, Build & verify, Deploys, Repo structure, Conventions & gotchas,
      Debugging on device, Reference docs. **This is what stops a future session re-running the

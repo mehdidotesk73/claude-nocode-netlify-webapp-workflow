@@ -64,7 +64,9 @@ Three things fall out of the split, beyond a shorter CLAUDE.md:
 
 **A procedure loaded deliberately is followed better than a section of a long document.** Branch protection and the branch-per-feature rule were both written down and both skipped; they were prose in the middle of a file, competing with everything else in it.
 
-One caveat: skills added to a repo mid-session may not register until the session reloads, so the bootstrap tells Claude to read `.claude/skills/finish-setup/SKILL.md` directly if the skill isn't discoverable yet.
+One caveat: skills added to a repo mid-session may not register until the session reloads, so the bootstrap tells Claude to read `.claude/skills/finish-setup/SKILL.md` directly if the skill isn't discoverable yet. That same caveat is also the reason Step 4 (copy/transform/build/push) can't itself be a skill: it's the step that writes `.claude/skills/` into the new repo in the first place, so there's nothing to invoke until after it runs — and even immediately after, discovery in the same turn isn't guaranteed.
+
+A related bug this raised: the transform instruction originally said to delete "everything from the top of the file" through the end of the bootstrap, which swallowed the title and intro line along with it — every scaffolded project's CLAUDE.md would have opened straight into "## What this is" with no heading. Fixed to preserve the top two lines and start the deletion at the first bootstrap section instead.
 
 ### Move Out of the Old Repo Rather Than Remembering to Avoid It
 
