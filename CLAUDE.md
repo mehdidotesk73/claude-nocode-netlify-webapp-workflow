@@ -214,11 +214,9 @@ that it didn't happen. Every guided step follows this shape:
    doesn't compile is worse than no scaffold, since they can't tell whether they broke it. Commit
    as "Initial scaffold from template" and push to `main`.
 
-   **Don't rewrite README.md, CLAUDE.md, or the docs — leave that to `finish-setup`.** This step's
-   only job is getting a working scaffold onto `main` while it's still safe to push there directly.
-   The personalization step is long and content-heavy; keeping it out of this bootstrap means it
-   runs reliably once loaded as a skill in Step 5, rather than depending on you still holding all
-   its detail in context after several tool calls of cloning, building, and pushing.
+   **Leave the `<REF:*>` placeholders and every file exactly as copied — don't fill them in here,**
+   even though the values are fresh from Step 1 and the placeholders are sitting right there in the
+   README and CLAUDE.md you're about to push. That's `finish-setup`'s first action, next.
 
 ### Step 5: Reload skills, then hand off to `finish-setup`
 
@@ -227,12 +225,7 @@ that it didn't happen. Every guided step follows this shape:
     `/reload-skills` re-scans skill directories mid-session and makes them invocable without
     starting over. This is a command *you* run, not something to ask the user to do.
 
-11. **Invoke the `finish-setup` skill.** Its first action personalizes the scaffold you just pushed
-    (README, CLAUDE.md, docs) using the purpose/UI-shape/name/deps established in Step 1 of this
-    conversation — do this now, while `main` is still unprotected, so it's one direct commit rather
-    than a branch and PR. It then covers Netlify and branch protection, driven by the setup checklist
-    it seeds in `docs/TODO.md` so an interrupted session can resume cleanly, and ends by handing off
-    to `ship-feature` for the first feature.
+11. **Invoke the `finish-setup` skill.**
 
     If `/reload-skills` isn't available (older Claude Code version) or `finish-setup` still isn't
     invocable afterward, fall back to reading `.claude/skills/finish-setup/SKILL.md` directly and
