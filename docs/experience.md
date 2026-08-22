@@ -72,11 +72,9 @@ The narrower rule this sits under: a question is only worth asking if you can't 
 
 ### Netlify Site Names Are a Global Namespace
 
-Every Netlify site lives under `*.netlify.app`, one pool shared by every user on the platform. Short obvious names — `grocery-assistant`, `weather-tracker`, `budget` — were claimed years ago by strangers. Proposing a plain name during intake and assuming it'll still be there at deploy time is wishful.
+Every Netlify site lives under `*.netlify.app`, one pool shared across the platform, so plain names like `grocery-assistant` are long gone. Propose a distinguished name (username, initials, an extra word), keep alternates in reserve, and warn the user it may be taken — then a rejection is a ten-second retry instead of a failure.
 
-Two things follow. Propose a name that's plausibly free in the first place (append the user's username, initials, or a word) and keep a couple of alternates in reserve, so a rejection is a ten-second retry rather than the user staring at a red error inventing names. And tell them up front that it might be taken — a warned-about outcome is a queue for a nice URL; an unwarned one reads as another thing they did wrong.
-
-The subtler failure is **doc rot**. The name is chosen during intake and written into the scaffold — the README's URLs, the deploy-preview pattern in the project's `CLAUDE.md` — but it isn't tested against reality until Netlify setup, several steps later. If the name changes there and the docs aren't updated, the project's own documentation points at a site that belongs to someone else. Any value committed to disk before it's validated externally needs a write-back step once the real value is known.
+The subtler failure is **doc rot**: the name is chosen at intake and committed into the scaffold (README URLs, the deploy-preview pattern in the project's `CLAUDE.md`), but isn't tested against reality until Netlify setup several steps later. If it changes there and the docs aren't updated, the project's documentation points at a stranger's live site — a wrong link, not a broken one, so nothing surfaces it. Any value committed before external validation needs a write-back once the real value is known.
 
 ### Netlify's Project Name Field Is Blank and Silently Generates a Random Name
 

@@ -91,11 +91,9 @@ Netlify read the build settings out of your project. There is **one empty field 
    like `dreamy-yeot-7cce7c.netlify.app` instead of your own. It's harmless but confusing, and every
    preview link you get from then on carries the random name too.
 
-   **If Netlify says the name is already taken**, that's normal and nothing to do with your project.
-   Every Netlify site in the world shares one pool of names, so short obvious ones went years ago.
-   Ask Claude for another — or just add something to the end: your name, your initials, `-app`.
-   `grocery-assistant-mehdi` will be free where `grocery-assistant` isn't. Tell Claude which name
-   you end up with, since it needs to update your project's links to match.
+   **If Netlify says the name is taken**, that's normal — all Netlify sites share one pool of names.
+   Add something to the end (your name, initials, `-app`) or ask Claude for another. Tell Claude the
+   name you settle on so it can update your project's links to match.
 
 5. **Leave everything under "Build settings" exactly as it is.** It should already read:
    - Branch to deploy: `main`
