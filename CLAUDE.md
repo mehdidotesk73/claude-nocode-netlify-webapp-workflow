@@ -251,6 +251,7 @@ anything there is unticked, run the **`finish-setup`** skill — it's resumable 
 does only what's outstanding.
 
 **Ready to build?** Every change goes through **`ship-feature`**. See below.
+
 ## Development lifecycle
 
 Every change — feature, fix, or tweak — goes through the **`ship-feature`** skill

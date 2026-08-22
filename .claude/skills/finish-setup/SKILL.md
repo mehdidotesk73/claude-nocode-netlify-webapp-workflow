@@ -35,20 +35,24 @@ already established earlier in this conversation; don't re-ask for them.
 - **`CLAUDE.md` — delete the bootstrap, fill in the rest.** Keep the title and one-line intro at the
   very top. Remove everything from "⚠️ CRITICAL: Leave the Session's Current Repo Alone" through the
   end of "Step 5: Reload skills, then hand off to `finish-setup`", plus the References fill-in
-  instructions and the Bitcoin example block. Keep and fill in: "What this is" (with every
-  `<REF:*>` value substituted inline — no placeholders left anywhere), Development lifecycle,
-  Build & verify, Deploys, Repo structure, Conventions & gotchas, Debugging on device, Reference
-  docs. **This is what stops a future session re-running the bootstrap on an already-created
-  project** — an unstripped CLAUDE.md would tell it to go create another repo.
+  instructions and the Bitcoin example block. **Keep every remaining `##` section** — as of this
+  writing: "What this is" (with every `<REF:*>` value substituted inline — no placeholders left
+  anywhere), Getting Started, Development lifecycle, Build & verify, Deploys, Repo structure,
+  Conventions & gotchas, Debugging on device, Reference docs. If you find a `##` section not in
+  that list, keep it: the rule is "delete the named bootstrap range, keep the rest", not "keep only
+  what's listed". **This is what stops a future session re-running the bootstrap on an
+  already-created project** — an unstripped CLAUDE.md would tell it to go create another repo.
 
 - **`docs/experience.md` — keep only these sections, remove everything else:** Mobile-First Design
   Constraints, Service-Worker Caching & Stale Builds, ECharts Gotchas, Pure Logic vs. Components,
   Don't Hand-Write a Static `public/manifest.json`, `npm ci` Needs a Committed Lockfile,
   `declaration: true` in an App's tsconfig, Ambient Types for Build-Time Constants, and Version
-  History (reset to the placeholder format, not the template's own history). Everything else in
-  this template's copy is a record of building *the template itself* — onboarding flow, Netlify UX,
-  skills design — and has no bearing on a project that will never re-run that bootstrap. Shipping it
-  verbatim would hand every project a confusing journal about a different piece of software.
+  History (reset to the placeholder format, not the template's own history). The test, if you hit an
+  entry not on that list: **does this teach something about building a Vue/Vite PWA, or about
+  building the template's setup flow?** Keep the first, drop the second. Most of what's there is the
+  second — onboarding flow, Netlify UX, skills design — and has no bearing on a project that will
+  never re-run that bootstrap. Shipping it verbatim would hand every project a confusing journal
+  about a different piece of software.
 
 - **`docs/TODO.md` — seed the one-time setup checklist** under **Next**:
 
