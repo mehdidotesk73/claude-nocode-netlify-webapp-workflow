@@ -70,6 +70,14 @@ So: ask one open question, parse it, then **show the user what you understood an
 
 The narrower rule this sits under: a question is only worth asking if you can't infer the answer *and* it changes what you'd build. Anything else is better resolved by building the obvious reading and letting them react to it on their phone.
 
+### Don't Schedule a Check-In for a Two-Minute Deploy
+
+Waiting on a GitHub Pages build by scheduling a background check-in produced the worst available shape: the turn ended on "I'll check back in a couple of minutes", the conversation stalled, and the user — sitting right there — got bored and checked manually. The deploy had already succeeded. The automation added latency and dead air to something that takes ninety seconds.
+
+Poll it in-turn instead, or hand the check to the user as an ordinary confirmation gate ("takes about two minutes, tell me when the run goes green"). Both beat a promise that parks the conversation. Background scheduling earns its place on long or unattended waits; during an interactive setup the user is a faster and more reliable signal than a timer.
+
+Related: deploy runs from before Pages was enabled fail, so re-trigger the workflow once the Source is set rather than waiting for the next push to come along.
+
 ### Netlify Site Names Are a Global Namespace
 
 Every Netlify site lives under `*.netlify.app`, one pool shared across the platform, so plain names like `grocery-assistant` are long gone. Propose a distinguished name (username, initials, an extra word), keep alternates in reserve, and warn the user it may be taken — then a rejection is a ten-second retry instead of a failure.

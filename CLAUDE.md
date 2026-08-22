@@ -99,6 +99,18 @@ that it didn't happen. Every guided step follows this shape:
    Ask for a screenshot if their description is ambiguous — they can paste one straight into chat,
    and it's usually faster than three rounds of questions.
 
+6. **Never end a turn on "I'll check back in a few minutes."** Deploys here take one to three
+   minutes and the user is sitting right there watching. A scheduled check-in stalls the
+   conversation on a promise, and they'll get bored and check manually — at which point the
+   automation is pure overhead. Instead:
+   - **Poll it yourself, in this turn.** Check the run's status a few times (`actions_get` /
+     `get_check_run`) until it resolves, then report. This is the default.
+   - **Or hand the check to them** as a normal confirmation gate: say it takes about two minutes,
+     say exactly what "done" looks like, and let them tell you. Fine when they're engaged anyway.
+
+   Background scheduling is for genuinely long or unattended waits, not for a Pages build during a
+   setup conversation.
+
 ### Step 1: Understand the project (one open question, then confirm)
 
 1. **Ask one open question and let them write freely.** Do **not** interrogate them with a
@@ -307,6 +319,10 @@ that it didn't happen. Every guided step follows this shape:
    Do the same for GitHub Pages (SETUP.md Step 3) — that's their production link. Note the Pages
    **Source** must be set to "GitHub Actions", not "Deploy from a branch"; the branch option
    publishes raw source instead of the built app.
+
+   Deploy runs from before Pages was enabled will have failed, so re-trigger the workflow once
+   they've set the Source rather than waiting for the next push. Then watch it to completion in
+   this turn — a Pages build is ~1–3 minutes; don't schedule a check-in for it.
 
 13. **Confirm they can actually see it.** Once Netlify's first deploy is green, give them the URL
     and ask them to open it on their phone and tell you what they see. Don't move on to building
