@@ -228,85 +228,9 @@ that it didn't happen. Every guided step follows this shape:
      repo sees first — it should describe the grocery app (or whatever they're building), not this
      template.
 
-     **Append this fixed section at the end, verbatim except `<repo-name>`.** It's reference
-     material for later, not part of the default setup — nothing in `finish-setup` or `ship-feature`
-     acts on it, and it shouldn't be mentioned during setup unless the user asks about hosting
-     independence. Note the **outer fence is 4 backticks** because the content has 3-backtick fences
-     nested inside it — copy it with 4, not 3, or the inner yaml/ts blocks will break it early:
-
-     ````markdown
-     ## Deploying Independently on GitHub Pages (Optional)
-
-     By default this project deploys entirely through Netlify — production and PR previews, one
-     host. You don't need anything below unless you specifically want a second, independent copy of
-     the live site that doesn't depend on your Netlify account.
-
-     **What you'd gain:** a production mirror that keeps working even if Netlify has an outage, or
-     if you ever move off it. **What you'd give up:** PR preview links on that copy — GitHub Pages
-     publishes one static site per repo, with no equivalent of Netlify's per-branch Deploy Preview.
-     This is a backup production copy, not a replacement for the preview workflow this project is
-     built around; keep using Netlify's previews to review changes either way.
-
-     If you want this, just ask Claude Code to set it up. It involves:
-
-     1. Add `.github/workflows/deploy-pages.yml`:
-
-        ```yaml
-        name: Deploy to GitHub Pages
-
-        on:
-          push:
-            branches: [main]
-
-        jobs:
-          deploy:
-            runs-on: ubuntu-latest
-            permissions:
-              contents: read
-              pages: write
-              id-token: write
-            environment:
-              name: github-pages
-              url: ${{ steps.deployment.outputs.page_url }}
-            steps:
-              - uses: actions/checkout@v4
-              - uses: actions/setup-node@v4
-                with:
-                  node-version: 20
-                  cache: npm
-              - run: npm ci
-              - run: npm run build
-                env:
-                  VITE_BUILD_ID: ${{ github.sha }}
-                  VITE_BASE: /${{ github.event.repository.name }}/
-              - uses: actions/upload-pages-artifact@v3
-                with:
-                  path: dist
-              - id: deployment
-                uses: actions/deploy-pages@v4
-        ```
-
-     2. In `vite.config.ts`, read the base path from that env var (Netlify and local dev leave it
-        unset and fall back to `/`):
-
-        ```ts
-        const base = process.env.VITE_BASE || '/'
-
-        export default defineConfig({
-          base,
-          // ...rest of the config unchanged
-        })
-        ```
-
-     3. In the repo on GitHub: **Settings → Pages → Source → GitHub Actions** — not "Deploy from a
-        branch", which publishes the raw source files instead of the built app.
-
-     Once merged to `main`, the site is live at `https://<owner>.github.io/<repo-name>/`, updating a
-     couple of minutes after every merge — alongside Netlify, not instead of it.
-     ````
-
-     If asked to actually set this up: create the workflow file, make the `vite.config.ts` edit,
-     then tell the user to flip the Pages Source setting themselves — that one click has no API.
+     Don't mention GitHub Pages or Netlify independence here — that's the `add-github-pages` skill's
+     job, triggered if the user ever asks for it. Nothing needs to be written into the README for it
+     up front.
 
    - **`CLAUDE.md` — delete the bootstrap, fill in the rest.** Keep the title and the one-line intro
      at the very top of the file. Remove everything from "⚠️ CRITICAL: Leave the Session's Current
@@ -431,6 +355,7 @@ src/
 .claude/skills/
   finish-setup/SKILL.md    one-time hosting setup: Netlify, branch protection
   ship-feature/SKILL.md    the change loop: branch → build → PR → links → doc gate
+  add-github-pages/SKILL.md   optional: a Netlify-independent production mirror, on request
 docs/
   TODO.md                  living backlog (Done / Next branch / Housekeeping)
   experience.md            what didn't work + per-merge version history
@@ -469,6 +394,7 @@ package-lock.json              committed — CI runs `npm ci` and needs it
 
 - `.claude/skills/finish-setup/SKILL.md` — one-time hosting setup (resumable).
 - `.claude/skills/ship-feature/SKILL.md` — the loop for every change.
+- `.claude/skills/add-github-pages/SKILL.md` — optional Netlify-independent mirror, on request.
 - `docs/TODO.md` — current backlog and what's been done.
 - `docs/experience.md` — dead ends (with reasons) + version history.
 - `docs/system-design.md` — developer/system documentation; §2 contains the wrapper template.
