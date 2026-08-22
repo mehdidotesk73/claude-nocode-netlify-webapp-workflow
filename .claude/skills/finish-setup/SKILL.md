@@ -16,7 +16,11 @@ depends on:
 **Resuming?** Check the setup checklist under **Next** in `docs/TODO.md` and do only what's still
 unticked. Tick each item off as it completes, so an interrupted session can pick up cleanly.
 
-The user-facing click-by-click lives in `SETUP.md` — drive from it, don't duplicate it here.
+**This skill is the operational authority — everything you need to run the conversation is below.**
+`SETUP.md` is a separate, human-readable copy of the same setup for the user to read on their own;
+you don't need to open it to execute this. The one exception: its collapsed fallback sections
+(linked below by name) hold troubleshooting detail that only lives there — open those specific
+sections if a user hits one of those failure modes.
 
 ## How to give every step
 
@@ -84,7 +88,7 @@ Wait for confirmation that Part B saved.
   the original name and would otherwise point at a stranger's live site.
 
 If they still hit "No repositories found", Part B didn't save or went to a different GitHub account —
-see the collapsed section at the end of SETUP.md Step 2.
+see SETUP.md Step 2's "Still says 'No repositories found'?" fallback.
 
 **Then confirm they can see it.** Once the first deploy is green, give them the URL and ask them to
 open it on their phone and say what they see. Don't move on until they confirm the page loads — a

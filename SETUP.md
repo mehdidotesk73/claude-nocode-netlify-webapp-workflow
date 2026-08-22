@@ -1,9 +1,9 @@
 # Setup Guide: Connect GitHub & Netlify
 
-**You normally don't need this guide.** Claude Code does all of this for you when you paste the
-template prompt from the [README](./README.md) — it creates your project on GitHub, fills in your
-details, and walks you through the rest. This guide is here as a reference for the few clicks that
-have to happen on a website Claude can't click for you, and as a manual fallback if something fails.
+**You normally don't need this guide.** Claude Code runs setup from its own `.claude/skills/` —
+it doesn't read this file to do so. This guide exists for you to read directly: as a second,
+human-readable description of what's happening, and as a standalone reference if you're
+troubleshooting something without Claude's help.
 
 ## Before You Start
 
