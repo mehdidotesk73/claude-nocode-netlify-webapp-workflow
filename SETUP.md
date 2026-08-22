@@ -163,23 +163,54 @@ go straight live with nothing to review.
 ### On GitHub (Web)
 
 1. Go to your repo → **Settings** → **Branches** (left sidebar)
-2. Under "Branch protection rules," click **Add rule**
-3. **Branch name pattern:** Enter `main`
-4. Check **"Require a pull request before merging"**
-5. Leave **"Require approvals"** unchecked (see below)
-6. Check **"Do not allow bypassing the above settings"** at the bottom
-7. Click **Create**
+2. Click the green **Add branch ruleset** button
+   - There's also an "Add classic branch protection rule" link next to it. That's the older system —
+     use the ruleset button. (If your GitHub only offers the classic one, see the fallback below.)
+3. **Ruleset Name:** `protect main` (any name works)
+4. **Enforcement status:** change it to **Active**
+   - **This is the one to get right.** It starts as *Disabled*, and a disabled ruleset looks
+     completely set up while doing nothing at all.
+5. **Bypass list:** leave it empty — that's what makes the rule apply to everyone, you included
+6. **Target branches** → **Add target** → **Include default branch**
+7. Under **Branch rules**, check **Require a pull request before merging**
+   - Set **Required approvals** to **0** (see below)
+8. Click **Create**
 
 You can still merge your own pull requests — no approval is needed, so nothing blocks you. What
 this stops is anything being pushed straight to `main` without a pull request, including by you.
 
-**Don't check "Require approvals" while you're working solo.** GitHub doesn't allow anyone to
-approve their own pull request, so a 1-approval requirement on a one-person project is a rule
-nobody can satisfy — and combined with step 6 above, you'd have to come back into these settings
-to merge anything at all. Turn it on only once someone else is actually reviewing your work.
+**Leave Required approvals at 0 while you're working solo.** GitHub doesn't let anyone approve their
+own pull request, so requiring one approval on a one-person project is a rule nobody can satisfy —
+and with an empty bypass list you'd have to come back and edit the ruleset to merge anything. Raise
+it only once someone else is actually reviewing your work.
 
 This also applies to Claude — after this, it can't push straight to your live site either, which is
 exactly what you want. Every change it makes comes to you as a preview link first.
+
+**Verify it's on:** the ruleset should be listed as **Active**. If it says Disabled, open it and
+change Enforcement status.
+
+<details>
+<summary>If your GitHub only shows "Add classic branch protection rule"</summary>
+
+1. Click **Add classic branch protection rule**
+2. **Branch name pattern:** `main`
+3. Check **Require a pull request before merging**
+4. Leave **Require approvals** unchecked
+5. Check **Do not allow bypassing the above settings** near the bottom — classic rules exempt repo
+   admins by default, and this is what closes that
+6. Click **Create**
+
+</details>
+
+<details>
+<summary>The options are greyed out or missing</summary>
+
+Branch protection on **private** repos needs a paid GitHub plan. On the free plan, either make the
+repo public (Settings → General → bottom → Change visibility) or skip this step — in which case tell
+Claude, so it knows to keep using branches and PRs by convention rather than relying on the rule.
+
+</details>
 
 ## What the Build Loop Looks Like
 

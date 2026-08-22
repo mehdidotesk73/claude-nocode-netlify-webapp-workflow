@@ -110,6 +110,16 @@ Recovery is easy but should happen immediately: **Project configuration → Chan
 
 Under Settings → Pages, the Source dropdown defaults to "Deploy from a branch". That's wrong for this project — it publishes the repo's raw source files, so visitors get the unbuilt `index.html` with a bare `<div id="app">` and no bundle. The project builds itself in `.github/workflows/deploy.yml`, so Source must be **GitHub Actions**. The failure is confusing because the deploy "succeeds" and the URL loads; it's just a blank page.
 
+### Branch Rulesets Replaced Classic Protection, and Default to Disabled
+
+GitHub's Settings → Branches page now leads with **Add branch ruleset** and demotes **Add classic branch protection rule** to a secondary link. Instructions written against the classic flow ("Add rule" → "Branch name pattern") no longer match what the user sees.
+
+Rulesets are the better target anyway: the bypass list starts **empty**, so the rule applies to repo admins by default — the thing classic protection gets wrong and needs an easily-missed "Do not allow bypassing the above settings" checkbox to fix.
+
+But rulesets have their own trap: **Enforcement status defaults to Disabled**. A ruleset can be fully configured, listed on the page, and enforcing nothing. That's the same silent-success failure as the GitHub Pages source setting — it looks done, and only reveals itself much later when something that should have been blocked isn't. Always have the user confirm the ruleset shows as **Active**.
+
+Also: branch protection on private repos requires a paid plan. If the controls are greyed out, that's why — make the repo public or proceed by convention, but say which.
+
 ### Branch Protection: "Require Approvals" Is a Trap for Solo Projects
 
 GitHub does not let anyone approve their own pull request — on your own PR, "Approve" is greyed out and only "Comment" is available. So "Require approvals: 1" on a one-person project is a rule that cannot be satisfied.

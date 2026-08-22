@@ -338,13 +338,21 @@ that it didn't happen. Every guided step follows this shape:
     preview link, and the user can't see or test anything before it's live — the entire review loop
     this template is built around silently stops existing.
 
-    Settings: **Require a pull request before merging** ✅, **Do not allow bypassing the above
-    settings** ✅, **Require approvals** ❌ (they can't approve their own PRs — see SETUP.md Step 4).
+    Use a **branch ruleset** (GitHub's current system — the green "Add branch ruleset" button),
+    not the classic rule beside it. Settings: **Enforcement status: Active**, **bypass list empty**,
+    target **default branch**, **Require a pull request before merging** ✅ with **Required
+    approvals: 0** (they can't approve their own PRs — see SETUP.md Step 4).
 
-    The second checkbox is the one that matters here: it applies the rule to repo admins, which
-    includes **you**. After this, your own pushes to `main` are rejected — that's the point. It
-    converts "always work on a branch" from something you have to keep remembering into something
-    the repo enforces.
+    Two things to watch. Enforcement status starts at **Disabled**, so a ruleset can be created and
+    quietly do nothing — have them confirm it lists as Active. And the empty bypass list is what
+    applies the rule to repo admins, which includes **you**: after this your own pushes to `main`
+    are rejected, which is the point. It converts "always work on a branch" from something you have
+    to keep remembering into something the repo enforces.
+
+    If their GitHub only offers the classic rule, that's fine — it needs **Do not allow bypassing
+    the above settings** checked to get the same effect. If the options are unavailable at all,
+    the repo is private on a free plan: offer making it public, or proceed with branches and PRs by
+    convention and say plainly that nothing is enforcing it.
 
 ### Step 7: Ready to build
 
