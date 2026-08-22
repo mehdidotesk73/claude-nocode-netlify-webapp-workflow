@@ -85,11 +85,17 @@ You now land on a **"Review configuration"** page. Most of it is already filled 
 Netlify read the build settings out of your project. There is **one empty field you must fill in**:
 
 4. **Project name** — type your site name here (Claude will tell you what it should be, e.g.
-   `grocery-assistant`).
+   `grocery-assistant-mehdi`).
 
    **Don't leave this blank.** Netlify generates a random name if you do, and you end up with a URL
-   like `dreamy-yeot-7cce7c.netlify.app` instead of `grocery-assistant.netlify.app`. It's harmless
-   but confusing, and every preview link you get from then on carries the random name too.
+   like `dreamy-yeot-7cce7c.netlify.app` instead of your own. It's harmless but confusing, and every
+   preview link you get from then on carries the random name too.
+
+   **If Netlify says the name is already taken**, that's normal and nothing to do with your project.
+   Every Netlify site in the world shares one pool of names, so short obvious ones went years ago.
+   Ask Claude for another — or just add something to the end: your name, your initials, `-app`.
+   `grocery-assistant-mehdi` will be free where `grocery-assistant` isn't. Tell Claude which name
+   you end up with, since it needs to update your project's links to match.
 
 5. **Leave everything under "Build settings" exactly as it is.** It should already read:
    - Branch to deploy: `main`

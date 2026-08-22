@@ -70,6 +70,14 @@ So: ask one open question, parse it, then **show the user what you understood an
 
 The narrower rule this sits under: a question is only worth asking if you can't infer the answer *and* it changes what you'd build. Anything else is better resolved by building the obvious reading and letting them react to it on their phone.
 
+### Netlify Site Names Are a Global Namespace
+
+Every Netlify site lives under `*.netlify.app`, one pool shared by every user on the platform. Short obvious names — `grocery-assistant`, `weather-tracker`, `budget` — were claimed years ago by strangers. Proposing a plain name during intake and assuming it'll still be there at deploy time is wishful.
+
+Two things follow. Propose a name that's plausibly free in the first place (append the user's username, initials, or a word) and keep a couple of alternates in reserve, so a rejection is a ten-second retry rather than the user staring at a red error inventing names. And tell them up front that it might be taken — a warned-about outcome is a queue for a nice URL; an unwarned one reads as another thing they did wrong.
+
+The subtler failure is **doc rot**. The name is chosen during intake and written into the scaffold — the README's URLs, the deploy-preview pattern in the project's `CLAUDE.md` — but it isn't tested against reality until Netlify setup, several steps later. If the name changes there and the docs aren't updated, the project's own documentation points at a site that belongs to someone else. Any value committed to disk before it's validated externally needs a write-back step once the real value is known.
+
 ### Netlify's Project Name Field Is Blank and Silently Generates a Random Name
 
 Netlify's "Review configuration" page auto-fills the build settings from `netlify.toml` — branch, build command, publish directory all correct — but leaves **Project name** empty. Blank means Netlify invents one: `dreamy-yeot-7cce7c`. It deploys fine, so nothing signals a mistake, but that string becomes the production URL *and* the host in every deploy-preview link from then on.

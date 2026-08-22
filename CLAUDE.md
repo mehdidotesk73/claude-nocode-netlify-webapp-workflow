@@ -120,8 +120,12 @@ that it didn't happen. Every guided step follows this shape:
      state this outright; propose a structure from the features they listed.
    - `<REF:external-deps>` — usually "none, self-contained" unless they mentioned live data.
      Don't ask about APIs; someone who needs one will have said so.
-   - `<REF:Netlify-app-name>` — a short, hyphenated name derived from the app. Only the web address
-     depends on it, and it can change later.
+   - `<REF:Netlify-app-name>` — a short, hyphenated name derived from the app. **Every Netlify site
+     in the world shares one namespace**, so an obvious name like `grocery-assistant` or
+     `weather-tracker` is probably already taken by a stranger. Assume the plain name is gone and
+     propose something with a distinguishing element: their GitHub username (`grocery-assistant-mehdi`),
+     initials, or an extra word (`my-grocery-assistant`, `grocery-assistant-app`). Then **prepare
+     two more candidates** to have ready when they reach Netlify.
 
 3. **Reflect it back and confirm before building anything.** Show what you understood in plain
    language — no `<REF:*>` labels, no jargon — then gate on `AskUserQuestion`:
@@ -129,8 +133,9 @@ that it didn't happen. Every guided step follows this shape:
    - **"Close, but something's off"** (free text for the correction)
 
    Keep the summary short enough to check at a glance. State the site name and the address it
-   produces (`https://grocery-assistant.netlify.app`) so they can object to it now rather than
-   after it's live.
+   produces (`https://grocery-assistant-mehdi.netlify.app`), and say plainly that the name might
+   already be taken by someone else's site — you'll have alternatives ready if so. Better they hear
+   that now than read it as a failure when it happens.
 
 4. **Ask targeted follow-ups only for genuine gaps** — something you couldn't infer and that
    changes what you'd build. One or two at most, in plain language, and only after the summary.
@@ -286,6 +291,22 @@ that it didn't happen. Every guided step follows this shape:
      Getting this wrong isn't fatal but it poisons every link afterwards — the random name shows up
      in the production URL and in every deploy-preview URL. If they report a random name, have them
      rename it under **Project configuration → Change project name** before continuing.
+
+     **Expect the name to be taken, and have alternatives ready.** All Netlify sites share one
+     global namespace, so Netlify may reject the name with something like *"This project name is
+     already taken"*. This is common and says nothing about their project — someone else simply got
+     there first. Don't leave them staring at a red error trying to invent a name:
+     - Offer the two alternates you prepared in Step 1, plus the pattern for making more (append
+       their username, initials, or a word)
+     - Have them try one; repeat if needed. It's usually one or two attempts.
+     - Keep it light — this is a queue for a nice URL, not a mistake they made.
+
+     **When the final name differs from the one in the docs, fix the docs before moving on.** The
+     scaffold was committed with `<REF:Netlify-app-name>` baked in — the README's preview/production
+     URLs and the deploy-preview pattern in their `CLAUDE.md`. If those still name a site that isn't
+     theirs, every link the docs promise points somewhere wrong, possibly at a stranger's site.
+     Update them in the clone and push before continuing, and use the real name in every URL you
+     hand them afterwards.
 
    Why the order matters: Netlify's GitHub grant is fixed when it's authorized, and their project
    was created minutes ago. Granting access first turns a confusing empty search result into a
