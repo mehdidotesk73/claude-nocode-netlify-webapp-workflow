@@ -30,6 +30,16 @@ Logic lives in `src/lib/` as plain functions over already-fetched arrays. They r
 
 `vite-plugin-pwa` generates `manifest.webmanifest` and injects its own `<link rel="manifest">`. A second static `public/manifest.json` linked from `index.html` produces two competing manifest links in the built HTML, and the static one wins in some browsers — pointing at icons the build never processed. Define the manifest once, in the `VitePWA({ manifest: ... })` block.
 
+### The Most Dangerous Step Is Where the Wrong Action Looks Right
+
+Netlify's import flow now routes through **Add new project** (not "Add new site"), and the page it lands on is dominated by an AI agent box — *"Describe your idea. The agent codes and configures for you"* — with starter prompts and a "Low on credits" banner. The actual import path is below a **"Bringing your own code?"** divider.
+
+A user who has just been told "now import your project" sees a box inviting them to describe what they want. Typing their app idea there is the *reasonable* reading of the instruction, and it produces a completely unrelated Netlify-generated project while burning agent credits. Nothing about it looks like an error.
+
+This is a different failure class from the ones already recorded here. Those were silent-success problems — a disabled ruleset, a blank project-name field, a Pages source setting — where the user does nothing wrong and the system fails quietly. This one is a *plausible wrong turn*: a competing call-to-action sitting directly on the path, more prominent than the correct one, that a careful reader can walk into precisely because they're following instructions. Steps like that need the wrong action named and warned off explicitly, not just the right action described — describing only the right path leaves the user to resolve the ambiguity, and the wrong option is the one with the bigger button.
+
+Second lesson, cheaper: **third-party UI labels drift, so pair the exact labels with the stable shape.** The instructions had said "Add new site → Import an existing project", neither of which exists on that page anymore. Exact labels are still right (rule 2 of the guided-step conventions), but they now carry a fallback describing the invariant — *start a new project → skip anything offering to build it for you → import from GitHub* — so a future label change degrades into mild vagueness instead of a dead end.
+
 ### Netlify's "No repositories found" on a Freshly Created Repo
 
 Netlify installs as a GitHub App with a repository-access grant, and that grant is fixed at authorization time. A repo created afterwards isn't in it, so Netlify's import screen shows "No repositories found" — with the search box holding exactly the name you typed and nothing beneath it. It reads like the repo was never created, or was created somewhere else.

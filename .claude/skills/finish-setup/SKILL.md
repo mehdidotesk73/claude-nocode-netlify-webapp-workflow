@@ -122,7 +122,21 @@ button they see:
 
 Wait for confirmation that Part B saved.
 
-**Part C — import the project.** Now send them to **Add new site → Import an existing project**.
+**Part C — import the project.** Three clicks, and the middle one has a trap in it:
+
+1. On Netlify's projects page, click the green **Add new project** button.
+2. **They now land on a page dominated by an AI agent box** — "Describe your idea. The agent codes
+   and configures for you," with starter prompts like *Marketing site* and *Habit tracker*. **Tell
+   them to ignore it and scroll down.** This is the one place in setup where the obvious-looking
+   action is the wrong one: a user told to "import your project" sees a box asking them to describe
+   what they want and reasonably types their app idea into it. That builds an unrelated Netlify-
+   generated project and burns their agent credits — the page also shows a "Low on credits" banner
+   that makes it look like something is wrong when nothing is.
+3. Below a **"Bringing your own code?"** divider, under **Import a Git repository**, click
+   **GitHub**. Then pick the project from the repo list.
+
+If the labels have shifted again, the shape is stable: *start a new project → skip anything
+offering to build it for you → import from GitHub*.
 
 - **Give them the Project name to type** — this is the site name from intake. The "Review
   configuration" page leaves **Project name** blank, and blank means Netlify generates something
@@ -137,6 +151,10 @@ Wait for confirmation that Part B saved.
   Fix it now, not later, since the name appears in every preview link: in Netlify, open the project
   → **Project configuration** (older accounts: **Site configuration**) → **Change project name** →
   enter the intended name → Save. URL becomes `https://<name>.netlify.app`.
+
+Then the deploy button at the bottom — labelled **Deploy `<name>`** or **Deploy site** depending on
+the account. Tell them what to expect after clicking: a build that runs for a minute or two, then a
+green **Published** label and the URL `https://<name>.netlify.app`.
 
 **If they still hit "No repositories found"** after Part B, the grant didn't save or was applied to
 a different GitHub account than the one owning the project:
