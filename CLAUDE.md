@@ -258,43 +258,23 @@ that it didn't happen. Every guided step follows this shape:
 
    Tick these off as they're completed. If the session ends before setup finishes, the next session
    picks up from this list.
-### Step 5: Hand off to a fresh session — this is what makes skills real
+### Step 5: Reload skills, then hand off to `finish-setup`
 
 12. **The scaffold you just pushed contains `.claude/skills/`, but *this* session started before
-    those files existed.** Skills are discovered once at session start; nothing rescans them mid-
-    conversation — not `/clear`, not `/compact`, nothing. So `finish-setup` and `ship-feature` are
-    not triggerable in this session, full stop; the only way to use them here is to read the file
-    and follow it by hand. That's exactly the "remember to do it" pattern the whole point of skills
-    was to get away from: without a genuinely new session, `ship-feature` would need to be manually
-    re-read on every future request in this conversation for the rest of its life — a rule to
-    remember, not something enforced. **Recommend a fresh session, and make it the default, not a
-    fallback for when something goes wrong.**
+    those files existed on disk, so they aren't invocable yet.** Run **`/reload-skills`** — it
+    re-scans skill directories mid-session and makes newly-added `SKILL.md` files invocable without
+    starting over. This is a command *you* run, not something to ask the user to do.
 
-    Tell them plainly, in non-technical terms:
+    After running it, invoke the **`finish-setup`** skill. It covers Netlify, GitHub Pages, and
+    branch protection, driven by the setup checklist in `docs/TODO.md` so an interrupted session can
+    resume cleanly, and it ends by handing off to `ship-feature` for the first feature.
 
-    > The last piece of setup is making sure I can follow this project's own checklists properly.
-    > The easiest way is to start a new chat pointed at your project — takes ten seconds and nothing
-    > is lost, I'll pick up exactly where we are.
-    >
-    > Click **+New**, then choose **`<name>`** as the repository (branch: `main`). Paste this in to
-    > pick up right where we left off:
-    >
-    > `Continue setup for <name> — connect Netlify, enable GitHub Pages, and protect main.`
+    If `/reload-skills` isn't available (older Claude Code version) or `finish-setup` still isn't
+    invocable afterward, fall back to reading `.claude/skills/finish-setup/SKILL.md` directly and
+    following it by hand — and mention to the user that later features in this same conversation may
+    need the same manual read, since `ship-feature` won't auto-trigger either.
 
-    Gate on `AskUserQuestion`:
-    - **"Done — I'm in a new session on `<name>` and pasted that in"**
-    - **"I'd rather keep going in this chat"** — honor it, but say plainly that `ship-feature` may
-      not auto-trigger later in this same conversation, so re-check `.claude/skills/` by hand if a
-      future change in this chat skips the branch/PR/preview-link loop.
-    - **"I don't see how to do that"** — screenshot, then walk them through it directly.
-
-    If they continue here: read `.claude/skills/finish-setup/SKILL.md` and follow it directly. It
-    covers Netlify, GitHub Pages, and branch protection, driven by the setup checklist in
-    `docs/TODO.md` so an interrupted session can resume cleanly, and it ends by handing off to
-    `ship-feature` for the first feature.
-
-    Either way, your bootstrap job is done here — the new session (or this one, if they chose to
-    stay) picks it up from `finish-setup`.
+    Your bootstrap job is done here — `finish-setup` takes over.
 
 ## What this is
 
