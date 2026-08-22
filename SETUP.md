@@ -154,10 +154,11 @@ This is your permanent public link, updated whenever changes are merged.
 **Verify:** Go to the **Actions** tab. After the next push to `main` you'll see a "Deploy to GitHub
 Pages" run; when it goes green your site is live at `https://your-username.github.io/your-repo-name/`.
 
-## Step 4: Branch Protection (Optional)
+## Step 4: Protect your live site
 
-Prevents accidental direct pushes to `main`, forcing changes through a pull request. Useful if
-others will work on the project; skippable if it's just you.
+**Do this one too.** It's what makes every change arrive as a pull request — which is what gives you
+a preview link to check on your phone before the change reaches your live site. Skip it and changes
+go straight live with nothing to review.
 
 ### On GitHub (Web)
 
@@ -177,7 +178,8 @@ approve their own pull request, so a 1-approval requirement on a one-person proj
 nobody can satisfy — and combined with step 6 above, you'd have to come back into these settings
 to merge anything at all. Turn it on only once someone else is actually reviewing your work.
 
-Skipping this step entirely is fine too — it's a safety rail, not a requirement.
+This also applies to Claude — after this, it can't push straight to your live site either, which is
+exactly what you want. Every change it makes comes to you as a preview link first.
 
 ## What the Build Loop Looks Like
 

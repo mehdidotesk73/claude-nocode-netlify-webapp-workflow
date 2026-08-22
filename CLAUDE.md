@@ -246,6 +246,7 @@ that it didn't happen. Every guided step follows this shape:
 
    - [ ] Connect Netlify (SETUP.md Step 2) — required; the only way to see the app
    - [ ] Enable GitHub Pages (SETUP.md Step 3) — production link
+   - [ ] Protect `main` (SETUP.md Step 4) — required; makes changes arrive as PRs with previews
    - [ ] First feature: <their first described feature>
    ```
 
@@ -329,9 +330,35 @@ that it didn't happen. Every guided step follows this shape:
     features until they confirm the page loads — a broken deploy discovered now is minutes of work,
     discovered later it's a whole feature built blind.
 
-### Step 6: Ready to build
+### Step 6: Protect `main` — required, and do it before the first feature
 
-14. **Ready to build** — "Your project is all set, and you've got a live link. Now tell me what your app should look like. You can describe it in words, show me a screenshot, or tell me what you want users to be able to do."
+14. **Walk them through branch protection (SETUP.md Step 4) as part of setup, not as an optional
+    extra.** This is what makes every change arrive as a pull request, and a pull request is what
+    produces a Netlify deploy preview. Without it, work goes straight onto `main`, there's no
+    preview link, and the user can't see or test anything before it's live — the entire review loop
+    this template is built around silently stops existing.
+
+    Settings: **Require a pull request before merging** ✅, **Do not allow bypassing the above
+    settings** ✅, **Require approvals** ❌ (they can't approve their own PRs — see SETUP.md Step 4).
+
+    The second checkbox is the one that matters here: it applies the rule to repo admins, which
+    includes **you**. After this, your own pushes to `main` are rejected — that's the point. It
+    converts "always work on a branch" from something you have to keep remembering into something
+    the repo enforces.
+
+### Step 7: Ready to build
+
+15. **Ready to build** — "Your project is all set, and you've got a live link. Now tell me what your
+    app should look like. You can describe it in words, show me a screenshot, or tell me what you
+    want users to be able to do."
+
+16. **Build the first feature on a branch, exactly like every feature after it.** Setup is over;
+    from here you follow the development lifecycle below — branch, commit, push, PR, preview link,
+    they merge. Do not commit the first feature to `main` because setup happened to leave you there.
+
+    The first feature is where the loop gets established, so make it explicit: tell them you're
+    working on a branch, hand them the deploy-preview URL when it's green, let them try it on their
+    phone, and only then give them the merge link.
 
 ## What this is
 

@@ -70,6 +70,16 @@ So: ask one open question, parse it, then **show the user what you understood an
 
 The narrower rule this sits under: a question is only worth asking if you can't infer the answer *and* it changes what you'd build. Anything else is better resolved by building the obvious reading and letting them react to it on their phone.
 
+### Optional Branch Protection Silently Removed the Whole Review Loop
+
+Branch protection was written as "Step 4 (Optional)" and never appeared in the setup sequence at all, so it got skipped. Setup ended with the session sitting on `main`, and the first feature was committed straight there.
+
+The damage isn't to `main` — it's that **no pull request means no Netlify deploy preview**. The user had no link to open, nothing to try on their phone, and no chance to react before the change was live. The template's entire premise is that its users can't run the app locally and review through preview links instead; skipping this quietly deletes the only feedback channel they have.
+
+So it's required setup now, and it sits *before* the first feature for a reason. With **Require a pull request** + **Do not allow bypassing** (approvals off), the rule applies to repo admins, which includes Claude — pushes to `main` are rejected outright. Same lesson as switching out of the old repo: make the unsafe path unreachable rather than repeatedly forbidden. "Always work on a branch" was already written in the lifecycle and was still not followed, because nothing enforced it and setup had left the session on `main`.
+
+Also worth an explicit handoff at the end of setup: the first feature is the moment the loop gets established, and "setup is over, now follow the lifecycle" is not obvious enough to leave implied.
+
 ### Don't Schedule a Check-In for a Two-Minute Deploy
 
 Waiting on a GitHub Pages build by scheduling a background check-in produced the worst available shape: the turn ended on "I'll check back in a couple of minutes", the conversation stalled, and the user — sitting right there — got bored and checked manually. The deploy had already succeeded. The automation added latency and dead air to something that takes ninety seconds.

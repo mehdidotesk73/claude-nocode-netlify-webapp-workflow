@@ -12,6 +12,8 @@ One-time setup — tick these off as they're done:
 
 - [ ] Connect Netlify (SETUP.md Step 2) — required; the only way to see the app on a phone
 - [ ] Enable GitHub Pages (SETUP.md Step 3) — production link (Source must be "GitHub Actions")
+- [ ] Protect `main` (SETUP.md Step 4) — required; this is what makes changes arrive as PRs with
+      preview links, instead of going straight to the live site
 
 (Then: what are you working on next?)
 
