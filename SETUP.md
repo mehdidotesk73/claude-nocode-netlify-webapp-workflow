@@ -42,23 +42,36 @@ empty list with your project nowhere in it.
 2. Click **Sign up** and choose **Sign up with GitHub** (fastest, and it links the two accounts)
 3. Approve the permissions screen GitHub shows you
 
-Already have a Netlify account? Just log in and move on.
+Already have a Netlify account? Just log in and move on to Part B.
 
 ### Part B — Give Netlify access to your project
 
-Netlify can only see projects you've explicitly given it access to, and that list is set once —
-a project created later isn't added automatically. Yours was just created, so do this now.
+Netlify can only see projects you've explicitly given it access to. That list is set when you
+connect it and **doesn't update on its own** — a project created later isn't added. Yours was
+created a few minutes ago, so it needs adding now, before you go looking for it on Netlify.
 
 1. Go to **https://github.com/apps/netlify**
-2. Look at the button on the right:
-   - It says **Install** → you haven't connected Netlify to GitHub yet. Click it.
-   - It says **Configure** → Netlify is already connected. Click it.
-3. If asked which account, choose your own username
-4. Under **Repository access**, choose **All repositories**
-   - This is the option that saves you from repeating this step for every future project.
-   - Prefer to be selective? Choose **Only select repositories** → **Select repositories** → pick
-     your project by name. Just remember you'll come back here each time you start a new one.
-5. Click **Save** (or **Install**). GitHub may ask for your password.
+2. Look at the button on the right — it tells you which situation you're in:
+
+**If it says "Install"** — you've never connected Netlify to GitHub.
+
+3. Click **Install**
+4. If asked which account, choose your own username
+5. Choose **All repositories**, then click **Install**
+
+**If it says "Configure"** — Netlify is already connected from a previous project. This is the case
+that catches people out, because GitHub won't prompt you about it on its own.
+
+3. Click **Configure**
+4. Look at **Repository access**. You'll almost certainly see **Only select repositories** chosen,
+   with the project(s) you connected before listed underneath.
+5. Add your new project — two ways, pick either:
+   - **Simplest:** switch to **All repositories**. Every future project then appears on Netlify
+     automatically and you never revisit this page.
+   - **Staying selective:** click the **Select repositories** dropdown and choose your new project
+     by name. **This adds to the list — your existing project stays connected.** Don't remove
+     anything that's already there, or you'll break the site that depends on it.
+6. Click **Save**. GitHub may ask for your password.
 
 Tell Claude when this is done, and mention which button you saw — Install or Configure.
 

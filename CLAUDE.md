@@ -172,13 +172,23 @@ Answer in plain language — Claude summarizes and auto-fills the references abo
    Give one part, wait for them to confirm, then give the next. A wall of seven steps spanning two
    websites is where people lose their place.
 
-   - **Part A — Netlify account.** Sign up with GitHub. Wait for "done".
+   - **Part A — Netlify account.** Sign up with GitHub. If they already have one, skip straight to
+     Part B; don't make them re-do signup.
    - **Part B — repository access. This is the part that prevents the failure, so never skip or
-     reorder it.** Send them to https://github.com/apps/netlify and have them set **Repository
-     access** to **All repositories**, then Save. Ask them to tell you whether the button read
-     **Install** or **Configure** — that tells you whether Netlify was already connected with an
-     older, narrower grant, which is exactly the case where the import screen would otherwise come
-     up empty. Wait for confirmation before moving on.
+     reorder it.** Send them to https://github.com/apps/netlify **before** they go looking for the
+     project on Netlify, and ask which button they see:
+     - **Install** — first-time connection. Have them choose **All repositories** and install.
+     - **Configure** — Netlify is already connected from an earlier project, almost certainly with
+       **Only select repositories** and a short list that can't include one created minutes ago.
+       This is the case that produces the empty import screen, and GitHub gives them no prompt
+       about it. Have them either switch to **All repositories**, or open the **Select
+       repositories** dropdown and add the new project.
+     - When they stay selective, tell them explicitly that adding is additive and **not to remove
+       the project already listed** — that one is feeding an existing site, and de-selecting it
+       breaks that site's deploys. This is a destructive misstep on a screen they're visiting for
+       an unrelated reason, so say it before they click, not after.
+
+     Wait for them to confirm Part B is saved before moving on.
    - **Part C — import the project.** Only now send them to Netlify's "Add new site → Import an
      existing project". With Part B done, their project is in the list.
 
