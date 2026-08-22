@@ -196,6 +196,19 @@ The `build` check comes from `.github/workflows/ci.yml`, which builds every PR. 
 non-compiling change reaching `main` — worth more here than usual, since the user can't run the app
 locally to notice.
 
+**Expect `build` to be missing from the checks list, and warn them before they look.** The dropdown
+only autocompletes checks GitHub has already seen run, and at this point in setup the project has
+never had a PR — the scaffold went straight to `main` — so `ci.yml` has never fired. The list will
+say "No checks have been added" and the search will find nothing. Nothing is wrong.
+
+- Have them **type `build` into the search box anyway** — a ruleset accepts a check name that
+  hasn't reported yet, and it starts matching on their first PR.
+- If typing it offers nothing selectable, fall back to making the check exist: **Actions** tab →
+  **CI** → **Run workflow** (`ci.yml` declares `workflow_dispatch` for exactly this), then return
+  to the ruleset and search again.
+- If `build` still doesn't appear after a real PR has run, the job name differs from what this
+  skill assumes — read the actual name off the PR's checks and use that.
+
 **If their GitHub only offers "Add classic branch protection rule"** (older UI, no ruleset button):
 1. Click **Add classic branch protection rule**
 2. **Branch name pattern:** `main`

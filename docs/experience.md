@@ -30,6 +30,16 @@ Logic lives in `src/lib/` as plain functions over already-fetched arrays. They r
 
 `vite-plugin-pwa` generates `manifest.webmanifest` and injects its own `<link rel="manifest">`. A second static `public/manifest.json` linked from `index.html` produces two competing manifest links in the built HTML, and the static one wins in some browsers — pointing at icons the build never processed. Define the manifest once, in the `VitePWA({ manifest: ... })` block.
 
+### The `build` Check Won't Exist Yet When You Configure the Ruleset
+
+GitHub's "Add checks" dropdown only autocompletes checks it has already seen run in that repo. At the point branch protection is configured, the project has never had a PR — the scaffold went straight to `main` — so `ci.yml` (which triggers on `pull_request`) has never fired. The list shows "No checks have been added" and searching finds nothing.
+
+The fix is to type `build` in anyway: rulesets accept a check name that hasn't reported yet and start matching on the first PR. Backup, if the UI won't take a free-typed name: **Actions → CI → Run workflow** (`ci.yml` declares `workflow_dispatch` for exactly this) to make the check exist, then search again.
+
+**Worth warning about before the user looks**, not after they report it. An empty list at the exact moment they're told "add the check named `build`" reads as *the thing I was told to find isn't there*, which is the same shape as the Netlify "No repositories found" trap — and lands on someone already several unfamiliar screens deep.
+
+**How this was missed is the more useful lesson.** This guidance existed in `SETUP.md` and was dropped when that file was deleted. That deletion was done carefully — every section was classified as duplicate, unique-fold-it-in, or drop — but the scan keyed on the `<details>` fallback blocks, and this one was a plain bolded paragraph in the step's body. Structure-based review misses content that doesn't match the structure you're scanning for. The check that would have caught it: diff the deleted file's *claims* against the surviving text mechanically, rather than re-reading and judging. Running that afterwards over every bolded passage in the old file surfaced this immediately, and confirmed the other 83 were genuinely covered.
+
 ### The Most Dangerous Step Is Where the Wrong Action Looks Right
 
 Netlify's import flow now routes through **Add new project** (not "Add new site"), and the page it lands on is dominated by an AI agent box — *"Describe your idea. The agent codes and configures for you"* — with starter prompts and a "Low on credits" banner. The actual import path is below a **"Bringing your own code?"** divider.
