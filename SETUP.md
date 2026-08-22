@@ -80,11 +80,45 @@ Tell Claude when this is done, and mention which button you saw — Install or C
 1. Back on https://netlify.com, click **Add new site** → **Import an existing project**
 2. Click **GitHub**
 3. Your project is in the list — select it
-4. Leave the build settings exactly as they are — Netlify reads them from the project already
-5. Click **Deploy site**
 
-**Verify:** Netlify builds for a minute, then shows a URL like `https://your-site-name.netlify.app/`.
-Open it on your phone. You should see the app's header and footer. Tell Claude what you see.
+You now land on a **"Review configuration"** page. Most of it is already filled in correctly —
+Netlify read the build settings out of your project. There is **one empty field you must fill in**:
+
+4. **Project name** — type your site name here (Claude will tell you what it should be, e.g.
+   `grocery-assistant`).
+
+   **Don't leave this blank.** Netlify generates a random name if you do, and you end up with a URL
+   like `dreamy-yeot-7cce7c.netlify.app` instead of `grocery-assistant.netlify.app`. It's harmless
+   but confusing, and every preview link you get from then on carries the random name too.
+
+5. **Leave everything under "Build settings" exactly as it is.** It should already read:
+   - Branch to deploy: `main`
+   - Build command: `npm run build`
+   - Publish directory: `dist`
+
+   If those are filled in, Netlify found your project's config correctly. Don't change them.
+
+6. Click **Deploy site**
+
+**What you should see:** Netlify builds for a minute or two, then the project page shows a green
+**Published** label and a URL — `https://grocery-assistant.netlify.app` (your name, not the
+example). Open it on your phone. You should see the app's header and footer.
+
+Tell Claude the URL and what you see on the page.
+
+<details>
+<summary>Got a random name like "dreamy-yeot-7cce7c"?</summary>
+
+The Project name field was left blank. Easy to fix, and it changes your URL:
+
+1. In Netlify, open your project
+2. Click **Project configuration** (or **Site configuration** in older accounts)
+3. Find **Change project name** (or **Change site name**) and enter your intended name
+4. Save — your URL becomes `https://your-name.netlify.app`
+
+Do this now rather than later; the name appears in every preview link.
+
+</details>
 
 <details>
 <summary>Still says "No repositories found"?</summary>
@@ -98,8 +132,6 @@ account than the one that owns your project.
 4. Return to Netlify and **refresh the page** — the list doesn't always update on its own
 
 </details>
-
-You can rename the site under **Site configuration → Change site name** if you want a tidier URL.
 
 ## Step 3: Enable GitHub Pages for Production
 

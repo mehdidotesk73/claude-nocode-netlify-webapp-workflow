@@ -50,6 +50,18 @@ The Configure case needs one extra guardrail. The user arrives at a screen listi
 
 Second-order lesson: when a setup step spans two websites, split it into parts and gate each one on the user confirming, rather than pasting the whole sequence. Someone bouncing between github.com and netlify.com loses their place in a seven-step list.
 
+### Netlify's Project Name Field Is Blank and Silently Generates a Random Name
+
+Netlify's "Review configuration" page auto-fills the build settings from `netlify.toml` — branch, build command, publish directory all correct — but leaves **Project name** empty. Blank means Netlify invents one: `dreamy-yeot-7cce7c`. It deploys fine, so nothing signals a mistake, but that string becomes the production URL *and* the host in every deploy-preview link from then on.
+
+Two lessons, and the second is the more general one:
+
+**"Leave the settings as they are" is unsafe wording on a page with a blank required field.** The build settings genuinely should be left alone; the field directly above them must be filled. An instruction that covers the page as a whole gets the empty field wrong.
+
+**A value collected during setup has to be traced to where it's used.** The site name is question 4 of the intake, stored as `<REF:Netlify-app-name>` — and it was being collected, written into the docs, and then never handed to the user at the one moment they needed to type it. Worth checking, for each thing the intake asks for, that something downstream actually consumes it; an unused answer is a question that shouldn't have been asked, and here it was worse than unused because the rest of the workflow assumed it had been applied.
+
+Recovery is easy but should happen immediately: **Project configuration → Change project name**.
+
 ### GitHub Pages Source Must Be "GitHub Actions"
 
 Under Settings → Pages, the Source dropdown defaults to "Deploy from a branch". That's wrong for this project — it publishes the repo's raw source files, so visitors get the unbuilt `index.html` with a bare `<div id="app">` and no bundle. The project builds itself in `.github/workflows/deploy.yml`, so Source must be **GitHub Actions**. The failure is confusing because the deploy "succeeds" and the URL loads; it's just a blank page.

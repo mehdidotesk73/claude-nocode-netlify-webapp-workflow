@@ -72,6 +72,34 @@ Answer in plain language — Claude summarizes and auto-fills the references abo
 
 **This is a NEW PROJECT workflow. Follow this EXACT order:**
 
+### How to give every guided step (applies throughout setup)
+
+Setup steps happen on websites you can't see. The user is your only sensor, so each step has to
+tell them exactly what to do, what they should end up with, and give them an easy way to report
+that it didn't happen. Every guided step follows this shape:
+
+1. **Say what they'll be looking at** — which site, which page, what it's called. "You'll land on a
+   page headed *Review configuration*."
+2. **Give exact values, never placeholders.** If a field needs `grocery-assistant`, write
+   `grocery-assistant`, not "your project name". Every value you already know — repo name,
+   description, project name, branch — you fill in for them. They should be copying, not deciding.
+3. **Name the field that needs their input, and the ones that don't.** "Leave the settings as they
+   are" is dangerous when one field on the page is blank and required; say which is which.
+4. **Describe the successful result concretely** — the URL they'll get, the label that turns green,
+   the text that appears. This is how they know it worked without understanding what happened.
+5. **Close with an `AskUserQuestion` confirmation gate.** Never move to the next step on silence or
+   a bare "done" — a user who did something slightly different will say "done" in good faith. Offer:
+   - **"Yes — <restate what they did and what they should now be seeing>"** — spelled out, so
+     selecting it is an actual claim about the result and not just "next". E.g. *"Yes — I clicked
+     Deploy site and the project page shows Published with the URL grocery-assistant.netlify.app."*
+   - **"It didn't work as expected"** — with the free-text box for what they saw instead.
+   - Add a third option when there's a known fork worth catching early, e.g. *"It worked but the
+     URL has a random name like dreamy-yeot-7cce7c."*
+
+   When they report a problem, diagnose from what they describe before sending them anywhere new.
+   Ask for a screenshot if their description is ambiguous — they can paste one straight into chat,
+   and it's usually faster than three rounds of questions.
+
 ### Step 1: Understand the project (ask the 4 questions first)
 
 1. **Greet the user** — "Great! I'll help you build a new webapp using this template. Let me ask a few questions to understand what you want to create."
@@ -80,9 +108,15 @@ Answer in plain language — Claude summarizes and auto-fills the references abo
    - "What is your app's purpose? (What problem does it solve? What does it help users do?)"
    - "How should the UI be organized? (e.g., tabs, pages, sections, dashboard layout)"
    - "What external data sources does it need? (e.g., APIs, databases, or none if self-contained)"
-   - "What should the Netlify site be called?" (e.g., my-awesome-app, weather-tracker, Note: this can change later)
-   
+   - "What should the Netlify site be called?" (e.g., my-awesome-app, weather-tracker — this
+     becomes their web address, `https://<name>.netlify.app`, and can be changed later)
+
    Provide examples from the References section to guide them.
+
+   **Their answer to question 4 is `<REF:Netlify-app-name>`, and you must actually use it** — it's
+   the Project name they type during Netlify setup (Step 4, Part C) and the host in every preview
+   URL you hand them. Collecting it and then not passing it through is how sites end up with names
+   like `dreamy-yeot-7cce7c`.
 
 ### Step 2: Walk them through creating the project home on GitHub
 
@@ -191,6 +225,18 @@ Answer in plain language — Claude summarizes and auto-fills the references abo
      Wait for them to confirm Part B is saved before moving on.
    - **Part C — import the project.** Only now send them to Netlify's "Add new site → Import an
      existing project". With Part B done, their project is in the list.
+
+     **Give them the Project name to type — this is `<REF:Netlify-app-name>`, the answer to
+     question 4.** The "Review configuration" page has a blank **Project name** field, and leaving
+     it blank makes Netlify generate a random name like `dreamy-yeot-7cce7c`. Don't say "leave the
+     settings as they are" without exempting this field: the build settings are correctly
+     auto-detected, but Project name is empty and needs their input. Tell them the exact string to
+     type and the URL it produces (`https://<name>.netlify.app`), then tell them to leave
+     everything under **Build settings** untouched.
+
+     Getting this wrong isn't fatal but it poisons every link afterwards — the random name shows up
+     in the production URL and in every deploy-preview URL. If they report a random name, have them
+     rename it under **Project configuration → Change project name** before continuing.
 
    Why the order matters: Netlify's GitHub grant is fixed when it's authorized, and their project
    was created minutes ago. Granting access first turns a confusing empty search result into a
