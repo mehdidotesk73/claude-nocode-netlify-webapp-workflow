@@ -30,6 +30,18 @@ Logic lives in `src/lib/` as plain functions over already-fetched arrays. They r
 
 `vite-plugin-pwa` generates `manifest.webmanifest` and injects its own `<link rel="manifest">`. A second static `public/manifest.json` linked from `index.html` produces two competing manifest links in the built HTML, and the static one wins in some browsers — pointing at icons the build never processed. Define the manifest once, in the `VitePWA({ manifest: ... })` block.
 
+### Mobile Autocapitalization Silently Breaks Exact-Match Identifiers
+
+Told to add a required status check named `build`, a user on iOS typed it into GitHub's search box and got `Build` — the keyboard capitalized the first letter, as mobile keyboards do by default in text fields. GitHub duly offered **+ Add Build · Any source**.
+
+Adding that would have been a full lockout. Check names match literally, so a rule requiring `Build` waits forever on a check reporting as `build`; combined with an empty bypass list, every PR the user ever opened would be unmergeable — on a ruleset that reads as correctly configured, Active, with all the right boxes ticked. Exactly the failure **Required approvals: 0** was chosen to prevent, arriving through a completely different door.
+
+Two things follow:
+
+**This audience types on phones, so any instruction to enter an identifier needs its casing stated.** "Type `build`" is insufficient; "type `build`, all lowercase — your phone will try to capitalize it" is the instruction. Applies to anything matched literally: check names, branch patterns, project names.
+
+**And the readback matters more than the instruction.** The user can follow "type `build`" perfectly and still end up with `Build`, because the corruption happens after they act, not during. That's what makes it different from a misread instruction — no amount of clarity in the telling prevents it. The only reliable catch is asking what's actually in the field before they commit, which is the same reason the confirmation gates restate the expected result rather than just asking "done?".
+
 ### The `build` Check Won't Exist Yet When You Configure the Ruleset
 
 GitHub's "Add checks" dropdown only autocompletes checks it has already seen run in that repo. At the point branch protection is configured, the project has never had a PR — the scaffold went straight to `main` — so `ci.yml` (which triggers on `pull_request`) has never fired. The list shows "No checks have been added" and searching finds nothing.

@@ -78,6 +78,11 @@ These steps happen on websites you can't see. The user is your only sensor.
    `grocery-assistant`. They should be copying, not deciding.
 3. **Name the field that needs their input, and the ones that don't.** "Leave the settings as they
    are" is wrong when one field on the page is blank and required.
+   - **When an exact string matters, say so and say the casing.** They're typing on a phone, and
+     mobile keyboards autocapitalize the first letter of a text field — so any identifier you ask
+     them to type arrives capitalized unless you flag it. For anything matched literally (check
+     names, branch names, project names), write "all lowercase" and have them read back what's in
+     the field before they commit it.
 4. **Describe the successful result concretely** — the URL, the label that turns green, the text
    that appears.
 5. **Close with an `AskUserQuestion` gate.** Never advance on silence or a bare "done" — someone who
@@ -202,7 +207,16 @@ never had a PR — the scaffold went straight to `main` — so `ci.yml` has neve
 say "No checks have been added" and the search will find nothing. Nothing is wrong.
 
 - Have them **type `build` into the search box anyway** — a ruleset accepts a check name that
-  hasn't reported yet, and it starts matching on their first PR.
+  hasn't reported yet, and it starts matching on their first PR. GitHub offers it as
+  **+ Add build · Any source**; that's the right thing to click.
+- **Say "all lowercase" explicitly, and have them confirm what's actually in the box before they
+  click Add.** The user is on a phone, and iOS autocapitalizes the first letter of a text field —
+  they will get `Build` without touching the shift key. Check names match literally, so a rule
+  requiring `Build` waits forever on a check that reports as `build`. With the bypass list empty
+  that blocks every PR they will ever open, on a ruleset that looks correctly configured. It is the
+  same lockout **Required approvals: 0** exists to prevent, reached by a different route.
+  - Already added the wrong one? Open the ruleset, delete the bad entry from **Status checks that
+    are required**, add `build`, and Save.
 - If typing it offers nothing selectable, fall back to making the check exist: **Actions** tab →
   **CI** → **Run workflow** (`ci.yml` declares `workflow_dispatch` for exactly this), then return
   to the ruleset and search again.
