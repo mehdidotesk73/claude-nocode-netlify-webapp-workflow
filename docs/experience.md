@@ -350,6 +350,52 @@ Emitting declarations for an *app* makes `vue-tsc` demand exported names for eve
 
 `__BUILD_ID__` and `__BUILD_TIME__` are injected by Vite's `define`, and `virtual:pwa-register` only exists at build time. TypeScript knows about none of them without an `src/env.d.ts` declaring the constants and referencing `vite/client` and `vite-plugin-pwa/client`. Without it the build fails with `TS2304: Cannot find name '__BUILD_ID__'`.
 
+## Patterns Worth Reusing
+
+### End-to-End Encryption Over a Database You Don't Trust
+
+For a messaging app, or anything where the rows live in a database but their contents shouldn't be readable by whoever can read the database. The server stores ciphertext and public keys; it never sees plaintext or any private key.
+
+**Key agreement is Diffie–Hellman (ECDH).** Each side has a keypair and publishes only the public half. The trick is that combining *your private key with their public key* produces the same value as combining *their private key with your public key* — so both ends arrive at one shared secret that never crosses the wire. On elliptic curves the combining step is scalar multiplication, not hashing. Hashing comes one step later: run the raw shared secret through HKDF to get the actual symmetric key.
+
+Then AES-GCM with that key, **a fresh random IV per message**. Reusing an IV under the same key breaks GCM badly — it's the one implementation mistake that turns this from real encryption into none.
+
+The browser does all of it natively; no library:
+
+```ts
+// once per identity — publish publicKey, keep privateKey off the server
+const kp = await crypto.subtle.generateKey(
+  { name: 'ECDH', namedCurve: 'P-256' }, true, ['deriveKey'])
+
+// per conversation — both sides compute the identical key
+const key = await crypto.subtle.deriveKey(
+  { name: 'ECDH', public: theirPublicKey }, myPrivateKey,
+  { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt'])
+
+// per message
+const iv = crypto.getRandomValues(new Uint8Array(12))
+const ciphertext = await crypto.subtle.encrypt(
+  { name: 'AES-GCM', iv }, key, new TextEncoder().encode(text))
+```
+
+Storage shape: `profiles(id, public_key)` and `messages(id, conversation_id, sender_id, ciphertext, iv, created_at)`. Note the IV is stored alongside and is not secret.
+
+**Key custody, when the user holds it.** Simplest workable version: the user enters a passphrase at the start of a session, and it never leaves memory. Two ways to get from a passphrase to a keypair — wrapping is the one to prefer:
+
+- **Wrap** (recommended): generate a random keypair once, encrypt the private key under a PBKDF2/Argon2-derived AES key, store that wrapped blob in the DB. The passphrase unwraps it. Safe to store because it's useless without the passphrase, and it works on any device.
+- **Derive deterministically**: turn the passphrase directly into the private scalar. No blob to store, but importing a raw scalar as a P-256 key via JWK is fiddly and easy to get subtly wrong.
+
+Either way the passphrase is the whole system: **lose it and every past message is permanently unreadable.** There is no reset. Say that to the user in those words before they pick one.
+
+**Be precise about what this protects, and what it doesn't.** Same discipline as not calling `using (true)` "link-only":
+
+- **The server can still MITM you** if it's the one telling you the recipient's public key — it can substitute its own and read everything. Closing that needs an out-of-band fingerprint check, which is what Signal's "safety numbers" are.
+- **No forward secrecy** with static keypairs: one compromised private key decrypts every message ever sent. Rotating per message (Double Ratchet) is a much larger build.
+- **Metadata stays plaintext.** Who talked to whom, when, and how often are ordinary readable columns. Encryption hides content, not the social graph.
+- **Group chat breaks the pairwise model.** Encrypt the message once under a random key, then wrap that key separately for each recipient.
+
+One good side effect: because content is opaque, a permissive RLS policy on the messages table is far less damaging than it would be otherwise. An enumerator gets blobs.
+
 ## Version History
 
 (Record major releases here as you merge features. Example format below.)

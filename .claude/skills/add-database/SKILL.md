@@ -33,10 +33,22 @@ that document; not a database.*
 > different kind of app. Don't let "it's in the cloud" promote it to the next category.
 
 **Separate copies have to agree.** Two people on one list, both editing. Your phone and your laptop
-showing the same data as it changes. Something outside every copy has to hold the truth and settle
+showing the same data as it changes. A messaging app — messages are durable, need history, and have
+to arrive for someone who was offline. Something outside every copy has to hold the truth and settle
 conflicts, and *that* is what a database is for. **This skill.** Within it, **realtime** matters
 only when both people are looking at once and a stale screen would be wrong; otherwise
 sync-on-load does.
+
+> **Live is not the same as stored.** A game, a shared cursor, a drawing surface: copies must agree
+> about *now*, and a value 200ms old is worthless rather than merely stale. Nothing needs keeping,
+> so a database is the wrong tool — use Supabase **Broadcast**, which is pub/sub over the same
+> WebSocket and never touches Postgres. Messaging looks similar and isn't: the message has to
+> survive. When an app needs both, use both — tables plus `postgres_changes` for the durable part,
+> Broadcast for typing indicators and presence dots.
+
+If the stored contents shouldn't be readable by whoever can read the database — messaging being the
+obvious case — see **End-to-End Encryption Over a Database You Don't Trust** in
+`docs/experience.md`. That decides the table shape, so settle it before writing the schema.
 
 Beyond that sits **accounts and login** — per-user private data, real sign-in. Supabase does it,
 it's a much bigger build, scope it as its own change.
