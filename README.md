@@ -18,18 +18,19 @@ When you paste the prompt below into Claude Code:
 1. **Copy this exact prompt** and paste it into Claude Code:
 
 ```
-Set up a new webapp for me. Read the instructions at https://github.com/mehdidotesk73/claude-nocode-netlify-webapp-workflow/blob/main/CLAUDE.md and follow them.
+I want to build a NEW webapp from this template:
+https://github.com/mehdidotesk73/claude-nocode-netlify-webapp-workflow
+
+Fetch that repo's CLAUDE.md and follow its setup instructions. This becomes a
+brand-new repository of its own — do not build it into whatever repo this
+session happens to be open on, and do not treat that repo as the project.
 ```
 
-> Reading this in the **GitHub mobile app**? It doesn't render copy buttons on code blocks — open
-> the repo in a browser instead (mobile or desktop), where the block has one.
-
-**Keep the link to `CLAUDE.md`** — that exact file, not just the repo. A Claude Code session is
-always attached to *some* repository, and a bare repo link is not an instruction to read anything:
-Claude will look at the repo it's already in and answer from that. If that repo happens to be a
+**Paste it whole, including the last two lines** — they do real work. A Claude Code session is
+always attached to *some* repository. Without being told to go read the template's `CLAUDE.md`,
+Claude looks at the repo it's already in and answers from that: if that repo happens to be a
 finished app, it reasonably concludes there's nothing to build and asks what you'd like to change
-in it instead. Naming the file is what makes the setup instructions load, and everything else —
-including "this becomes its own new repository" — is the first thing that file says.
+in it instead. Naming the file to read is what makes the setup instructions load at all.
 
 2. **Claude Code will guide you through everything:**
    - Ask you to describe the app in your own words — one paragraph, no form to fill in

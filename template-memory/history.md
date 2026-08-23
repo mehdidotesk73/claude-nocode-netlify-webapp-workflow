@@ -246,23 +246,19 @@ didn't ask — which is harder to notice than the failure being prevented.
 The bootstrap prompt appeared without a copy button, and the block had recently changed from one
 line to a formatted multi-line one, so the reformatting looked like the cause. It wasn't. **The
 GitHub mobile app does not render copy buttons on code blocks at all**; GitHub on the web — mobile
-browser and desktop — does. Nothing about the markdown mattered.
+browser and desktop — does. Nothing about the markdown mattered, and the prompt was reverted to the
+multi-line form, which is the easier one to read.
 
-Two formatting changes were shipped chasing that: collapsing back to a single line, then adding a
-`text` language tag. Both were speculation dressed as fixes, and the first was even written up here
-as "reverted to the shape that demonstrably worked" — a conclusion with no evidence behind it,
-recorded as though there were.
+Two formatting changes were shipped chasing it: collapsing to a single line, then adding a `text`
+language tag. Both were speculation dressed as fixes, and both are now reverted. Worse, the first
+was written up in this file as "reverted to the shape that demonstrably worked" — a guess recorded
+as a finding, which the next session would have trusted.
 
-What should have happened first: **ask which surface they're looking at**, and whether *any* code
-block on the page has the button. One question would have ruled out the entire markdown theory
-before the first commit. The signal that this was needed was already there — two fixes in a row had
-failed to change anything, which is the point to stop and gather information rather than form a
-third hypothesis.
+What should have happened: **ask which surface they were looking at**, and whether *any* code block
+on the page had a button. One question would have ruled out the entire markdown theory before the
+first commit. The signal was already there — two fixes in a row had changed nothing, which is the
+point to stop and gather information rather than form a third hypothesis.
 
-Two things did survive, on their own merits rather than as copy-button fixes: the prompt is now one
-short sentence instead of ~350 characters, because the long version duplicated guidance that
-`CLAUDE.md` already opens with; and the README tells app readers to open the repo in a browser.
-
-The reusable part: **when a fix doesn't work twice, the next move is a question, not another fix.**
-And don't record a guess in the notes file as if it were a finding — a wrong entry here is worse
-than no entry, because the next session trusts it.
+Two reusable parts. **When a fix doesn't work twice, the next move is a question, not another fix.**
+And **don't record a guess here as though it were established** — a wrong entry is worse than no
+entry, because its whole purpose is to be believed later without re-checking.
