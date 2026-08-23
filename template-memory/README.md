@@ -25,6 +25,9 @@ saw the template repo?* If not, it belongs here.
 
 ## Files
 
+- `history.md` — what we learned building the template: the bootstrap, the setup flow, the scaffold
+  mechanics. Mostly traps in a one-time setup that a project never runs again. The live guidance for
+  each lives in the relevant skill; these record *why* the skill says what it says.
 - `decisions.md` — why the template is shaped the way it is, and what was tried and dropped.
 - `backlog.md` — work parked deliberately, with enough context to resume cold.
 
