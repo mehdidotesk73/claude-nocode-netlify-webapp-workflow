@@ -148,45 +148,33 @@ npm install @supabase/supabase-js
 
 Commit the lockfile — CI runs `npm ci`.
 
-**Default to putting the two values straight in `src/lib/supabase.ts`.** With Vite, any `VITE_*`
-variable is inlined into the JavaScript bundle at build time, so environment variables give a static
-site exactly zero additional secrecy — the key ships to the browser either way. What they cost is a
-fourth dashboard, two more guided steps, and the failure modes below. The publishable key is built
-to be public; row-level security is the boundary.
+**Two places the values can live, and both are fine.** Committed straight into
+`src/lib/supabase.ts`, or read from `VITE_*` environment variables set in Netlify. Either way the
+key ends up in the shipped bundle — Vite inlines `VITE_*` at build time — so this is a convenience
+question, not a security one. Committing is fewer moving parts; env vars let the key change without
+a PR and allow different projects per environment. Pick one, and if the project already has one,
+leave it.
 
-**Netlify environment variables are a legitimate alternative** — conventional, and right if the key
-may need rotating without a PR, or if production and previews should ever hit different Supabase
-projects. If the project already uses them, leave it alone; don't migrate a working setup for
-tidiness. But check both of these, because each one fails *silently*:
-
-- **The names must match the code exactly.** `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are
-  what the client reads; Supabase's dashboard now calls that second value **Publishable key**, so
-  naming the Netlify variable after the label produces a mismatch. Read the variable names out of
-  the source, not off the Supabase screen.
-- **Scope them to Deploy Previews, not just Production.** Netlify scopes per context. Set to
-  Production only, every PR preview — the user's sole test surface — gets no database and looks
-  broken while the live site works.
-- **Set the variables *before* the build, and redeploy after any change.** This is the one that
-  actually bites, because everything looks correct while it's broken. `VITE_*` values are baked
-  into the bundle at build time, and **Netlify does not rebuild when you edit an environment
-  variable** — so a deploy that ran before the variables existed has `undefined` compiled into it
-  permanently. The user then checks Netlify, sees both variables set on all scopes, and reasonably
-  concludes the configuration isn't the problem. Fix: **Deploys → Trigger deploy → Clear cache and
-  deploy site**. When a database "doesn't work" on a deploy whose variables look right, check
-  whether that deploy predates them before debugging anything in the code.
-
-**Guard the missing case, and say so in the log.** The client should degrade rather than crash:
+Whichever route, the client should degrade rather than crash when the values are missing:
 
 ```ts
 export const supabase: SupabaseClient | null = url && key ? createClient(url, key) : null
 ```
 
 That keeps CI green — the required `build` check runs in GitHub Actions with no Supabase variables
-set, and Vite never executes app code at build time, so a top-level `throw` on missing config would
-block every merge. But a bare `null` turns a misconfiguration into a feature that quietly does
-nothing, so pair it with `logDebug('Supabase not configured — sharing disabled', 'warn')`. That's
-the difference between the user reporting "sharing doesn't work" and pasting you a log that says
-why.
+set. Log the fallback (`logDebug('Supabase not configured — sharing disabled', 'warn')`) so a
+misconfiguration shows up as a log line rather than a feature that quietly does nothing.
+
+**Things that have actually gone wrong with the env-var route**, offered as leads when something
+doesn't work rather than as a checklist to run up front:
+
+- Variable names not matching what the code reads — Supabase's dashboard says **Publishable key**
+  while a client may read `VITE_SUPABASE_ANON_KEY`.
+- Netlify scopes variables per context, so a Production-only setting leaves deploy previews without
+  a database.
+- `VITE_*` is baked in at build time and Netlify doesn't redeploy when you edit a variable, so a
+  build can predate its own configuration. A rebuild is worth trying early, since it's cheap and
+  rules this out.
 
 ```ts
 import { createClient } from '@supabase/supabase-js'

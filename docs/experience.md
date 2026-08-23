@@ -70,13 +70,11 @@ Testing surfaced `rsync: command not found` — it isn't in this sandbox. But th
 
 The database worked on branch previews, then didn't, and a fresh rebuild fixed it with no code change and no config change. The variables had been set on all scopes from the start, so the configuration screen gave no hint anything was wrong.
 
-The mechanism: **Vite inlines `VITE_*` into the bundle at build time**, and **Netlify does not trigger a deploy when an environment variable is edited**. A deploy that ran before the variables existed — or before a scope was widened — has `undefined` compiled into it permanently. Editing the variable afterwards changes the *next* build, not the artifact currently being served. So the dashboard shows a correct configuration, the deployed JavaScript contains `undefined`, and the two never reconcile until something else causes a build.
+The root cause was never pinned down, and it's recorded here as an open case rather than a solved one. The leading candidate is build-time staleness: **Vite inlines `VITE_*` into the bundle at build time**, and **Netlify does not trigger a deploy when an environment variable is edited** — so a build can predate its own configuration and serve `undefined` while the dashboard shows everything set correctly. That fits "a rebuild fixed it" without any code change. The service worker serving a stale bundle fits too, and the two aren't exclusive.
 
-That makes it a nasty diagnostic: every place you'd look to check the configuration says it's fine. The tell is the deploy's timestamp versus the variable's, not its value. Fix is **Deploys → Trigger deploy → Clear cache and deploy site**.
+The useful part isn't the diagnosis. It's that **a rebuild is cheap and rules out a whole class of cause**, so it's worth trying early rather than after reading the code. And that when a value is compiled in rather than read at runtime, every configuration screen can look correct while the served artifact disagrees — the tell is the deploy's timestamp, not the value.
 
-Two things compound it. The service worker can serve a stale bundle on top of this, so a fixed deploy can still look broken on the user's phone until **Reload latest**. And the graceful `supabase = url && key ? createClient(...) : null` guard — which is right, since it keeps the required `build` check green in CI where no variables are set — converts the whole failure into a feature that silently does nothing. Pairing that guard with `logDebug('Supabase not configured — sharing disabled', 'warn')` is what turns "sharing is broken" into a log line naming the cause.
-
-Same family as the service-worker cache entry: **the thing serving your app is not the thing you just configured.** Anywhere a value is compiled in rather than read at runtime, changing it is inert until a rebuild.
+Worth noting the graceful `supabase = url && key ? createClient(...) : null` guard makes this harder to see. It's the right pattern — it keeps the required `build` check green in CI, where no variables are set — but it converts the failure into a feature that silently does nothing. Pairing it with `logDebug('Supabase not configured — sharing disabled', 'warn')` is what would have turned "sharing is broken" into a log line naming the cause, which is also how we'd know which candidate above was right.
 
 ### `using (true)` Is Not "Anyone With the Link"
 
