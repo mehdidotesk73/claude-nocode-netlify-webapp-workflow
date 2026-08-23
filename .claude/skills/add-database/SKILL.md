@@ -1,6 +1,6 @@
 ---
 name: add-database
-description: Give the app a real database with Supabase, so data survives a refresh, syncs across devices, and can be shared live between people. Use whenever the app needs state that outlives one browser — a list two people edit together, anything "share with a friend", data that must appear on both phone and laptop, live updates between users, accounts or login. Walks the user through creating the Supabase project and schema, then wires up the client. Check the localStorage fork first: data that only ever lives on one device does not need this.
+description: Give the app a shared database with Supabase, for state that has to stay coherent across separately running copies of the app — a list two people edit together, anything "share with a friend", data that must match on phone and laptop, live updates between users. Walks the user through creating the Supabase project and schema, then wires up the client. Not for every app that "remembers" things: work through the levels-of-state fork first, since device-local memory and file-backed documents need no server at all.
 ---
 
 # Give the app a shared database
@@ -8,22 +8,44 @@ description: Give the app a real database with Supabase, so data survives a refr
 Setting this up means sending the user to a **third website** and having them run SQL. That's the
 biggest ask in this whole template, so the first job is making sure it's actually needed.
 
-## First: does it need a database at all?
+## First: which kind of state is this?
 
-Ask what happens to the data, and route on the answer:
+"Stateful" spans several different problems, and only the last one needs a database. Ask what
+happens to the data and route on the answer — the question that separates them is **who else has to
+agree about it**.
 
-| What they describe | What it needs |
-|---|---|
-| "I want to see it when I come back" (one device) | `localStorage` — no setup, no accounts, no website |
-| "on my phone *and* my laptop" | Supabase |
-| "share it with my partner / a friend" | Supabase |
-| "we both edit it and it updates live" | Supabase + realtime |
-| "other people sign in" | Supabase + auth (out of scope here — say so) |
+**Level 0 — no state outside the session.** A game you play, die, and replay; a calculator; a
+converter. Everything lives in memory and dying with the tab is correct behaviour. *Needs nothing.*
+Don't add persistence because it sounds more finished.
 
-**`localStorage` is a real answer, not a lesser one.** A personal checklist, saved preferences, a
-draft in progress — those work offline, need no account, and cost nothing to set up. Reaching for a
-database there is thirty minutes of someone's time spent on nothing. Only continue once the answer
-is genuinely "more than one device or more than one person".
+**Level 1 — remembered on this device.** A personal checklist, saved preferences, a draft in
+progress. One person, one browser, survives a refresh. *`localStorage`, or IndexedDB past a few
+megabytes.* No account, no setup, works offline. This is a real answer, not a lesser one — reaching
+past it costs someone half an hour for nothing.
+
+**Level 2 — the app edits a document.** An accounting app over a CSV, a viewer for a data file, an
+editor for a config. The **file is the source of truth**; the app loads it into memory, edits it
+there, and writes it back. Nothing is stored by the app between sessions — reopen the file and the
+state returns. *Needs file access, not a server.* This one is genuinely different from level 1 and
+is easy to misroute into a database; see the note below before doing so.
+
+**Level 3 — separate copies must agree.** Two people on one list. Your phone and your laptop showing
+the same data. Anything "share with a friend". Now something outside every copy of the app has to
+hold the truth, and *that* is what a database is for. **This skill.** Within it: sync-on-load is
+enough for most things; **realtime** matters only when both people are looking at once and a stale
+screen would be wrong.
+
+Above level 3 sits **accounts and login** — per-user private data, real sign-in. Supabase does it,
+it's a much bigger build, and it should be scoped as its own change rather than bolted on here.
+
+**Level 2 is not a smaller level 3.** "Read and write a CSV" sounds like storage, so it drifts into
+"we'll put it in a database" — but that changes the app's shape entirely: the user's file stops
+being the artifact, and they've gained an account and a service to keep a file they already owned.
+Route it to file access instead. Worth knowing before promising it: **the File System Access API
+(editing a file in place) does not exist in Safari, including on iPhone.** On this template's usual
+target that means load via a file input and save via a download — a copy out, not a write back. And
+"a text file on the web" is readable with `fetch` if CORS allows, but not writable without some
+service behind it. Say which of these you're building before you build it.
 
 ## Then: decide the sharing model, out loud
 
