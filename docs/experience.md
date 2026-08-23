@@ -74,6 +74,22 @@ Recorded as posed. The examples carry the distinction better than any taxonomy b
 >
 > Different forms of state might need different infrastructure.
 
+### Realtime Statefulness — a Variation With No Stored State
+
+A further form, alongside the ones above: **state that is live between running instances and stored nowhere.** Four players in a game, a shared cursor, a live drawing surface. Separate copies must agree — but the agreement is only about *now*, and a value that's 200ms old is worthless rather than merely stale.
+
+That is not what a database is for, and Supabase serves it with a different primitive. `postgres_changes` (what a shared shopping list uses) is a real row write replicated off the WAL and then fanned out — correct when the data must persist, far too heavy when it must not. **Broadcast** is plain pub/sub over the same WebSocket and never touches Postgres.
+
+How the connection actually works, since the obvious guesses are both wrong — instances neither share a socket nor join one that a host opens:
+
+- Every client opens **its own** WebSocket to the Realtime server and subscribes to a **topic name**. The server relays between whoever named the same string. It's rendezvous by string, like a chat room name.
+- **Nobody creates or owns a channel.** The first subscriber doesn't set it up; the last to leave doesn't tear it down. If the app needs an authoritative host, that's an election the app runs — the transport has no such concept.
+- **One socket per client, multiplexed.** Several `.channel()` calls share it.
+- **Nothing is stored, and there is no replay.** A message sent before you subscribed is gone, so a late joiner arrives blind and must be handed a snapshot explicitly.
+- **Traffic always goes to the region and back.** Two devices on the same wifi still round-trip to Supabase. That's the latency floor; WebRTC is the only way under it.
+- The **channel name is the entire access control** on a public channel — so a random room code, for the same reason list ids are random.
+- **Presence** rides the same channel and gives the roster (join/leave) without building it.
+
 ### Netlify Doesn't Rebuild When You Change an Environment Variable
 
 The database worked on branch previews, then didn't, and a fresh rebuild fixed it with no code change and no config change. The variables had been set on all scopes from the start, so the configuration screen gave no hint anything was wrong.
