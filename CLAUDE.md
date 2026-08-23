@@ -487,6 +487,7 @@ src/
   add-github-pages/SKILL.md   optional: a Netlify-independent production mirror, on request
   add-database/SKILL.md    Supabase setup, when data must outlive one browser or be shared
   update-skills/SKILL.md   pull newer skills from the template this project was copied from
+  share-pattern/SKILL.md   write up a reusable lesson as one copy-pasteable block, to send upstream
 docs/
   TODO.md                  living backlog (Done / Next branch / Housekeeping)
   experience.md            what didn't work + per-merge version history
