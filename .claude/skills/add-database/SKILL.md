@@ -1,6 +1,6 @@
 ---
 name: add-database
-description: Give the app a shared database with Supabase, for state that has to stay coherent across separately running copies of the app — a list two people edit together, anything "share with a friend", data that must match on phone and laptop, live updates between users. Walks the user through creating the Supabase project and schema, then wires up the client. Not for every app that "remembers" things: work through the levels-of-state fork first, since device-local memory and file-backed documents need no server at all.
+description: Give the app a shared database with Supabase, for state that has to stay coherent across separately running copies of the app — a list two people edit together, anything "share with a friend", data that must match on phone and laptop, live updates between users. Walks the user through creating the Supabase project and schema, then wires up the client. Not for every app that "remembers" things: work through the fork at the top first, since an app that edits a document — wherever that document lives, local or cloud — needs no database at all.
 ---
 
 # Give the app a shared database
@@ -10,42 +10,47 @@ biggest ask in this whole template, so the first job is making sure it's actuall
 
 ## First: which kind of state is this?
 
-"Stateful" spans several different problems, and only the last one needs a database. Ask what
-happens to the data and route on the answer — the question that separates them is **who else has to
-agree about it**.
+"Stateful" covers several different problems and only one of them needs a database. The line that
+matters is **whether separate running copies of the app have to agree with each other**, and it
+falls in exactly one place:
 
-**Level 0 — no state outside the session.** A game you play, die, and replay; a calculator; a
-converter. Everything lives in memory and dying with the tab is correct behaviour. *Needs nothing.*
-Don't add persistence because it sounds more finished.
+**No external state.** A game you play, die, and replay; a calculator; a converter. Everything lives
+in memory and dying with the tab is correct behaviour. *Needs nothing.* Don't add persistence
+because it sounds more finished.
 
-**Level 1 — remembered on this device.** A personal checklist, saved preferences, a draft in
-progress. One person, one browser, survives a refresh. *`localStorage`, or IndexedDB past a few
-megabytes.* No account, no setup, works offline. This is a real answer, not a lesser one — reaching
-past it costs someone half an hour for nothing.
+**Remembered on this device.** A personal checklist, saved preferences, a draft in progress. One
+browser, survives a refresh, works offline. *`localStorage`, or IndexedDB past a few megabytes.* A
+real answer, not a lesser one — reaching past it costs someone half an hour for nothing.
 
-**Level 2 — the app edits a document.** An accounting app over a CSV, a viewer for a data file, an
-editor for a config. The **file is the source of truth**; the app loads it into memory, edits it
-there, and writes it back. Nothing is stored by the app between sessions — reopen the file and the
-state returns. *Needs file access, not a server.* This one is genuinely different from level 1 and
-is easy to misroute into a database; see the note below before doing so.
+**The app edits a document.** An accounting app over a CSV, a viewer for a data file, an editor for
+a config. The **document is the source of truth**: load it, edit in memory, save it back. The app
+stores nothing itself — reopen the document and the state returns. *Needs a way to read and write
+that document; not a database.*
 
-**Level 3 — separate copies must agree.** Two people on one list. Your phone and your laptop showing
-the same data. Anything "share with a friend". Now something outside every copy of the app has to
-hold the truth, and *that* is what a database is for. **This skill.** Within it: sync-on-load is
-enough for most things; **realtime** matters only when both people are looking at once and a stale
-screen would be wrong.
+> **Where the document lives doesn't change what this is.** A file on the phone, a file on Google
+> Drive, a file at a URL — same behaviour, same shape, same conversation with the user. Only the
+> read/write mechanism differs, and that's an implementation detail to settle while building, not a
+> different kind of app. Don't let "it's in the cloud" promote it to the next category.
 
-Above level 3 sits **accounts and login** — per-user private data, real sign-in. Supabase does it,
-it's a much bigger build, and it should be scoped as its own change rather than bolted on here.
+**Separate copies have to agree.** Two people on one list, both editing. Your phone and your laptop
+showing the same data as it changes. Something outside every copy has to hold the truth and settle
+conflicts, and *that* is what a database is for. **This skill.** Within it, **realtime** matters
+only when both people are looking at once and a stale screen would be wrong; otherwise
+sync-on-load does.
 
-**Level 2 is not a smaller level 3.** "Read and write a CSV" sounds like storage, so it drifts into
-"we'll put it in a database" — but that changes the app's shape entirely: the user's file stops
-being the artifact, and they've gained an account and a service to keep a file they already owned.
-Route it to file access instead. Worth knowing before promising it: **the File System Access API
-(editing a file in place) does not exist in Safari, including on iPhone.** On this template's usual
-target that means load via a file input and save via a download — a copy out, not a write back. And
-"a text file on the web" is readable with `fetch` if CORS allows, but not writable without some
-service behind it. Say which of these you're building before you build it.
+Beyond that sits **accounts and login** — per-user private data, real sign-in. Supabase does it,
+it's a much bigger build, scope it as its own change.
+
+**The document case is the one that gets misrouted**, because "read and write a CSV" sounds like
+storage and a database is where you put storage. It isn't the same app: routing it to a database
+means the user's document stops being the artifact, and they've acquired an account and a service
+to hold something they already owned. Saving a document to Drive is still saving a document.
+
+Two constraints to know while building that case — they decide how saving works, not which category
+it is: **the File System Access API (editing a file in place) doesn't exist in Safari, iPhone
+included**, so on this template's usual target it's load-via-file-input and save-via-download, a
+copy out rather than a write back; and a plain URL is readable with `fetch` when CORS allows but
+isn't a writable target without a host behind it. Say which you're building before you build it.
 
 ## Then: decide the sharing model, out loud
 
