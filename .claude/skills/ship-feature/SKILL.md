@@ -105,6 +105,11 @@ while they try the change.
 
 Preview first — they should look before merging. Never say "merge when ready" without the URLs.
 
+**Hand these over in a normal message, never inside an `AskUserQuestion` question.** That field
+renders as plain text, so all three links arrive dead — and links they can't tap are the entire
+point of this step. If you also want a gate here, post the links first, then make the tool call with
+a one-line question.
+
 ## 7. After the merge
 
 Merging to `main` triggers Netlify's production deploy of the same site. Watch it and confirm the

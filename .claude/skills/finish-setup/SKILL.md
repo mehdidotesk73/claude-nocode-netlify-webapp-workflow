@@ -52,16 +52,18 @@ be one push, not a branch and PR.
   what's listed". **This is what stops a future session re-running the bootstrap on an
   already-created project** — an unstripped CLAUDE.md would tell it to go create another repo.
 
-- **`docs/experience.md` — keep only these sections, remove everything else:** Mobile-First Design
-  Constraints, Service-Worker Caching & Stale Builds, ECharts Gotchas, Pure Logic vs. Components,
-  Don't Hand-Write a Static `public/manifest.json`, `npm ci` Needs a Committed Lockfile,
-  `declaration: true` in an App's tsconfig, Ambient Types for Build-Time Constants, and Version
-  History (reset to the placeholder format, not the template's own history). The test, if you hit an
-  entry not on that list: **does this teach something about building a Vue/Vite PWA, or about
-  building the template's setup flow?** Keep the first, drop the second. Most of what's there is the
-  second — onboarding flow, Netlify UX, skills design — and has no bearing on a project that will
-  never re-run that bootstrap. Shipping it verbatim would hand every project a confusing journal
-  about a different piece of software.
+- **`docs/experience.md` — keep every entry; only reset Version History** to the placeholder format
+  rather than carrying the template's own version list.
+
+  **Don't prune it against a remembered list.** The template already did that separation: entries
+  about building the template's setup flow live in `template-memory/`, which never ships, so what
+  arrives in a scaffold is already the project-relevant set — stack gotchas plus reusable patterns
+  like the end-to-end-encryption one. A hardcoded keep-list here used to duplicate that judgement
+  and went stale the moment the template gained an entry, silently deleting good material on its
+  next run. If something genuinely doesn't belong, the test is: **does this teach something about
+  building a Vue/Vite PWA, or about building the template's setup flow?** The second shouldn't be
+  in the file at all — if you find one, it's a template bug worth reporting, not something to
+  quietly drop here.
 
 - **`docs/TODO.md` — seed the one-time setup checklist** under **Next**:
 
@@ -152,6 +154,26 @@ trouble.
    - **"It didn't work as expected"** with the free-text box
    - A third option when there's a known fork worth catching, e.g. *"It worked but the URL has a
      random name like dreamy-yeot-7cce7c."*
+
+   **The steps go in the message. Only the question goes in the question.** This is the one that
+   has actually broken steps in testing. `AskUserQuestion` renders its `question` as plain text —
+   **no clickable links, no code blocks, no copy button.** A step whose body is packed into that
+   field reaches the user as a wall of unformatted text with a dead URL they must retype and SQL
+   they must select by hand on a phone. Both of the things you worked hardest to give them — the
+   link and the copyable value — are destroyed by putting them there.
+
+   So every guided step is two parts, in this order:
+
+   1. **A normal assistant message** carrying the whole step — the progress block, the numbered
+      instructions, the URL, any SQL in a fenced code block. This renders as markdown, so links are
+      tappable and code gets a copy control.
+   2. **Then the `AskUserQuestion` call**, whose `question` is one short line pointing back at it:
+      *"Did that work?"* or *"Is the ruleset showing as Active?"* The options carry the restated
+      outcomes.
+
+   Never restate the instructions inside the question, and never put a URL, a block of SQL, or any
+   value to be copied there. "The turn ends on the gate" means the tool call is the last thing in
+   the turn — not that the turn is *only* the tool call.
 
 When they report a problem, diagnose from what they describe before sending them anywhere new. Ask
 for a screenshot if it's ambiguous — faster than three rounds of questions.

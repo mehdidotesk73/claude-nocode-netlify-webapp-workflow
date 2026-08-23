@@ -98,10 +98,17 @@ that it didn't happen. Every guided step follows this shape:
 4. **Describe the successful result concretely** — the URL they'll get, the label that turns green,
    the text that appears. This is how they know it worked without understanding what happened.
 5. **Close with an `AskUserQuestion` confirmation gate — end the turn on the tool call itself,**
-   not on prose inviting a reply. Instructions posted as text and then waiting leaves the user
-   unsure whether you're working or blocked, and gives them nothing to click. Never move to the
+   not on prose inviting a reply. Instructions followed by "let me know how it goes" leave the user
+   unsure whether you're working or blocked, and give them nothing to click. Never move to the
    next step on silence or a bare "done" either — a user who did something slightly different will
-   say "done" in good faith. Offer:
+   say "done" in good faith.
+
+   **The instructions still go in the message — only the question goes in the question.**
+   `AskUserQuestion` renders its `question` as plain text: no clickable links, no code blocks, no
+   copy button. Packing a step's body in there hands the user a dead URL to retype and SQL to
+   select by hand on a phone. Post the step as a normal markdown message, *then* make the tool
+   call with a one-line question (*"Did that work?"*). The tool call being last in the turn is
+   what "end on the gate" means — not that the turn is only the tool call. Offer:
    - **"Yes — <restate what they did and what they should now be seeing>"** — spelled out, so
      selecting it is an actual claim about the result and not just "next". E.g. *"Yes — I clicked
      Deploy site and the project page shows Published with the URL grocery-assistant.netlify.app."*
@@ -154,7 +161,8 @@ that it didn't happen. Every guided step follows this shape:
 3. **Reflect it back, then gate on `AskUserQuestion` — the turn must end with that tool call, not
    with prose.** A summary followed by "let me know if that's right" leaves them with nothing to
    click and no idea whether you're waiting or working. Post the summary and the question in the
-   same turn.
+   same turn — **the summary as a normal markdown message, the tool call after it.** Don't paste
+   the summary into the `question` field; it renders as flat text there and loses its formatting.
 
    Use this shape — bolded label, plain sentence, no `<REF:*>` names and no jargon:
 
@@ -374,6 +382,23 @@ that it didn't happen. Every guided step follows this shape:
       goodbye briefly, and stop. Don't keep working in this session: it's rooted in the wrong repo,
       and anything you do here is either wasted or lands somewhere it shouldn't. The new session
       reads `CLAUDE.md`, hits the guard at the top, finds the brief, and picks up from there.
+
+## If someone asks to start a *different* app here
+
+This section stays after setup strips the bootstrap — it exists for exactly that moment.
+
+If the user asks to **build a new webapp**, mentions the template repo, or pastes the template's
+setup prompt into a session open on this project: **they are starting a new project, not changing
+this one.** Don't answer from this repo. Fetch
+https://github.com/mehdidotesk73/claude-nocode-netlify-webapp-workflow — read its `CLAUDE.md` and
+follow those setup instructions, which begin by walking them through creating a new repository.
+
+The tempting wrong answer is to inspect this repo, see a finished app, report that there's nothing
+left to scaffold, and offer to work on *this* project instead. That reads as helpful and it answers
+a question nobody asked — the request was for a new app, and this repo is simply where the session
+happened to be pointing.
+
+Never scaffold the new app into this repository.
 
 ## What this is
 
