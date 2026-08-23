@@ -53,6 +53,13 @@ Three cases in the diff, and they are not treated alike:
 `docs/setup-brief.md`, and keeping the directory uniform is simpler than maintaining a list of
 exceptions. Same for this skill itself; see the note at the end.
 
+**One exception, and it must not be skipped: never copy `update-template/`.** That skill is for
+editing the template repo itself and is meaningless — actively misleading — in a project. The
+template marks it `export-ignore`, which keeps it out of *new* scaffolds, but `export-ignore` only
+applies to `git archive`; this skill copies from a plain **clone**, where the file is present. So
+the exclusion has to happen here, explicitly. If the template ever grows another template-only
+skill, its `.gitattributes` says to add it to this list too.
+
 ## 2. Tell them what changed, in behaviour
 
 The user is not going to read a diff, and a list of touched filenames tells them nothing. Read the
