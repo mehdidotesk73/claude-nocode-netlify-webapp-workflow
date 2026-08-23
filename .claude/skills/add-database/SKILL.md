@@ -46,9 +46,15 @@ sync-on-load does.
 > survive. When an app needs both, use both — tables plus `postgres_changes` for the durable part,
 > Broadcast for typing indicators and presence dots.
 
-If the stored contents shouldn't be readable by whoever can read the database — messaging being the
-obvious case — see **End-to-End Encryption Over a Database You Don't Trust** in
-`docs/experience.md`. That decides the table shape, so settle it before writing the schema.
+Two worked patterns in `docs/experience.md` decide the table shape, so read the relevant one
+**before** writing the schema rather than retrofitting:
+
+- **Two-Party Link Apps** — when exactly two people share one thing via a link, with no accounts.
+  Covers handing someone a real credential in the URL fragment (and the third-party-script leak
+  that ruins it), and the conditional update that stops a third visitor silently taking over the
+  session. **Applies whether or not anything is encrypted.**
+- **End-to-End Encryption Over a Database You Don't Trust** — when the stored contents shouldn't be
+  readable by whoever can read the database. Messaging is the obvious case.
 
 Beyond that sits **accounts and login** — per-user private data, real sign-in. Supabase does it,
 it's a much bigger build, scope it as its own change.
