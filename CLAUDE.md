@@ -272,30 +272,45 @@ that it didn't happen. Every guided step follows this shape:
 
 ### Step 5: Have the user point this session at their new repo
 
-11. **Ask them to switch the session's active repository.** Their project exists, builds, and holds
-    the brief — but this session is still rooted in whatever repo it opened in. Skills are
-    discovered from the session's project root, so `finish-setup` and `ship-feature` aren't
-    invocable until the session points at the new repo.
+11. **Get a session rooted on their new repo — offer both routes, don't assume either.** Their
+    project exists, builds, and holds the brief, but this session is still rooted in whatever repo
+    it opened in, and skills are discovered from the session's project root. Some Claude Code
+    surfaces let you change the active repo mid-session (the terminal does); others don't (the
+    mobile app doesn't). You can't do it for them either way — it's a UI control.
 
-    **`/reload-skills` does not solve this** — it re-scans the roots this session already has and
-    reports "no changes". And you can't switch repos yourself; it's a UI control only the user can
-    operate. Ask plainly:
+    **`/reload-skills` does not substitute for this.** It re-scans the roots this session already
+    has and reports "no changes".
 
-    > Your project is built and pushed. Last thing I need from you: switch this session over to it.
-    > Use the repository selector at the top of the screen — it currently shows `<old-repo>` — and
-    > pick **`<new-repo>`**, branch `main`. Tell me once you've done it.
+    Give them both options and let them take whichever their app supports:
 
-12. **Verify before continuing.** Confirm you're actually on their repo (`git remote -v` resolving
-    to `<owner>/<new-repo>`) and that `finish-setup` is invocable.
+    > Your project is built and pushed. Last step is getting me pointed at it — either way works:
+    >
+    > **If you can switch repos in this session:** use the repository selector at the top of the
+    > screen (it shows `<old-repo>` now), pick **`<new-repo>`**, branch `main`, and tell me.
+    >
+    > **If you don't see that option** — the mobile app doesn't have it — just start a new session
+    > on **`<new-repo>`** and paste this in:
+    >
+    > ```
+    > Continue setting up this project. Read docs/setup-brief.md and run finish-setup.
+    > ```
+    >
+    > Nothing is lost either way: everything we discussed is saved in your project.
 
-    - **Both true** → invoke `finish-setup`. It reads `docs/setup-brief.md` and takes over.
-    - **Right repo, skills still not invocable** → read `.claude/skills/finish-setup/SKILL.md` and
-      follow it by hand. Tell the user later changes this conversation will need the same manual
-      read, since `ship-feature` won't auto-trigger either.
-    - **Still on the old repo** → the switch didn't take. Ask again rather than proceeding; running
-      setup from the wrong root is how work lands in someone else's project.
+12. **Then handle whichever happened.**
 
-    Your bootstrap job is done here — `finish-setup` takes over.
+    - **They switched in-session** → verify it took before doing anything: `git remote -v` should
+      resolve to `<owner>/<new-repo>`. If it does and `finish-setup` is invocable, invoke it. If the
+      repo is right but skills still aren't invocable, read `.claude/skills/finish-setup/SKILL.md`
+      and follow it by hand, telling them later changes this conversation will need the same manual
+      read since `ship-feature` won't auto-trigger either. If it's still the old repo, the switch
+      didn't take — ask again rather than proceeding, since running setup from the wrong root is
+      how work lands in someone else's project.
+
+    - **They're starting a new session** → your job is done. Confirm the brief is pushed, say
+      goodbye briefly, and stop. Don't keep working in this session: it's rooted in the wrong repo,
+      and anything you do here is either wasted or lands somewhere it shouldn't. The new session
+      reads `CLAUDE.md`, hits the guard at the top, finds the brief, and picks up from there.
 
 ## What this is
 

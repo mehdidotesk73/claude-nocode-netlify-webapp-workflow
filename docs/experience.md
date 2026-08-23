@@ -46,6 +46,8 @@ The better answer was a **staged brief**: the bootstrap adds exactly one file, `
 
 General shape worth reusing: **when context must cross a boundary a conversation can't span, write it down as a file rather than trying to keep the conversation alive across it.** The file is more durable than the session, and its presence or absence doubles as state.
 
+**One more constraint the first draft got wrong: UI affordances differ across Claude Code surfaces.** The handoff told the user to change the session's active repository — which the terminal supports and the mobile app does not. An instruction that names a control the user cannot find is a dead end, and this template's audience is on phones. The step now offers both routes: switch the repo if your app allows it, or start a fresh session on the new repo and paste a one-line continue message. The staged brief is what makes the second route cost nothing — a new session reads `CLAUDE.md`, hits the guard, finds the brief, and resumes with full context. Worth generalizing: **before telling a user to click something, consider whether their surface has it, and give an alternative when you can't be sure.**
+
 ### Claude Can't Run Slash Commands — They're User Input
 
 The bootstrap told Claude to run `/reload-skills` itself, with the explicit note "this is a command *you* run, not something to ask the user to do." That was wrong. Slash commands are Claude Code CLI affordances typed by the user; Claude's toolset has no matching entry. In testing, Claude looked, correctly reported "no explicit `/reload-skills` tool is available in this environment," and fell through to reading `finish-setup` by hand. The user then typed `/reload-skills` themselves and the session picked up normally.
