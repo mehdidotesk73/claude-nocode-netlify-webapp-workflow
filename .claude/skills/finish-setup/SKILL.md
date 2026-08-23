@@ -52,16 +52,18 @@ be one push, not a branch and PR.
   what's listed". **This is what stops a future session re-running the bootstrap on an
   already-created project** — an unstripped CLAUDE.md would tell it to go create another repo.
 
-- **`docs/experience.md` — keep only these sections, remove everything else:** Mobile-First Design
-  Constraints, Service-Worker Caching & Stale Builds, ECharts Gotchas, Pure Logic vs. Components,
-  Don't Hand-Write a Static `public/manifest.json`, `npm ci` Needs a Committed Lockfile,
-  `declaration: true` in an App's tsconfig, Ambient Types for Build-Time Constants, and Version
-  History (reset to the placeholder format, not the template's own history). The test, if you hit an
-  entry not on that list: **does this teach something about building a Vue/Vite PWA, or about
-  building the template's setup flow?** Keep the first, drop the second. Most of what's there is the
-  second — onboarding flow, Netlify UX, skills design — and has no bearing on a project that will
-  never re-run that bootstrap. Shipping it verbatim would hand every project a confusing journal
-  about a different piece of software.
+- **`docs/experience.md` — keep every entry; only reset Version History** to the placeholder format
+  rather than carrying the template's own version list.
+
+  **Don't prune it against a remembered list.** The template already did that separation: entries
+  about building the template's setup flow live in `template-memory/`, which never ships, so what
+  arrives in a scaffold is already the project-relevant set — stack gotchas plus reusable patterns
+  like the end-to-end-encryption one. A hardcoded keep-list here used to duplicate that judgement
+  and went stale the moment the template gained an entry, silently deleting good material on its
+  next run. If something genuinely doesn't belong, the test is: **does this teach something about
+  building a Vue/Vite PWA, or about building the template's setup flow?** The second shouldn't be
+  in the file at all — if you find one, it's a template bug worth reporting, not something to
+  quietly drop here.
 
 - **`docs/TODO.md` — seed the one-time setup checklist** under **Next**:
 

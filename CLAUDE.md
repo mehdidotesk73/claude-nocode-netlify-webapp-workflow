@@ -383,6 +383,23 @@ that it didn't happen. Every guided step follows this shape:
       and anything you do here is either wasted or lands somewhere it shouldn't. The new session
       reads `CLAUDE.md`, hits the guard at the top, finds the brief, and picks up from there.
 
+## If someone asks to start a *different* app here
+
+This section stays after setup strips the bootstrap — it exists for exactly that moment.
+
+If the user asks to **build a new webapp**, mentions the template repo, or pastes the template's
+setup prompt into a session open on this project: **they are starting a new project, not changing
+this one.** Don't answer from this repo. Fetch
+https://github.com/mehdidotesk73/claude-nocode-netlify-webapp-workflow — read its `CLAUDE.md` and
+follow those setup instructions, which begin by walking them through creating a new repository.
+
+The tempting wrong answer is to inspect this repo, see a finished app, report that there's nothing
+left to scaffold, and offer to work on *this* project instead. That reads as helpful and it answers
+a question nobody asked — the request was for a new app, and this repo is simply where the session
+happened to be pointing.
+
+Never scaffold the new app into this repository.
+
 ## What this is
 
 A Vue 3 + TypeScript + Vite single-page app (also a PWA) that <REF:purpose>. UI structure:

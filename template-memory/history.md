@@ -211,3 +211,32 @@ GitHub does not let anyone approve their own pull request — on your own PR, "A
 How bad that is depends on a second setting. "Do not allow bypassing the above settings" is unchecked by default, which means repo admins are exempt from branch protection entirely — you can still merge (with a red "bypass branch protections" warning) and still push directly to `main`. Check it, and the bypass is gone: with approvals required you're genuinely stuck and have to edit the rule to merge anything.
 
 The combination that works for a solo project is "Require a pull request before merging" + "Do not allow bypassing the above settings", with approvals **off**. That enforces PR-only changes to `main` for everyone including the owner, while imposing no requirement the owner can't meet — opening and merging a PR satisfies the rule on its own.
+
+### The Bootstrap Prompt Has to Name the File to Read
+
+The paste prompt was `I want to build a webapp based on this template <repo url>`. Pasted into a
+session open on a *finished* project (`whisper-z`), Claude ran `git status && ls -l`, saw a
+complete app, and replied: "there's nothing left to scaffold — what would you like to work on
+next?" Then it offered a feature menu for the wrong project.
+
+The `⚠️ CRITICAL: Leave the Session's Current Repo Alone` guard did its job — nothing was scaffolded
+into `whisper-z`. What was missing was the other half: **routing the user to the right place after
+refusing the wrong one.** A guard that only prevents damage leaves the request unanswered.
+
+The mechanism is worth stating plainly, because the original fix was aimed one step short of it:
+**a Claude Code session is always attached to some repository, and a bare URL in a prompt is not an
+instruction to read anything.** Claude never fetched the template's `CLAUDE.md`, so none of the
+bootstrap — including "walk them through creating a new repo" — ever loaded. It answered from the
+only document it had, which was the local project's own stripped `CLAUDE.md`.
+
+Two defences now, because either alone can be bypassed:
+
+- The prompt names the file (`Fetch that repo's CLAUDE.md and follow its setup instructions`) and
+  states that the current repo is not the target. This is the one that makes the instructions load.
+- A `## If someone asks to start a *different* app here` section in `CLAUDE.md` **inside the range
+  that survives stripping**, so a finished project can route the request itself even when the
+  prompt is pasted loosely or paraphrased.
+
+General shape: **when you tell a model not to do something, say what to do instead in the same
+breath.** Refusal without redirection produces a confidently wrong answer to a question the user
+didn't ask — which is harder to notice than the failure being prevented.
