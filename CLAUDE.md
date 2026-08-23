@@ -288,19 +288,37 @@ that it didn't happen. Every guided step follows this shape:
     > **If you can switch repos in this session:** use the repository selector at the top of the
     > screen (it shows `<old-repo>` now), pick **`<new-repo>`**, branch `main`, and tell me.
     >
-    > **If you don't see that option** — the mobile app doesn't have it — just start a new session
-    > on **`<new-repo>`** and say:
+    > **If you don't see that option** — the mobile app doesn't have it — you'll start a fresh
+    > conversation instead. About thirty seconds:
     >
-    > ```
-    > Finish setting up this project.
-    > ```
+    > 1. Tap the **back arrow** at the top-left to leave this conversation. You'll land on your
+    >    Claude Code home screen, showing your recent conversations.
+    > 2. Tap **+ New** to start a new one.
+    > 3. **Before typing anything**, look just above the message box for a row of small buttons —
+    >    one shows a repository name (right now it'll say `<old-repo>`). Tap it and pick
+    >    **`<new-repo>`** from the list. If it also asks for a branch, choose **`main`**.
+    > 4. Now type this and send it:
     >
-    > Nothing is lost either way: everything we discussed is saved in your project.
+    >    ```
+    >    Finish setting up this project.
+    >    ```
+    >
+    > That's it — I'll pick up exactly where we left off. Everything we talked about is saved in
+    > your project, so nothing is lost by starting fresh.
+    >
+    > If your screen doesn't look like that, send me a screenshot and I'll point you to the right
+    > button.
 
-    Keep that message plain — no file paths, no skill names. `finish-setup` triggers on that
-    wording and reads the brief itself; asking a non-technical user to type
-    `run finish-setup and read docs/setup-brief.md` makes the handoff look like it needs
-    an incantation to work.
+    **Spell out the navigation like that — don't compress it to "start a new session on
+    `<new-repo>`".** That phrasing assumes they know what a session is, where new ones come from,
+    and that a repo gets chosen before the first message. This person created their first
+    repository twenty minutes ago. Name the buttons, say what screen each step lands on, and put
+    the repo picker *before* typing, since choosing it afterwards isn't possible.
+
+    Keep the message they send plain — no file paths, no skill names. `finish-setup` triggers on
+    that wording and reads the brief itself; asking a non-technical user to type
+    `run finish-setup and read docs/setup-brief.md` makes the handoff look like it needs an
+    incantation to work.
 
 12. **Then handle whichever happened.**
 
