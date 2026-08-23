@@ -101,9 +101,33 @@ Two reasons this is worth doing here rather than later:
 
 If the run fails, fix it before continuing; a red `build` becomes a required check shortly.
 
+## Show them where they are
+
+Setup is a handful of steps across two websites, and from the user's side it's easy to lose track
+of how much is left. **Open with the whole list, then re-post it with the current step marked each
+time you move on.** Keep it to one compact block:
+
+> **Setup progress**
+> ✅ Netlify account
+> ✅ Give Netlify access to your project
+> ▶️ **Import the project** ← you're here
+> ⬜ Protect your live site
+> ⬜ First feature
+
+Cheap to render, and it answers the two questions someone silently has partway through a multi-step
+process: how much more of this is there, and is it nearly done. Mirror `docs/TODO.md`'s setup
+checklist so the two never disagree — tick items there as you tick them here.
+
 ## How to give every step
 
 These steps happen on websites you can't see. The user is your only sensor.
+
+**Know more than you say.** This skill documents every trap because *you* need them; the user needs
+the click. A step with a warning bolted onto every line is harder to follow than the task itself,
+and it reads as though the whole thing is fragile. Aim for five short numbered lines someone can
+follow on a phone while looking at another tab. Keep a caveat inline only when acting on the
+obvious-looking thing would take them somewhere wrong — otherwise hold it and use it if they report
+trouble.
 
 1. **Say what they'll be looking at** — which site, which page, what it's headed.
 2. **Give exact values, never placeholders.** If a field needs `grocery-assistant`, write
@@ -159,39 +183,44 @@ button they see:
 
 Wait for confirmation that Part B saved.
 
-**Part C — import the project.** Three clicks, and the middle one has a trap in it:
+**Part C — import the project.** Send something close to this, and no longer:
 
-1. On Netlify's projects page, click the green **Add new project** button.
-2. **They now land on a page dominated by an AI agent box** — "Describe your idea. The agent codes
-   and configures for you," with starter prompts like *Marketing site* and *Habit tracker*. **Tell
-   them to ignore it and scroll down.** This is the one place in setup where the obvious-looking
-   action is the wrong one: a user told to "import your project" sees a box asking them to describe
-   what they want and reasonably types their app idea into it. That builds an unrelated Netlify-
-   generated project and burns their agent credits — the page also shows a "Low on credits" banner
-   that makes it look like something is wrong when nothing is.
-3. Below a **"Bringing your own code?"** divider, under **Import a Git repository**, click
-   **GitHub**. Then pick the project from the repo list.
+> Now let's bring your project into Netlify:
+>
+> 1. Click **Add new project**
+> 2. **Scroll past the "describe your idea" box** — that one builds a different app from scratch.
+>    Further down, under **Bringing your own code?**, click **GitHub**
+> 3. Pick **`<repo-name>`** from the list
+> 4. On the page that appears, fill in **Project name**: `<site-name>` — all lowercase, and check
+>    what's actually in the box, since phones like to capitalize the first letter
+> 5. Leave everything else as it is and click **Deploy**
+>
+> It'll build for a minute or two, then show **Published** and your address:
+> `https://<site-name>.netlify.app`
 
-If the labels have shifted again, the shape is stable: *start a new project → skip anything
-offering to build it for you → import from GitHub*.
+**Everything below is for you, not for them.** Don't recite it — a five-step list with a caveat
+attached to each step is harder to follow than the task itself, and this person is on a phone
+switching between two websites. Surface a trap when they hit it, not in advance.
 
-- **Give them the Project name to type** — this is the site name from intake. The "Review
-  configuration" page leaves **Project name** blank, and blank means Netlify generates something
-  like `dreamy-yeot-7cce7c`, which then appears in the production URL *and* every preview URL. Tell
-  them the exact string and the URL it produces; tell them to leave **Build settings** untouched.
-- **Expect "name already taken"** — the namespace is global. Offer your reserve alternates, make
-  clear it isn't their mistake, move on. Usually one retry.
-- **If the final name differs from what you scaffolded with, update the docs and push before
-  continuing.** The README's URLs and the deploy-preview pattern in `CLAUDE.md` were committed with
-  the original name and would otherwise point at a stranger's live site.
-- **Got a random name like `dreamy-yeot-7cce7c` anyway?** The Project name field was left blank.
-  Fix it now, not later, since the name appears in every preview link: in Netlify, open the project
-  → **Project configuration** (older accounts: **Site configuration**) → **Change project name** →
-  enter the intended name → Save. URL becomes `https://<name>.netlify.app`.
-
-Then the deploy button at the bottom — labelled **Deploy `<name>`** or **Deploy site** depending on
-the account. Tell them what to expect after clicking: a build that runs for a minute or two, then a
-green **Published** label and the URL `https://<name>.netlify.app`.
+- **The "describe your idea" box is the real hazard**, which is why it's the one warning that stays
+  inline. Someone told to "import your project" sees a box inviting them to describe what they
+  want, and typing their app idea there is the reasonable reading — it builds an unrelated
+  Netlify-generated project and spends their agent credits. The page also shows a "Low on credits"
+  banner that looks like a problem and isn't.
+- **If labels have shifted**, the shape is stable: *start a new project → skip anything offering to
+  build it for you → import from GitHub*.
+- **Project name is the only blank field.** Blank means Netlify invents `dreamy-yeot-7cce7c`, which
+  becomes the production URL *and* every preview URL. Build settings come from `netlify.toml` and
+  are already right.
+- **If they report a random name anyway:** Netlify → the project → **Project configuration**
+  (older accounts: **Site configuration**) → **Change project name** → save. Do it now; the name is
+  in every future preview link.
+- **If the name is taken**, offer a reserve alternate, make clear it isn't their mistake, move on.
+  Usually one retry.
+- **If the final name differs from what you scaffolded with**, update the docs and push before
+  continuing — the README URLs and `CLAUDE.md`'s deploy-preview pattern still name the old one and
+  would point at a stranger's site.
+- **Deploy button label** varies: **Deploy `<name>`** or **Deploy site**.
 
 **If they still hit "No repositories found"** after Part B, the grant didn't save or was applied to
 a different GitHub account than the one owning the project:
