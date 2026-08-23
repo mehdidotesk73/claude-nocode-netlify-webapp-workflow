@@ -66,6 +66,20 @@ Testing surfaced `rsync: command not found` — it isn't in this sandbox. But th
 
 `git archive HEAD | tar -x -C <dest>` is the right call: exactly the committed files, dotfiles included, `.git` and `node_modules` excluded by construction rather than by an exclude list you have to remember. Worth an `ls -A` on the destination to confirm `.claude/` landed, since everything downstream depends on it and nothing else would reveal its absence until much later.
 
+### Scaffolding by File Copy Means Every Project Is Frozen at Its Creation Date
+
+`git archive` is the right way to lay down the scaffold — it's the fix for `cp -R` dropping dotfiles — but it has a consequence nothing accounted for until a skill was written for it: the new project has **no git relationship to the template**. No remote, no shared history, no `git pull` path. A project created in March runs March's skills forever.
+
+That's fine for `src/`, `docs/` and `CLAUDE.md` — those are meant to diverge; they *are* the project. It's wrong for `.claude/skills/`, which is pure workflow machinery with no project content in it. Every bug found by one person's project (the blank Netlify project name, the `Build` vs `build` lockout, dead URLs in backticks) was fixed only in the template, where no existing project would ever see it.
+
+The `update-skills` skill closes it: shallow-clone the template, diff `.claude/skills/` only, ship the result through `ship-feature`. Three rules that matter more than the mechanics:
+
+**Never delete a local skill that's absent from the template.** Claude may have written a project-specific one. Absence upstream is not a deletion request.
+
+**Scope is the whole safety argument.** Skills are safe to overwrite wholesale *because* they carry nothing project-specific. The moment the same mechanism reaches for `CLAUDE.md`, it's deleting someone's personalization. If a shared-section improvement is wanted, port it by hand.
+
+**Merging doesn't update the session that merged it.** Skills load at session start, so the conversation that pulls the update finishes on the old copy — the same root cause as the `/reload-skills` finding. The hand-off has to say "start a new conversation when you're ready" or "all updated" is a lie the user will act on.
+
 ### Mobile Autocapitalization Silently Breaks Exact-Match Identifiers
 
 Told to add a required status check named `build`, a user on iOS typed it into GitHub's search box and got `Build` — the keyboard capitalized the first letter, as mobile keyboards do by default in text fields. GitHub duly offered **+ Add Build · Any source**.

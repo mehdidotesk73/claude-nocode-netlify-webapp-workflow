@@ -408,6 +408,13 @@ Two rules that hold regardless:
 - **The user merges, not you.** They can't merge what they can't find, so a PR
   turn always ends with the links.
 
+**The skills in `.claude/skills/` are a copy, not a subscription.** This project
+was scaffolded from a template by file copy, so fixes made to that template since
+never arrive on their own. The **`update-skills`** skill pulls them in. Worth
+offering when a step in setup or shipping goes wrong in a way that sounds like a
+known bug — but don't run it mid-feature; it's housekeeping, not a fix for
+whatever they're actually asking about.
+
 ## Build & verify
 
 - **Type-check + build:** `npm run build` (runs `vue-tsc -b && vite build`).
@@ -453,6 +460,7 @@ src/
   finish-setup/SKILL.md    scaffold personalization + one-time hosting setup
   ship-feature/SKILL.md    the change loop: branch → build → PR → links → doc gate
   add-github-pages/SKILL.md   optional: a Netlify-independent production mirror, on request
+  update-skills/SKILL.md   pull newer skills from the template this project was copied from
 docs/
   TODO.md                  living backlog (Done / Next branch / Housekeeping)
   experience.md            what didn't work + per-merge version history
