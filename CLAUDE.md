@@ -97,8 +97,11 @@ that it didn't happen. Every guided step follows this shape:
    are" is dangerous when one field on the page is blank and required; say which is which.
 4. **Describe the successful result concretely** — the URL they'll get, the label that turns green,
    the text that appears. This is how they know it worked without understanding what happened.
-5. **Close with an `AskUserQuestion` confirmation gate.** Never move to the next step on silence or
-   a bare "done" — a user who did something slightly different will say "done" in good faith. Offer:
+5. **Close with an `AskUserQuestion` confirmation gate — end the turn on the tool call itself,**
+   not on prose inviting a reply. Instructions posted as text and then waiting leaves the user
+   unsure whether you're working or blocked, and gives them nothing to click. Never move to the
+   next step on silence or a bare "done" either — a user who did something slightly different will
+   say "done" in good faith. Offer:
    - **"Yes — <restate what they did and what they should now be seeing>"** — spelled out, so
      selecting it is an actual claim about the result and not just "next". E.g. *"Yes — I clicked
      Deploy site and the project page shows Published with the URL grocery-assistant.netlify.app."*
@@ -148,14 +151,49 @@ that it didn't happen. Every guided step follows this shape:
      (username, initials, or an extra word) and keep two alternates in reserve for the
      `finish-setup` skill, which is where the name meets reality.
 
-3. **Reflect it back and confirm before building anything.** Show what you understood in plain
-   language — no `<REF:*>` labels, no jargon — then gate on `AskUserQuestion`:
-   - **"Yes, that's right — go ahead"**
-   - **"Close, but something's off"** (free text for the correction)
+3. **Reflect it back, then gate on `AskUserQuestion` — the turn must end with that tool call, not
+   with prose.** A summary followed by "let me know if that's right" leaves them with nothing to
+   click and no idea whether you're waiting or working. Post the summary and the question in the
+   same turn.
 
-   Keep the summary short enough to check at a glance. State the site name and the address it
-   produces (`https://grocery-assistant-mehdi.netlify.app`), noting it may already be taken and
-   you'll have alternatives ready.
+   Use this shape — bolded label, plain sentence, no `<REF:*>` names and no jargon:
+
+   > Here's what I understood:
+   >
+   > **App:** A shopping list manager. You can add, edit, and remove items, each optionally tagged
+   > with a category (produce, frozen, etc.) and optionally linked to one or more preferred stores
+   > (Costco, Trader Joe's, etc.).
+   >
+   > **Key behavior:** Adding an item whose name already exists is blocked — instead you're
+   > prompted to edit the existing item rather than create a duplicate.
+   >
+   > **Shopping sessions:** You can start a session for the whole list, or for one specific store.
+   > Either way the session shows items organized by category so you can shop in order.
+   >
+   > **Proposed screens:**
+   > - List view — all items, with add/edit/remove, category, and store tags
+   > - Add/Edit item — name, category, store(s)
+   > - Start session — pick "All items" or a specific store
+   > - Session view — items grouped by category
+   >
+   > **No external data/APIs** — everything is self-contained, stored on your device.
+   >
+   > **Netlify site name:** `shopping-sync` → your live app will be at
+   > `https://shopping-sync.netlify.app` (this name might already be taken by someone else — if so
+   > I'll try `shopping-sync-mehdi` or `shopping-sync-app` as backups and let you know).
+
+   The middle sections vary by app — name them after what the person actually described, the way
+   "Key behavior" and "Shopping sessions" above came from their own emphasis. The fixed parts are:
+   **App**, **Proposed screens**, external data, and the site name with its URL and the
+   already-taken caveat.
+
+   Then the gate:
+   - **"Yes, that's right — go ahead"**
+   - **"Close, but something's off"** — free text for the correction
+
+   The screens list is doing the most work here. It's the first time they see their description
+   turned into something with a shape, and it's far easier to react to ("there should also be a
+   way to…") than an abstract question about requirements.
 
 4. **Ask targeted follow-ups only for genuine gaps** — something you couldn't infer and that
    changes what you'd build. One or two at most, in plain language, and only after the summary.
