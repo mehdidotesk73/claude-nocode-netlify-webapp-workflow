@@ -66,18 +66,13 @@ Testing surfaced `rsync: command not found` — it isn't in this sandbox. But th
 
 `git archive HEAD | tar -x -C <dest>` is the right call: exactly the committed files, dotfiles included, `.git` and `node_modules` excluded by construction rather than by an exclude list you have to remember. Worth an `ls -A` on the destination to confirm `.claude/` landed, since everything downstream depends on it and nothing else would reveal its absence until much later.
 
-### "Stateful" Is Four Different Problems, and Only One Needs a Database
+### Database Support Is for Live Apps, Not "Stateful" Apps
 
-The `add-database` skill first routed on "does the data outlive the browser", with everything that wasn't Supabase collapsed into `localStorage`. That framing misroutes, because *stateful* isn't one axis. The question that actually separates the cases is **who else has to agree about the data**:
+Recorded as posed. The examples carry the distinction better than any taxonomy built on top of them would:
 
-- **No external state** — a game you play, die, and replay. Dying with the tab is correct. Needs nothing, and adding persistence because it sounds more finished is a real failure mode.
-- **Device-local memory** — a checklist, preferences, a draft. One person, one browser. `localStorage`.
-- **Document-backed** — an accounting app over a CSV, an editor for a config file. The *file* is the source of truth; the app loads it, edits in memory, writes it back. Nothing is stored by the app at all.
-- **Coherence between running copies** — two people on one list, phone and laptop agreeing. Something outside every copy must hold the truth. This is the only one that needs a server.
-
-**The document-backed case is the one that gets misrouted**, because "read and write a CSV" sounds like storage. Sending it to a database changes the app's shape: the user's file stops being the artifact, and they've acquired an account and a service to hold a file they already owned.
-
-It also can't be promised casually on this template's target. **The File System Access API — editing a file in place — does not exist in Safari, iPhone included.** So the achievable shape there is load-via-file-input, save-via-download: a copy out, not a write back. And "a text file on the web" is readable via `fetch` when CORS allows, but not writable without a service behind it. Those constraints decide what the feature even is, so they belong in the conversation before the build, not after.
+> I think the database support is for live apps not stateful apps. Depends on what defines a state. But there can be an app that accesses a database to create some sort of coherencey between different running instances of the app. Another form of state is an app that links to a resource and loads into app states for example an accounting app that sets up connection to a text file on web or a csv local file that it has read and write access to, and allow reading the state, modifying the state and saving the state. The latter is a lower level of statefulness. And another level is like a flappy bird app game that does not keep highscores or anything. The app runs, you click play, you play the game, when you die your score is displayed and button for play again. No external state at all just an endless loop of internal states.
+>
+> Different forms of state might need different infrastructure.
 
 ### Netlify Doesn't Rebuild When You Change an Environment Variable
 
