@@ -460,6 +460,7 @@ src/
   finish-setup/SKILL.md    scaffold personalization + one-time hosting setup
   ship-feature/SKILL.md    the change loop: branch → build → PR → links → doc gate
   add-github-pages/SKILL.md   optional: a Netlify-independent production mirror, on request
+  add-database/SKILL.md    Supabase setup, when data must outlive one browser or be shared
   update-skills/SKILL.md   pull newer skills from the template this project was copied from
 docs/
   TODO.md                  living backlog (Done / Next branch / Housekeeping)

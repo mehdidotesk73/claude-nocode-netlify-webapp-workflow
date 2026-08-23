@@ -66,6 +66,16 @@ Testing surfaced `rsync: command not found` — it isn't in this sandbox. But th
 
 `git archive HEAD | tar -x -C <dest>` is the right call: exactly the committed files, dotfiles included, `.git` and `node_modules` excluded by construction rather than by an exclude list you have to remember. Worth an `ls -A` on the destination to confirm `.claude/` landed, since everything downstream depends on it and nothing else would reveal its absence until much later.
 
+### `using (true)` Is Not "Anyone With the Link"
+
+A Supabase walkthrough that otherwise went well described its RLS policies as making rows "readable/writable by anyone with a list's id — that's what link-only sharing means at the database level," and compared it to a Google Docs anyone-with-the-link share. The SQL was `create policy ... for all using (true)`, and that claim is wrong in a way worth keeping.
+
+`using (true)` grants the anon role **the entire table**. The client can `select *` and enumerate every row; it never has to know an id. Both values needed to do it — project URL and publishable key — are readable in the shipped JavaScript bundle, because that is what those values are for. The unguessable `gen_random_uuid()` stops someone *guessing* a link; it does nothing once they can just list the table. Google Docs actually enforces link-sharing server-side, so the analogy claims a property the database does not have.
+
+It's usually an acceptable trade-off — a shopping list between two people does not need more — and the fix is not always harder SQL. The fix is describing it accurately: *"keeps it away from anyone who wasn't sent the link, and off search engines; not private in a bank-account sense."* Real link-only enforcement needs table access revoked and `security definer` functions taking the id as an argument, which is a bigger piece of work and should be scoped as one.
+
+Same family as the disabled ruleset and the blank Netlify project name: **a setup that looks configured and enforces less than it appears to.** The difference here is that the gap lands in what Claude *tells* the user, not in what they clicked — which makes it harder to catch, since nothing ever fails.
+
 ### A Multi-Select Gate Without a Recommendation Is a Quiz the User Can't Pass
 
 The pre-merge doc gate listed its four surfaces neutrally and asked which to update. But the user is non-technical and did not read the diff — they have no basis for judging whether a branch touched "architecture" or made a help page wrong. Asking anyway pushes a decision onto the person least equipped to make it, and the rational responses are to tick everything or tick nothing, neither of which is a judgement.
