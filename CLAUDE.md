@@ -449,7 +449,7 @@ whatever they're actually asking about.
 src/
   App.vue                  header/footer shell (see docs/system-design.md §2) + tab/page content
   main.ts, pwa.ts          bootstrap; service-worker auto-update + reload
-  debug.ts                 logDebug() → on-screen log (mobile has no console)
+  debug.ts                 on-screen log: auto-captures errors + logDebug() (mobile has no console)
   env.d.ts                 ambient types: vite/client, PWA virtual module, __BUILD_ID__/__BUILD_TIME__
   api/                     external data fetch modules, if <REF:external-deps> apply
   lib/                     pure computation — plain functions over fetched data
@@ -488,12 +488,21 @@ package-lock.json              committed — CI runs `npm ci` and needs it
 
 ## Debugging on device (no console)
 
-- `logDebug(msg)` from `src/debug.ts` appends to the **on-screen log panel**
-  (expand via the footer build stamp). There's a **Copy log** button so the user
-  can paste values back.
-- When something's invisible/not-working on device, add a **one-shot, guarded**
-  diagnostic (in `onMounted`, wrapped in try/catch) and ask the user to copy the
-  log. Remove or quiet noisy logs before merge.
+- **Errors are captured automatically.** `installErrorCapture(app)` in
+  `main.ts` routes four sources into the on-screen log: Vue's
+  `errorHandler` (throws inside event handlers, hooks and watchers — the
+  "button does nothing" case), `console.error`/`console.warn`, `window.error`
+  (including failed resource loads), and `unhandledrejection`. Nobody has to
+  have anticipated the failure for it to be visible.
+- The footer shows **View logs** with a red count badge when errors exist;
+  the panel has **Copy log**, which includes build id, user agent and URL.
+  **Ask for it by name** — "tap View logs, then Copy log, and paste it here"
+  — rather than asking what they see. Repeated identical errors collapse to
+  `×N`, so a handler firing every tap can't flush the buffer.
+- `logDebug(msg, kind?)` still exists for deliberate diagnostics. When
+  something's invisible on device, add a **one-shot, guarded** one (in
+  `onMounted`, wrapped in try/catch) and ask for the log. Remove or quiet
+  noisy logs before merge.
 
 ## Reference docs
 

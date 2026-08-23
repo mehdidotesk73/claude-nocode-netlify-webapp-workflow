@@ -66,6 +66,18 @@ Testing surfaced `rsync: command not found` — it isn't in this sandbox. But th
 
 `git archive HEAD | tar -x -C <dest>` is the right call: exactly the committed files, dotfiles included, `.git` and `node_modules` excluded by construction rather than by an exclude list you have to remember. Worth an `ls -A` on the destination to confirm `.claude/` landed, since everything downstream depends on it and nothing else would reveal its absence until much later.
 
+### A Log Panel Nobody Writes To Is Just an Empty Box
+
+The scaffold shipped the *display* half of on-device debugging — a reactive buffer, a log panel, a **Copy log** button, an error-count dot — and none of the *capture* half. `main.ts` was three lines with no `errorHandler`, no `window.error` listener, no `unhandledrejection` handler. The only entries that ever appeared were ones someone had hand-written a `logDebug()` call for, which means the panel could only report failures that had already been anticipated. The user opens it after a button misbehaves and reads "No log entries yet."
+
+**The case that matters is not the white screen — it's the button that does nothing.** And that one has a specific trap: **Vue catches throws inside event handlers itself.** A handler that throws never reaches `window.onerror`; Vue routes it to `app.config.errorHandler`, and if that's unset the error is logged to a console the phone user cannot open. So the single most common user-visible failure was the one path a naive `window.onerror` would have missed.
+
+Four sources are needed, and each catches something the others don't: `app.config.errorHandler` (handlers, hooks, watchers), patched `console.error`/`warn` (library output, Vue's own warnings), `window.error` **in the capture phase** (plain script errors, plus failed image/script/stylesheet loads, which don't bubble), and `unhandledrejection` (the un-awaited `fetch` in an async handler). Patching the console needs care: bind the native methods *before* patching and have `logDebug` use those, or writing to the panel re-enters the patch and records itself.
+
+Two things that only matter because the user is non-technical: **repeated identical errors collapse to `×N`**, since a handler that throws on every tap would otherwise flush the one useful message out of a 100-entry buffer with copies of itself; and **`copyLog` has an `execCommand` fallback**, because `navigator.clipboard` needs a secure context and this is the only channel from the phone back to Claude — a silent failure there loses the entire bug report.
+
+Verified with Playwright against the built app rather than argued from the code: a throwing handler, a `console.error`, a rejected promise, a 404 image and five repeats all land in the panel, the footer badge turns red with the count, and **Copy log** sits inside the opened window. Worth doing because all four handlers were unverifiable by reading, and the sandbox can drive a real browser.
+
 ### Scaffolding by File Copy Means Every Project Is Frozen at Its Creation Date
 
 `git archive` is the right way to lay down the scaffold — it's the fix for `cp -R` dropping dotfiles — but it has a consequence nothing accounted for until a skill was written for it: the new project has **no git relationship to the template**. No remote, no shared history, no `git pull` path. A project created in March runs March's skills forever.

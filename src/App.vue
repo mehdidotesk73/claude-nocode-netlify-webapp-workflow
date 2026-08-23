@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import HelpModal from './components/HelpModal.vue'
-import { debugState, logDebug } from './debug'
+import { debugState, logDebug, logAsText } from './debug'
 import { reloadLatest } from './pwa'
 
 const buildId = __BUILD_ID__
@@ -22,19 +22,32 @@ function onDocClickUpdate(e: MouseEvent) {
 onMounted(() => document.addEventListener('click', onDocClickUpdate))
 onBeforeUnmount(() => document.removeEventListener('click', onDocClickUpdate))
 
-// Copy log buffer for debugging
+const errorCount = computed(() => debugState.logs.filter((l) => l.kind === 'error').length)
+
+// Copy the log so the user can paste it back to Claude. This is the only
+// channel from a phone with no console, so it gets a fallback: clipboard.*
+// needs a secure context, and a silent failure here loses the whole report.
 async function copyLog() {
-  const text = [
-    `build ${buildId} · ${buildTime}`,
-    ...debugState.logs.map((l) => `${l.time} [${l.kind}] ${l.msg}`),
-  ].join('\n')
+  const text = logAsText(buildId, buildTime)
   try {
     await navigator.clipboard.writeText(text)
-    copied.value = true
-    setTimeout(() => (copied.value = false), 1500)
   } catch {
-    logDebug('clipboard copy failed', 'error')
+    const ta = document.createElement('textarea')
+    ta.value = text
+    ta.setAttribute('readonly', '')
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0'
+    document.body.appendChild(ta)
+    ta.select()
+    ta.setSelectionRange(0, text.length) // iOS ignores select() alone
+    const ok = document.execCommand('copy')
+    document.body.removeChild(ta)
+    if (!ok) {
+      logDebug('Could not copy automatically — select the log text and copy it by hand.', 'warn')
+      return
+    }
   }
+  copied.value = true
+  setTimeout(() => (copied.value = false), 1500)
 }
 
 // Reload to latest build
@@ -94,29 +107,47 @@ onMounted(() => {
     </div>
 
     <footer class="debug">
-      <button class="debug-toggle" @click="showDebug = !showDebug">
-        build {{ buildId }}
-        <span v-if="debugState.logs.some((l) => l.kind === 'error')" class="err-dot">
-          ● {{ debugState.logs.filter((l) => l.kind === 'error').length }} error(s)
-        </span>
-        <span class="chev">{{ showDebug ? '▲' : '▼' }}</span>
-      </button>
-      <button
-        class="reload-btn"
-        :class="{ 'update-ready': updateAvailable }"
-        @click="onReloadLatest"
-      >
-        {{ updateAvailable ? 'Update ready — Reload' : 'Reload latest' }}
-      </button>
-      <button v-if="showDebug" class="reload-btn" @click="copyLog">
-        {{ copied ? 'Copied ✓' : 'Copy log' }}
-      </button>
-      <ul v-if="showDebug" class="debug-log">
-        <li v-if="!debugState.logs.length" class="muted">No log entries yet.</li>
-        <li v-for="(l, i) in debugState.logs" :key="i" :class="l.kind">
-          <span class="muted">{{ l.time }}</span> {{ l.msg }}
-        </li>
-      </ul>
+      <div class="debug-bar">
+        <span class="build-stamp">build {{ buildId }}</span>
+
+        <button
+          class="reload-btn logs-btn"
+          :class="{ 'has-errors': errorCount > 0 }"
+          @click="showDebug = !showDebug"
+        >
+          {{ showDebug ? 'Hide logs' : 'View logs' }}
+          <span v-if="errorCount" class="err-count">{{ errorCount }}</span>
+        </button>
+
+        <button
+          class="reload-btn"
+          :class="{ 'update-ready': updateAvailable }"
+          @click="onReloadLatest"
+        >
+          {{ updateAvailable ? 'Update ready — Reload' : 'Reload latest' }}
+        </button>
+      </div>
+
+      <div v-if="showDebug" class="log-window">
+        <div class="log-head">
+          <span class="muted">
+            {{ debugState.logs.length }} {{ debugState.logs.length === 1 ? 'entry' : 'entries' }}
+          </span>
+          <button class="reload-btn" @click="copyLog">
+            {{ copied ? 'Copied ✓' : 'Copy log' }}
+          </button>
+        </div>
+        <p class="log-hint muted">
+          Something not working? Tap <strong>Copy log</strong> and paste it to Claude.
+        </p>
+        <ul class="debug-log">
+          <li v-if="!debugState.logs.length" class="muted">No log entries yet.</li>
+          <li v-for="(l, i) in debugState.logs" :key="i" :class="l.kind">
+            <span class="muted">{{ l.time }}</span> {{ l.msg
+            }}<span v-if="l.count > 1" class="repeat">×{{ l.count }}</span>
+          </li>
+        </ul>
+      </div>
     </footer>
 
     <HelpModal :open="showHelp" :initial-doc="helpDoc" @close="showHelp = false" />
@@ -228,26 +259,62 @@ onMounted(() => {
   padding-top: 0.5rem;
 }
 
-.debug-toggle {
-  border: none;
-  background: none;
+.debug-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.build-stamp {
   color: var(--text-muted);
   font-size: 0.72rem;
-  padding: 0.2rem 0;
-  cursor: pointer;
+  margin-right: auto;
 }
 
-.debug-toggle:hover {
-  color: var(--text);
-}
-
-.err-dot {
+/* An error the user can't notice is an error they won't report — so the
+   button that opens the log carries the count, in the danger colour. */
+.logs-btn.has-errors {
+  border-color: var(--danger);
   color: var(--danger);
-  margin-left: 0.4rem;
+  font-weight: 600;
+}
+
+.err-count {
+  display: inline-block;
+  min-width: 1.05rem;
+  margin-left: 0.3rem;
+  padding: 0 0.25rem;
+  border-radius: 999px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 0.65rem;
+  line-height: 1.05rem;
+  text-align: center;
+}
+
+.log-window {
+  margin-top: 0.5rem;
+}
+
+.log-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.log-hint {
+  margin: 0.25rem 0 0;
+  font-size: 0.7rem;
+}
+
+.repeat {
+  margin-left: 0.35rem;
+  opacity: 0.65;
 }
 
 .reload-btn {
-  margin-left: 0.6rem;
   font-size: 0.72rem;
   padding: 0.15rem 0.5rem;
   background: var(--bg-elev-2);
@@ -261,10 +328,6 @@ onMounted(() => {
   border-color: var(--accent-blue);
   color: var(--text);
   font-weight: 600;
-}
-
-.chev {
-  margin-left: 0.3rem;
 }
 
 .debug-log {
