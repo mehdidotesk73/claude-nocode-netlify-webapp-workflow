@@ -66,6 +66,18 @@ Testing surfaced `rsync: command not found` — it isn't in this sandbox. But th
 
 `git archive HEAD | tar -x -C <dest>` is the right call: exactly the committed files, dotfiles included, `.git` and `node_modules` excluded by construction rather than by an exclude list you have to remember. Worth an `ls -A` on the destination to confirm `.claude/` landed, since everything downstream depends on it and nothing else would reveal its absence until much later.
 
+### Netlify Doesn't Rebuild When You Change an Environment Variable
+
+The database worked on branch previews, then didn't, and a fresh rebuild fixed it with no code change and no config change. The variables had been set on all scopes from the start, so the configuration screen gave no hint anything was wrong.
+
+The mechanism: **Vite inlines `VITE_*` into the bundle at build time**, and **Netlify does not trigger a deploy when an environment variable is edited**. A deploy that ran before the variables existed — or before a scope was widened — has `undefined` compiled into it permanently. Editing the variable afterwards changes the *next* build, not the artifact currently being served. So the dashboard shows a correct configuration, the deployed JavaScript contains `undefined`, and the two never reconcile until something else causes a build.
+
+That makes it a nasty diagnostic: every place you'd look to check the configuration says it's fine. The tell is the deploy's timestamp versus the variable's, not its value. Fix is **Deploys → Trigger deploy → Clear cache and deploy site**.
+
+Two things compound it. The service worker can serve a stale bundle on top of this, so a fixed deploy can still look broken on the user's phone until **Reload latest**. And the graceful `supabase = url && key ? createClient(...) : null` guard — which is right, since it keeps the required `build` check green in CI where no variables are set — converts the whole failure into a feature that silently does nothing. Pairing that guard with `logDebug('Supabase not configured — sharing disabled', 'warn')` is what turns "sharing is broken" into a log line naming the cause.
+
+Same family as the service-worker cache entry: **the thing serving your app is not the thing you just configured.** Anywhere a value is compiled in rather than read at runtime, changing it is inert until a rebuild.
+
 ### `using (true)` Is Not "Anyone With the Link"
 
 A Supabase walkthrough that otherwise went well described its RLS policies as making rows "readable/writable by anyone with a list's id — that's what link-only sharing means at the database level," and compared it to a Google Docs anyone-with-the-link share. The SQL was `create policy ... for all using (true)`, and that claim is wrong in a way worth keeping.

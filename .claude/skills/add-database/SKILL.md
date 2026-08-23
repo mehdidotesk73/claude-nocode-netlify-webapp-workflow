@@ -166,6 +166,14 @@ tidiness. But check both of these, because each one fails *silently*:
 - **Scope them to Deploy Previews, not just Production.** Netlify scopes per context. Set to
   Production only, every PR preview — the user's sole test surface — gets no database and looks
   broken while the live site works.
+- **Set the variables *before* the build, and redeploy after any change.** This is the one that
+  actually bites, because everything looks correct while it's broken. `VITE_*` values are baked
+  into the bundle at build time, and **Netlify does not rebuild when you edit an environment
+  variable** — so a deploy that ran before the variables existed has `undefined` compiled into it
+  permanently. The user then checks Netlify, sees both variables set on all scopes, and reasonably
+  concludes the configuration isn't the problem. Fix: **Deploys → Trigger deploy → Clear cache and
+  deploy site**. When a database "doesn't work" on a deploy whose variables look right, check
+  whether that deploy predates them before debugging anything in the code.
 
 **Guard the missing case, and say so in the log.** The client should degrade rather than crash:
 
