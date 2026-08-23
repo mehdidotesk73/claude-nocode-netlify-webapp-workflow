@@ -297,7 +297,7 @@ that it didn't happen. Every guided step follows this shape:
     > 3. **Before typing anything**, look just above the message box for a row of small buttons —
     >    one shows a repository name (right now it'll say `<old-repo>`). Tap it and pick
     >    **`<new-repo>`** from the list. If it also asks for a branch, choose **`main`**.
-    > 4. Now type this and send it:
+    > 4. Copy the prompt below and paste it into that new conversation:
     >
     >    ```
     >    Finish setting up this project.
@@ -305,9 +305,6 @@ that it didn't happen. Every guided step follows this shape:
     >
     > That's it — I'll pick up exactly where we left off. Everything we talked about is saved in
     > your project, so nothing is lost by starting fresh.
-    >
-    > If your screen doesn't look like that, send me a screenshot and I'll point you to the right
-    > button.
 
     **Spell out the navigation like that — don't compress it to "start a new session on
     `<new-repo>`".** That phrasing assumes they know what a session is, where new ones come from,
