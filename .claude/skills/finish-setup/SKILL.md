@@ -132,6 +132,10 @@ trouble.
 1. **Say what they'll be looking at** — which site, which page, what it's headed.
 2. **Give exact values, never placeholders.** If a field needs `grocery-assistant`, write
    `grocery-assistant`. They should be copying, not deciding.
+   - **Never put a URL in backticks.** Code formatting suppresses auto-linking, so the address
+     arrives as dead text — on a phone, that's a long string to select and copy by hand, which is
+     worse than the click-path the link was meant to replace. Write URLs bare, in running text.
+     Backticks stay for things they *type*: names, values, branches.
 3. **Name the field that needs their input, and the ones that don't.** "Leave the settings as they
    are" is wrong when one field on the page is blank and required.
    - **When an exact string matters, say so and say the casing.** They're typing on a phone, and
@@ -196,7 +200,7 @@ Wait for confirmation that Part B saved.
 > 5. Leave everything else as it is and click **Deploy**
 >
 > It'll build for a minute or two, then show **Published** and your address:
-> `https://<site-name>.netlify.app`
+> https://<site-name>.netlify.app
 
 **Everything below is for you, not for them.** Don't recite it — a five-step list with a caveat
 attached to each step is harder to follow than the task itself, and this person is on a phone
@@ -252,7 +256,7 @@ trap as Netlify's blank Project name:
 
 > One more setup step, on GitHub. Open this link — it's your project's rules page:
 >
-> `https://github.com/<owner>/<repo>/settings/rules`
+> https://github.com/<owner>/<repo>/settings/rules
 >
 > 1. Click **New ruleset → New branch ruleset** (the green button, top right)
 > 2. **Ruleset Name**: `protect main`
