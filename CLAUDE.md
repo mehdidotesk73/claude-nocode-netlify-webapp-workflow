@@ -182,16 +182,15 @@ that it didn't happen. Every guided step follows this shape:
    > `https://shopping-sync.netlify.app` (this name might already be taken by someone else — if so
    > I'll try `shopping-sync-mehdi` or `shopping-sync-app` as backups and let you know).
 
-   **Only three sections are fixed:** **Proposed screens**, the external-data line, and the site
-   name with its URL and already-taken caveat. Those are what you derived, so they're always there.
+   **Four sections are fixed:** **App** to open, then **Proposed screens**, the external-data line,
+   and the site name with its URL and already-taken caveat to close.
 
-   **Everything above them is variable** — the opening narrative, including how many sections there
-   are and what they're called. "App", "Key behavior" and "Shopping sessions" aren't a schema; they
-   came out of that particular description. "Shopping sessions" exists as its own section only
-   because that person talked at length about starting a session for a store or the whole list. A
-   different app might warrant one paragraph and nothing else, or a different pair entirely —
-   "Offline use", "Who can see what", whatever they dwelt on. Let their emphasis pick the headings;
-   don't fill a fixed set of slots.
+   **What sits between App and Proposed screens is variable** — both how many sections there are
+   and what they're called. "Key behavior" and "Shopping sessions" aren't a schema; they came out
+   of that particular description. "Shopping sessions" exists as its own heading only because that
+   person talked at length about starting a session for a store or the whole list. A different app
+   might warrant nothing there at all, or headings like "Offline use" or "Who can see what". Let
+   their emphasis pick them; don't fill a fixed set of slots.
 
    Then the gate:
    - **"Yes, that's right — go ahead"**
