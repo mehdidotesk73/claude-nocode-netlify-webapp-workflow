@@ -240,3 +240,23 @@ Two defences now, because either alone can be bypassed:
 General shape: **when you tell a model not to do something, say what to do instead in the same
 breath.** Refusal without redirection produces a confidently wrong answer to a question the user
 didn't ask — which is harder to notice than the failure being prevented.
+
+### An Enumerated File List Is a Bug Waiting for the Next File
+
+`finish-setup` personalized README, `CLAUDE.md`, `docs/experience.md` and `docs/TODO.md` — a list
+written when those were all the files that needed it. `docs/concepts/overview.md` was added later
+with two `<REF:*>` placeholders in it and never got added to the list, so real projects shipped with
+literal `<REF:purpose>` **rendered in the app's Help modal**, visible to whoever uses the app.
+
+Worse than a scruffy doc, and invisible during setup: nothing about personalization fails when a
+file is skipped, because the list is the only thing that knows the file exists.
+
+The fix isn't another list entry — that's the same bug with a longer list. It's a **verification
+that doesn't depend on remembering**: after personalizing, grep the repo for `<REF:` and require it
+to come back empty. Any hit is a file the list forgot, which makes the omission self-reporting the
+first time it happens rather than after it reaches users.
+
+Second instance of this exact shape in one session: `finish-setup` also pruned `docs/experience.md`
+against a hardcoded keep-list, which went stale the moment the template gained an entry and would
+have deleted good material. **Whenever a skill enumerates files or sections, ask what happens when
+the set changes** — and prefer a check over a list.

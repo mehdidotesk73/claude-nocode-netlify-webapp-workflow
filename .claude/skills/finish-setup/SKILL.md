@@ -75,12 +75,31 @@ be one push, not a branch and PR.
   - [ ] First feature: <their first described feature>
   ```
 
+- **`docs/concepts/overview.md` — fill it in; this one is user-facing.** It ships with
+  `<REF:purpose>` and `<REF:UI-shape>` in it, and it is **rendered inside the app's Help modal** —
+  so an unfilled placeholder isn't a scruffy doc, it's `<REF:purpose>` displayed to whoever uses
+  the app. Substitute both, in plain language aimed at someone using the app rather than building
+  it. The generic Q&A below them (PWA caching, offline, reporting a bug) is already written for end
+  users — keep it.
+
 - **`.claude/skills/` — leave untouched.** Already generic; nothing to personalize.
 
 - **`docs/setup-brief.md` — delete it.** Its whole job was carrying the intake across the repo
   switch, and that's done. Removing it is also what marks setup as no longer pending: the guard at
   the top of `CLAUDE.md` keys off its presence, and a stripped `CLAUDE.md` plus an absent brief are
   two independent reasons a later session won't try to re-bootstrap this project.
+
+**Then sweep for stragglers, don't trust this list.** A file added to the template later won't be
+on it — that is exactly how `docs/concepts/overview.md` shipped unfilled to real projects. Before
+moving on:
+
+```
+grep -rn "<REF:" . --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.claude
+```
+
+It must come back empty. (`.claude/skills/` is excluded because the skills discuss `<REF:*>` as a
+concept; they contain no placeholders to fill.) Anything it finds is a file this list forgot —
+fill it, and say so, since the omission is a template bug worth fixing at the source.
 
 Verify `npm run build` passes, commit (e.g. "Personalize scaffold for `<project name>`"), and push
 directly to `main`.
@@ -102,6 +121,7 @@ Two reasons this is worth doing here rather than later:
   fix, rather than as a mysteriously stuck first PR.
 
 If the run fails, fix it before continuing; a red `build` becomes a required check shortly.
+
 
 ## Show them where they are
 
