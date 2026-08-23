@@ -240,3 +240,19 @@ Two defences now, because either alone can be bypassed:
 General shape: **when you tell a model not to do something, say what to do instead in the same
 breath.** Refusal without redirection produces a confidently wrong answer to a question the user
 didn't ask — which is harder to notice than the failure being prevented.
+
+### A Multi-Line Fenced Block Lost Its Copy Button
+
+Rewriting the bootstrap prompt from one line to a formatted multi-line block cost it the **copy
+button** in GitHub's mobile app, so the user had to select ~350 characters of text by hand on a
+phone — to fix a paste-prompt problem. The old single-line version had the button.
+
+The exact rule GitHub's mobile renderer uses wasn't established (it can't be tested from the
+sandbox), so this is recorded as "reverted to the shape that demonstrably worked" rather than as a
+diagnosis. The prompt is now one long line; it scrolls sideways, which doesn't matter when the
+button is what you tap.
+
+The reusable part: **for text a user is meant to copy, how it copies outranks how it reads.** A
+prettier block that has to be hand-selected is worse than an ugly one with a button. Check the
+affordance on the surface the reader actually uses — and when a formatting change is cosmetic, note
+that the previous shape was known-good before replacing it.
