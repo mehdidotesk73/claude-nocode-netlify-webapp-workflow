@@ -1,0 +1,5 @@
+# Files that belong to the template itself and must NOT land in scaffolded
+# projects. The scaffold is copied with `git archive HEAD | tar -x`, which
+# honours export-ignore — so anything listed here stays behind.
+/docs/template-backlog.md export-ignore
+/.gitattributes export-ignore

@@ -273,6 +273,10 @@ that it didn't happen. Every guided step follows this shape:
    all. `git archive` copies exactly the committed files, keeps dotfiles, and excludes `.git` and
    `node_modules` without needing an exclude list.
 
+   It also honours `export-ignore` in `.gitattributes`, which is how a couple of template-only
+   files (`docs/template-backlog.md`, `.gitattributes` itself) stay behind. Their absence from a
+   scaffolded project is deliberate — don't copy them in by hand.
+
    **Confirm `.claude/skills/` arrived** before committing — `ls -A` the destination. Everything
    after this step depends on it.
 
