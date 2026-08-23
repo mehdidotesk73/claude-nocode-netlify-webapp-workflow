@@ -241,18 +241,28 @@ General shape: **when you tell a model not to do something, say what to do inste
 breath.** Refusal without redirection produces a confidently wrong answer to a question the user
 didn't ask — which is harder to notice than the failure being prevented.
 
-### A Multi-Line Fenced Block Lost Its Copy Button
+### The Copy Button Was Never Ours to Fix
 
-Rewriting the bootstrap prompt from one line to a formatted multi-line block cost it the **copy
-button** in GitHub's mobile app, so the user had to select ~350 characters of text by hand on a
-phone — to fix a paste-prompt problem. The old single-line version had the button.
+The bootstrap prompt appeared without a copy button, and the block had recently changed from one
+line to a formatted multi-line one, so the reformatting looked like the cause. It wasn't. **The
+GitHub mobile app does not render copy buttons on code blocks at all**; GitHub on the web — mobile
+browser and desktop — does. Nothing about the markdown mattered.
 
-The exact rule GitHub's mobile renderer uses wasn't established (it can't be tested from the
-sandbox), so this is recorded as "reverted to the shape that demonstrably worked" rather than as a
-diagnosis. The prompt is now one long line; it scrolls sideways, which doesn't matter when the
-button is what you tap.
+Two formatting changes were shipped chasing that: collapsing back to a single line, then adding a
+`text` language tag. Both were speculation dressed as fixes, and the first was even written up here
+as "reverted to the shape that demonstrably worked" — a conclusion with no evidence behind it,
+recorded as though there were.
 
-The reusable part: **for text a user is meant to copy, how it copies outranks how it reads.** A
-prettier block that has to be hand-selected is worse than an ugly one with a button. Check the
-affordance on the surface the reader actually uses — and when a formatting change is cosmetic, note
-that the previous shape was known-good before replacing it.
+What should have happened first: **ask which surface they're looking at**, and whether *any* code
+block on the page has the button. One question would have ruled out the entire markdown theory
+before the first commit. The signal that this was needed was already there — two fixes in a row had
+failed to change anything, which is the point to stop and gather information rather than form a
+third hypothesis.
+
+Two things did survive, on their own merits rather than as copy-button fixes: the prompt is now one
+short sentence instead of ~350 characters, because the long version duplicated guidance that
+`CLAUDE.md` already opens with; and the README tells app readers to open the repo in a browser.
+
+The reusable part: **when a fix doesn't work twice, the next move is a question, not another fix.**
+And don't record a guess in the notes file as if it were a finding — a wrong entry here is worse
+than no entry, because the next session trusts it.

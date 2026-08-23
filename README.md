@@ -17,9 +17,12 @@ When you paste the prompt below into Claude Code:
 
 1. **Copy this exact prompt** and paste it into Claude Code:
 
-```text
+```
 Set up a new webapp for me. Read the instructions at https://github.com/mehdidotesk73/claude-nocode-netlify-webapp-workflow/blob/main/CLAUDE.md and follow them.
 ```
+
+> Reading this in the **GitHub mobile app**? It doesn't render copy buttons on code blocks — open
+> the repo in a browser instead (mobile or desktop), where the block has one.
 
 **Keep the link to `CLAUDE.md`** — that exact file, not just the repo. A Claude Code session is
 always attached to *some* repository, and a bare repo link is not an instruction to read anything:
