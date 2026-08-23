@@ -206,6 +206,16 @@ Two lessons, and the second is the more general one:
 
 Recovery is easy but should happen immediately: **Project configuration → Change project name**.
 
+### A Guided Step Needs a Link and a Value for Every Required Field
+
+The branch-protection step told the user "Go to your repo on GitHub → Settings → Rules → Rulesets" and then listed seven instructions that never supplied a **Ruleset Name** — a field GitHub requires and leaves blank. Two failures in one message, and both had already been fixed once, elsewhere:
+
+**A navigation path is not a link.** Four hops through a settings menu someone has never opened, on a phone, is work the message could have done for them. Deep links exist: `https://github.com/<owner>/<repo>/settings/rules`. Give the URL and keep the click-path as a one-line fallback for when it doesn't resolve.
+
+**Every field the form requires needs a value in the message.** This is the same bug as Netlify's blank Project name, one page later. The instruction covered what to tick and what to leave alone, and simply had nothing to say about the field at the top — so the user stops, mid-step, holding a decision the instructions implied wouldn't come up. If the value genuinely doesn't matter, that's still a reason to supply one (`protect main`) rather than to omit it; "any name works" is a thing to know, not a thing to have to invent.
+
+The general form: **walk the actual form, field by field, and check the message accounts for each one** — including the ones that don't matter. Steps get written from the interesting parts (which rules, which checks) and the boring required field at the top is what gets dropped.
+
 ### GitHub Pages Was Dropped — Netlify Was Already Doing the Job
 
 The original design (carried over from the source project this template generalized) was Netlify for previews, GitHub Pages for production — mirroring a setup where Pages predated Netlify's adoption. But connecting a GitHub repo to Netlify makes it deploy `main` as **production** automatically, with zero extra config: that's Netlify's default behavior for whatever branch is marked as the repo's default. So by the time GitHub Pages setup was even reached, Netlify was already serving the exact same content as "production" at its own URL. GitHub Pages wasn't providing anything Netlify didn't; it was a second copy of the same job, on a separate pipeline, that could drift from the first one if either half broke independently — which is exactly what the "Source must be GitHub Actions" and "asset paths must be base-relative" gotchas were: failure modes of the redundant copy, not of the thing users actually needed.

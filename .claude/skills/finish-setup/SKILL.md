@@ -246,17 +246,45 @@ This is what makes every change arrive as a pull request, and a pull request is 
 Netlify deploy preview. Without it, work goes straight onto `main` with no preview link and nothing
 for the user to review — the loop this whole template is built around stops existing, silently.
 
-Use a **branch ruleset** (the green "Add branch ruleset" button), not the classic rule beside it:
+Send something close to this, and no longer. **Give the link, not a click-path**, and **give the
+ruleset name as a value they copy** — it's a required field with nothing in it, the same shape of
+trap as Netlify's blank Project name:
 
-- **Enforcement status: Active** — starts at *Disabled*, so a ruleset can be fully configured and
-  enforce nothing. Have them confirm it lists as Active.
-- **Bypass list: empty** — this is what applies the rule to repo admins, including **you**. After
-  this your own pushes to `main` are rejected. That's the point: it makes "always work on a branch"
-  enforced rather than remembered.
-- Target: **default branch**
-- Rules: **Require a pull request before merging** ✅ with **Required approvals: 0** (they can't
-  approve their own PRs) · **Require status checks to pass** ✅ with `build` · **Block force
-  pushes** ✅. Leave **Require branches to be up to date** off.
+> One more setup step, on GitHub. Open this link — it's your project's rules page:
+>
+> `https://github.com/<owner>/<repo>/settings/rules`
+>
+> 1. Click **New ruleset → New branch ruleset** (the green button, top right)
+> 2. **Ruleset Name**: `protect main`
+> 3. **Enforcement status**: change it from **Disabled** to **Active** — it won't do anything
+>    otherwise
+> 4. Under **Target branches**, click **Add target → Include default branch**
+> 5. Tick **Require a pull request before merging**, then set **Required approvals** to **0**
+> 6. Tick **Require status checks to pass**, click **Add checks**, type `build`, and pick **build**
+>    from the list that appears — select it, don't type it in as new
+> 7. Tick **Block force pushes**, then click **Create** at the bottom
+>
+> You should land back on the rules page with **protect main** listed and **Active** beside it.
+
+If the link 404s or they can't reach it, the click-path is **your repo on GitHub → Settings → Rules
+→ Rulesets**.
+
+**Everything below is for you, not for them.** Same rule as Part C — surface a trap when they hit
+it, not in advance.
+
+- **Enforcement status is the silent failure.** It defaults to *Disabled*, so a ruleset can be
+  fully and correctly configured and enforce nothing at all. This is why the gate's "yes" option
+  must restate **Active**, not just "created".
+- **Bypass list: empty** — leaving it untouched is what applies the rule to repo admins, including
+  **you**. After this your own pushes to `main` are rejected. That's the point: it makes "always
+  work on a branch" enforced rather than remembered. Don't mention it unless they ask why a push
+  failed.
+- **Required approvals: 0** matters because they can't approve their own PRs — any higher number
+  locks them out of their own repo permanently.
+- Leave **Require branches to be up to date** off. It forces a merge-and-rerun of CI on every PR
+  whenever `main` moves, which is friction with no benefit at this scale.
+- The **ruleset name is free-form** — `protect main` is given only so the field isn't blank. Any
+  value works; nothing matches on it.
 
 The `build` check comes from `.github/workflows/ci.yml`, which builds every PR. Requiring it stops a
 non-compiling change reaching `main` — worth more here than usual, since the user can't run the app
@@ -295,6 +323,13 @@ If `build` isn't listed anyway:
 **If the controls are greyed out or missing entirely**, the repo is private on a free GitHub plan —
 branch protection needs a paid plan there. Offer making the repo public (Settings → General →
 bottom → Change visibility), or proceed by convention and say plainly that nothing is enforcing it.
+
+**Gate on the enforcement state, not on "created."** The `AskUserQuestion` options here should be:
+
+- **"Yes — the rules page lists `protect main` as Active"**
+- **"It's listed, but it says Disabled"** — send them back in to flip Enforcement status; this is
+  the common miss and it looks like success
+- **"It didn't work as expected"**
 
 ## Done
 
