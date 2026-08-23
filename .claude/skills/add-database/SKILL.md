@@ -83,8 +83,13 @@ saying otherwise is a promise the database doesn't keep.
 
 Same shape as the Netlify steps in `finish-setup`, and the same conventions apply — exact values
 never placeholders, bare URLs never backticked, one part at a time, each ending on an
-`AskUserQuestion` gate whose "yes" restates what they should be seeing. Open with the whole list so
-they know how long this is:
+`AskUserQuestion` gate whose "yes" restates what they should be seeing.
+
+**Especially here: the step goes in the message, not in the `AskUserQuestion` question.** This part
+hands over a dashboard link and a block of SQL, and both are destroyed by the question field — it
+renders as plain text, so the link stops being tappable and the SQL has to be selected by hand on a
+phone. Post the part as a markdown message with the SQL in a fenced block, *then* make the tool call
+with a one-line question. Open with the whole list so they know how long this is:
 
 > Before I can write any of this, the app needs a real database to talk to. It's a free Supabase
 > account and three short steps — about ten minutes, and it's a one-time thing.

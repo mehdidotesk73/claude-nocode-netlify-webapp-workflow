@@ -153,6 +153,26 @@ trouble.
    - A third option when there's a known fork worth catching, e.g. *"It worked but the URL has a
      random name like dreamy-yeot-7cce7c."*
 
+   **The steps go in the message. Only the question goes in the question.** This is the one that
+   has actually broken steps in testing. `AskUserQuestion` renders its `question` as plain text —
+   **no clickable links, no code blocks, no copy button.** A step whose body is packed into that
+   field reaches the user as a wall of unformatted text with a dead URL they must retype and SQL
+   they must select by hand on a phone. Both of the things you worked hardest to give them — the
+   link and the copyable value — are destroyed by putting them there.
+
+   So every guided step is two parts, in this order:
+
+   1. **A normal assistant message** carrying the whole step — the progress block, the numbered
+      instructions, the URL, any SQL in a fenced code block. This renders as markdown, so links are
+      tappable and code gets a copy control.
+   2. **Then the `AskUserQuestion` call**, whose `question` is one short line pointing back at it:
+      *"Did that work?"* or *"Is the ruleset showing as Active?"* The options carry the restated
+      outcomes.
+
+   Never restate the instructions inside the question, and never put a URL, a block of SQL, or any
+   value to be copied there. "The turn ends on the gate" means the tool call is the last thing in
+   the turn — not that the turn is *only* the tool call.
+
 When they report a problem, diagnose from what they describe before sending them anywhere new. Ask
 for a screenshot if it's ambiguous — faster than three rounds of questions.
 
