@@ -66,6 +66,16 @@ Testing surfaced `rsync: command not found` — it isn't in this sandbox. But th
 
 `git archive HEAD | tar -x -C <dest>` is the right call: exactly the committed files, dotfiles included, `.git` and `node_modules` excluded by construction rather than by an exclude list you have to remember. Worth an `ls -A` on the destination to confirm `.claude/` landed, since everything downstream depends on it and nothing else would reveal its absence until much later.
 
+### A Multi-Select Gate Without a Recommendation Is a Quiz the User Can't Pass
+
+The pre-merge doc gate listed its four surfaces neutrally and asked which to update. But the user is non-technical and did not read the diff — they have no basis for judging whether a branch touched "architecture" or made a help page wrong. Asking anyway pushes a decision onto the person least equipped to make it, and the rational responses are to tick everything or tick nothing, neither of which is a judgement.
+
+Claude is the only participant who knows what changed, so the recommendation has to be worked out *before* the question is posed and carried in the options themselves: recommended ones first with **(Recommended)**, and each description naming the specific thing in *this* branch that triggers it. "The Browse page got a category filter, so its help page now describes the old behaviour" is a fact they can accept or reject. "If UI changed, update the help doc" is homework.
+
+**The failure mode to avoid is recommending all four defensively.** If everything is always recommended the recommendation carries no information, and it's the neutral list again with more words. Actively clearing a surface — "nothing here changed the architecture" — is worth as much as flagging one.
+
+Generalizes past this gate: whenever a question is posed to someone who can't see what you can see, the options have to carry your reading of the situation, not just the choices. The user still decides; they just shouldn't have to reconstruct the evidence first.
+
 ### A Log Panel Nobody Writes To Is Just an Empty Box
 
 The scaffold shipped the *display* half of on-device debugging — a reactive buffer, a log panel, a **Copy log** button, an error-count dot — and none of the *capture* half. `main.ts` was three lines with no `errorHandler`, no `window.error` listener, no `unhandledrejection` handler. The only entries that ever appeared were ones someone had hand-written a `logDebug()` call for, which means the panel could only report failures that had already been anticipated. The user opens it after a button misbehaves and reads "No log entries yet."

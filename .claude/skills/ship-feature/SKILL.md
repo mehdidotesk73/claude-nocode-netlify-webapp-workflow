@@ -56,8 +56,33 @@ the four doc surfaces, asking which to update now, before merge:
   design, or a convention: update that section *and* the system map
 - **`docs/concepts/*.md`** — if a page's UI or behaviour changed, update that page's help doc
 
-Selecting none means "keep working on the branch / skip docs". Update exactly what's selected,
-rebuild, then open the PR. **Never declare a branch merge-ready without running this gate.**
+### Say which ones you think need it, and why
+
+**Work out the answer before you ask.** The user has no way to judge whether this branch touched
+architecture or changed a help page — you're the only one who read the diff. Four neutrally-worded
+options are a quiz they can't pass, and the honest response to a quiz is to tick everything or
+nothing.
+
+So read your own diff first (`git diff main...HEAD --stat`, plus the changes themselves) and decide
+per surface. Then build the question so your recommendation is visible:
+
+- Put the ones you're recommending **first**, and append **(Recommended)** to those labels.
+- Make each `description` name **the specific thing in this branch** that triggers it — not the
+  generic rule. "The Browse page got a category filter, so its help page now describes the old
+  behaviour" tells them something. "If UI changed, update the help doc" does not.
+- For the ones you're *not* recommending, say so just as plainly: "Nothing here changed the
+  architecture — no update needed." A surface you actively cleared is more useful than one you
+  left ambiguous.
+
+**Don't recommend all four out of caution.** If everything is always recommended, the recommendation
+carries no information and you've re-created the neutral list with extra words. `TODO.md` and
+`experience.md` genuinely do apply to nearly every merge; `system-design.md` and `concepts/*.md`
+often genuinely don't. Say that.
+
+Their selection wins over your recommendation — if they drop one you suggested, update what they
+picked and move on without re-arguing. Selecting none means "keep working on the branch / skip
+docs". Update exactly what's selected, rebuild, then open the PR. **Never declare a branch
+merge-ready without running this gate.**
 
 Open the PR into `main` with a what/why/testing summary. Use the GitHub MCP tools (`mcp__github__*`)
 — there is no `gh` CLI. Keep PR comments frugal. **Do not merge** — the user merges.
