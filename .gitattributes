@@ -1,0 +1,11 @@
+# Template-only files. The scaffold is copied with `git archive HEAD | tar -x`,
+# which honours export-ignore, so nothing listed here reaches a project built
+# from this template.
+#
+# NOTE: `update-skills` copies `.claude/skills/` out of a plain `git clone`,
+# which does NOT honour export-ignore. That skill carries its own exclusion for
+# `update-template/` — if you add another template-only skill here, add it there
+# too, or it will land in every project on the next skills sync.
+/template-memory/ export-ignore
+/.claude/skills/update-template/ export-ignore
+/.gitattributes export-ignore
