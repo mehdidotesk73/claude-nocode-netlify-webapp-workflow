@@ -148,6 +148,47 @@ Emitting declarations for an *app* makes `vue-tsc` demand exported names for eve
 
 ## Patterns Worth Reusing
 
+### Two-Party Link Apps: the URL Fragment as Credential, and the Join Race
+
+Two people share one thing via a link, with no accounts — a chat, a 1:1 handoff, an approval between
+two roles. Two pieces here are worth reusing **whether or not anything is encrypted**, which is why
+they sit outside the encryption pattern below.
+
+**The URL fragment is a credential store you already have.** Everything after `#` is never sent in
+an HTTP request — not to the host, not to the database, not in a `Referer` header, not into server
+access logs. So `#/chat/<id>/<role>/<packedKey>` hands someone a real secret with no login, no
+password, and nothing server-side to store. Pack it by exporting the key as JWK →
+`JSON.stringify` → base64 → URL-safe alphabet (`+/` → `-_`, strip `=`).
+
+That's a complete answer to *"how do we give someone a real credential without building a login
+system"*, and it's the most transferable idea here. What it is **not** is secret from everything:
+
+- **Any JavaScript on the page can read `location.hash`.** Add an analytics snippet, a chat widget,
+  any third-party tag, and it can exfiltrate every user's private key. This is the failure that
+  matters most, because it arrives later, innocently, in an unrelated PR.
+- It lands in **browser history**, which may sync across a user's devices.
+- It's **on screen** — in screenshots, screen shares, and over a shoulder.
+- **The link is the account.** Whoever holds it *is* that party, and losing it loses everything with
+  no reset. Say that to the user in those words.
+
+**Guard the join with a conditional update, not a plain one.** When the second person to open an
+invite claims a role, do it as:
+
+```sql
+update sessions set joiner_public_key = $1
+where id = $2 and joiner_public_key is null
+```
+
+Then **check the affected row count** rather than trusting that the update "succeeded" — zero rows
+means somebody else got there first, and the app should say so instead of silently continuing as a
+participant it isn't. Without this, a third visitor to a shared link quietly overwrites the real
+joiner and takes over the session.
+
+Be honest about its reach: with a permissive `using (true)` policy this stops the *accidental*
+second joiner, which is the realistic case. It does not stop someone determined, who can issue the
+same update themselves. It's cheap, it fixes the failure that actually happens, and it isn't
+authentication.
+
 ### End-to-End Encryption Over a Database You Don't Trust
 
 For a messaging app, or anything where the rows live in a database but their contents shouldn't be readable by whoever can read the database. The server stores ciphertext and public keys; it never sees plaintext or any private key.
@@ -174,7 +215,35 @@ const ciphertext = await crypto.subtle.encrypt(
   { name: 'AES-GCM', iv }, key, new TextEncoder().encode(text))
 ```
 
-Storage shape: `profiles(id, public_key)` and `messages(id, conversation_id, sender_id, ciphertext, iv, created_at)`. Note the IV is stored alongside and is not secret.
+**Storage shape: pairwise, not user-keyed.** Built for real, this wants no `profiles`/`users` table
+at all — there is no identity beyond "the two people in this row", so the role is an enum and the
+public keys are slots on the shared row:
+
+```sql
+create table sessions (
+  id uuid primary key default gen_random_uuid(),
+  starter_public_key text not null,
+  joiner_public_key  text,            -- null until the second party arrives
+  created_at timestamptz not null default now()
+);
+
+create table messages (
+  id uuid primary key default gen_random_uuid(),
+  session_id uuid not null references sessions(id) on delete cascade,
+  sender text not null check (sender in ('starter', 'joiner')),
+  ciphertext text not null,
+  iv text not null,
+  created_at timestamptz not null default now()
+);
+```
+
+The IV is stored beside the ciphertext and is not secret. `sender` as a role check rather than a
+foreign key is the part that generalizes to any small fixed-N arrangement.
+
+**Two realtime subscriptions, not one:** an UPDATE on the session row, so "waiting for the other
+person" becomes a live transition rather than a poll, and a session-filtered INSERT on messages.
+Letting your own sends round-trip through that same INSERT subscription instead of rendering
+optimistically avoids a duplicate-render race, and the added latency isn't noticeable.
 
 **Key custody, when the user holds it.** Simplest workable version: the user enters a passphrase at the start of a session, and it never leaves memory. Two ways to get from a passphrase to a keypair — wrapping is the one to prefer:
 
@@ -190,7 +259,7 @@ Either way the passphrase is the whole system: **lose it and every past message 
 - **Metadata stays plaintext.** Who talked to whom, when, and how often are ordinary readable columns. Encryption hides content, not the social graph.
 - **Group chat breaks the pairwise model.** Encrypt the message once under a random key, then wrap that key separately for each recipient.
 
-One good side effect: because content is opaque, a permissive RLS policy on the messages table is far less damaging than it would be otherwise. An enumerator gets blobs.
+One good side effect, worth stating the right way round: `using (true)` still means anyone with the URL and publishable key can list the whole table — **the encryption is what makes that normally-too-permissive default acceptable here**, since what they enumerate is ciphertext. It is not that the policy became safe.
 
 ## Version History
 
