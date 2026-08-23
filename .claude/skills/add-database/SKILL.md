@@ -148,11 +148,37 @@ npm install @supabase/supabase-js
 
 Commit the lockfile — CI runs `npm ci`.
 
-**Put the two values straight in `src/lib/supabase.ts`. Don't set up environment variables.** With
-Vite, any `VITE_*` variable is inlined into the JavaScript bundle at build time, so env vars give a
-static site exactly zero additional secrecy — the key ships to the browser either way. What they'd
-cost is a fourth website, two more guided steps, and a class of failure where a typo produces a
-blank app. The publishable key is built to be public; row-level security is the boundary.
+**Default to putting the two values straight in `src/lib/supabase.ts`.** With Vite, any `VITE_*`
+variable is inlined into the JavaScript bundle at build time, so environment variables give a static
+site exactly zero additional secrecy — the key ships to the browser either way. What they cost is a
+fourth dashboard, two more guided steps, and the failure modes below. The publishable key is built
+to be public; row-level security is the boundary.
+
+**Netlify environment variables are a legitimate alternative** — conventional, and right if the key
+may need rotating without a PR, or if production and previews should ever hit different Supabase
+projects. If the project already uses them, leave it alone; don't migrate a working setup for
+tidiness. But check both of these, because each one fails *silently*:
+
+- **The names must match the code exactly.** `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are
+  what the client reads; Supabase's dashboard now calls that second value **Publishable key**, so
+  naming the Netlify variable after the label produces a mismatch. Read the variable names out of
+  the source, not off the Supabase screen.
+- **Scope them to Deploy Previews, not just Production.** Netlify scopes per context. Set to
+  Production only, every PR preview — the user's sole test surface — gets no database and looks
+  broken while the live site works.
+
+**Guard the missing case, and say so in the log.** The client should degrade rather than crash:
+
+```ts
+export const supabase: SupabaseClient | null = url && key ? createClient(url, key) : null
+```
+
+That keeps CI green — the required `build` check runs in GitHub Actions with no Supabase variables
+set, and Vite never executes app code at build time, so a top-level `throw` on missing config would
+block every merge. But a bare `null` turns a misconfiguration into a feature that quietly does
+nothing, so pair it with `logDebug('Supabase not configured — sharing disabled', 'warn')`. That's
+the difference between the user reporting "sharing doesn't work" and pasting you a log that says
+why.
 
 ```ts
 import { createClient } from '@supabase/supabase-js'
