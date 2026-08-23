@@ -1,6 +1,6 @@
 ---
 name: finish-setup
-description: Personalize a freshly scaffolded project (README, CLAUDE.md, docs), connect Netlify, and protect the main branch — the one-time setup that gives the user a project that reads as their own, a preview link, a live production site, and a pull-request workflow. Use right after a project is scaffolded from the template, or any time setup was left unfinished (check the setup checklist in docs/TODO.md).
+description: Finish setting up a newly created project — personalize it (README, CLAUDE.md, docs), connect Netlify for preview and production hosting, and protect the main branch. Use whenever the user asks to finish, continue, or complete setting up this project, or says setup was left unfinished. Also use on any repo containing docs/setup-brief.md, which means a project was scaffolded but never personalized; that file holds the answers from the session that created it, so read it first rather than asking again.
 ---
 
 # Finish setting up the project

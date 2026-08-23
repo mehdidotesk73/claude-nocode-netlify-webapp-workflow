@@ -289,13 +289,18 @@ that it didn't happen. Every guided step follows this shape:
     > screen (it shows `<old-repo>` now), pick **`<new-repo>`**, branch `main`, and tell me.
     >
     > **If you don't see that option** — the mobile app doesn't have it — just start a new session
-    > on **`<new-repo>`** and paste this in:
+    > on **`<new-repo>`** and say:
     >
     > ```
-    > Continue setting up this project. Read docs/setup-brief.md and run finish-setup.
+    > Finish setting up this project.
     > ```
     >
     > Nothing is lost either way: everything we discussed is saved in your project.
+
+    Keep that message plain — no file paths, no skill names. `finish-setup` triggers on that
+    wording and reads the brief itself; asking a non-technical user to type
+    `run finish-setup and read docs/setup-brief.md` makes the handoff look like it needs
+    an incantation to work.
 
 12. **Then handle whichever happened.**
 
