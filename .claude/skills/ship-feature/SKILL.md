@@ -8,7 +8,40 @@ description: Take one change from request to merged — branch, build, PR, hand 
 The user can't run the app locally. Preview links are the only way they see anything, and they merge
 every change themselves. Both facts shape every step below.
 
-## 1. Branch
+## 1. Check whether the skills have moved on — once per session
+
+Before the first change of a session, see whether the template's `.claude/skills/` differ from this
+project's. Projects are copies, not subscriptions, so a fix made upstream sits there until somebody
+pulls it — and the skill you're about to follow may be the one that was fixed.
+
+```
+git clone --depth 1 https://github.com/mehdidotesk73/claude-nocode-netlify-webapp-workflow <scratch>/tpl
+diff -rq <scratch>/tpl/.claude/skills .claude/skills
+```
+
+**Identical → say nothing and go to step 2.** A "skills are up to date" line on every feature is
+noise that trains the user to ignore this step. **Do this once per session, not once per feature.**
+
+**Different → say so briefly and let them choose.** Name what changed in behaviour, not filenames,
+then gate on an `AskUserQuestion`:
+
+- **"Carry on with this feature, sync afterwards"** — the sensible default; say so.
+- **"Sync the skills first"** — hand off to `update-skills`, which opens its own PR.
+- **"Skip, and don't ask again this session."**
+
+**Be honest about what syncing does and doesn't do here**, because the obvious assumption is wrong:
+**skills are read from the session's project root when the session starts, so anything pulled now
+does not apply to this conversation** — including this very skill, mid-run. Picking it up needs a
+new conversation **with this project's repo selected**; a fresh chat pointing at another repo reads
+nothing new. So syncing first means a second PR to merge *and* a restart before the new behaviour
+is live. That's occasionally worth it, and usually not; it is never a
+reason to leave a user's feature half-built while they go and merge something else.
+
+So: mention it, let them decide, and don't block on it. The one case worth actively recommending a
+sync-first is when the drift is *in the thing they just reported* — a step that rendered badly, a
+link that didn't work — because then carrying on reproduces the bug you already know is fixed.
+
+## 2. Branch
 
 Never work on `main` — it's protected, and pushes to it are rejected.
 
@@ -22,18 +55,18 @@ Name it for what it does: `claude/dark-mode`, `claude/search-bar`. Not auto-gene
 **Verify the base** — confirm `git log --oneline origin/main..HEAD` is empty and the expected files
 are present. A stale or pre-existing branch can fork from an old commit.
 
-## 2. Edit in small commits
+## 3. Edit in small commits
 
 Keep changes focused. **Run `npm run build` before every commit** — it type-checks and catches Vue
 template errors. CI runs the same build on the PR, but a red check on the user's PR is noise they
 have to interpret, so catch it first.
 
-## 3. Push
+## 4. Push
 
 Conventional, descriptive messages. `git push -u origin claude/<feature>`. Network can be flaky;
 retry with backoff.
 
-## 4. Wait for the preview
+## 5. Wait for the preview
 
 Each PR gets a Netlify Deploy Preview. The footer shows the live `build <sha>` — confirm it matches
 the commit you pushed. Poll it in-turn; don't schedule a check-in for a two-minute deploy.
@@ -42,7 +75,7 @@ the commit you pushed. Poll it in-turn; don't schedule a check-in for a two-minu
 show", it's almost always the cache — have them tap **Reload latest** in the footer, or open the URL
 in a private/incognito tab.
 
-## 5. Doc gate, then PR
+## 6. Doc gate, then PR
 
 **Before opening or finalising the PR**, pose an `AskUserQuestion` with `multiSelect: true` listing
 the four doc surfaces, asking which to update now, before merge:
@@ -87,7 +120,7 @@ merge-ready without running this gate.**
 Open the PR into `main` with a what/why/testing summary. Use the GitHub MCP tools (`mcp__github__*`)
 — there is no `gh` CLI. Keep PR comments frugal. **Do not merge** — the user merges.
 
-## 6. Hand over all three links
+## 7. Hand over all three links
 
 They can't merge what they can't find, and may never have seen a PR page. Always include the live
 site next to the preview: seeing both is what makes it concrete that their working app is untouched
@@ -110,7 +143,7 @@ renders as plain text, so all three links arrive dead — and links they can't t
 point of this step. If you also want a gate here, post the links first, then make the tool call with
 a one-line question.
 
-## 7. After the merge
+## 8. After the merge
 
 Merging to `main` triggers Netlify's production deploy of the same site. Watch it and confirm the
 live URL now shows the change.
