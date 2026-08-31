@@ -61,12 +61,65 @@ Keep changes focused. **Run `npm run build` before every commit** — it type-ch
 template errors. CI runs the same build on the PR, but a red check on the user's PR is noise they
 have to interpret, so catch it first.
 
-## 4. Push
+## 4. Consider unit tests — assess first, then ask
+
+**Most changes don't need them, and asking anyway is ceremony.** A copy tweak, a colour, a one-off
+layout fix: say nothing and move on. The question is worth raising when the change adds **logic that
+later features will sit on top of** — because then a test isn't about today's bug, it's the thing
+that tells you months later that a foundation still behaves the way something newer assumes.
+
+Concretely, that's usually pure functions in `src/lib/`: rules, calculations, transforms, state
+transitions, parsing, validation. Things with inputs and outputs and no DOM. If the change is all in
+a component's template, there's nothing here worth testing at this level.
+
+**If the project has no test runner yet, setting one up is part of this change:**
+
+```
+npm install -D vitest
+```
+
+`"test": "vitest run"` in `package.json` scripts, and tests as `*.test.ts` beside the code they
+cover. Then add **one line to the existing `build` job** in `.github/workflows/ci.yml` — `- run: npm
+test` after the build step. **Do not add a separate job.** The branch ruleset requires a check named
+`build`; a new job called `test` would run, could fail, and merges would sail past it while the
+ruleset waited on a check that never covered it.
+
+### Offer bundles, with your recommendation on each
+
+Don't present a list of function names — the user can't judge those. Group the tests into **two to
+four bundles** and describe each by the behaviour it protects. Group by whichever fits the change:
+how core it is (foundational rules vs. conveniences), or by area (the list rules, the sharing
+rules). Post the assessment as a normal message, then gate on `AskUserQuestion` with
+`multiSelect: true`.
+
+Each option needs:
+
+- **A plain-language label** — "the rules for adding items", not `dedupeItems()`.
+- **A description saying what breaks if it regresses**, in terms they'd notice: "if this broke,
+  duplicates would start appearing in lists and nothing would warn us."
+- **(Recommended)** appended where you mean it. **Recommending all of them is fine** when the change
+  really is all foundational — this isn't a quota. What matters is that the tag reflects a judgement
+  you actually made, not a hedge: if you'd recommend everything on every feature, you've stopped
+  giving information.
+
+Say plainly which bundles you're *not* recommending and why — "this one's a convenience wrapper,
+it'll get rewritten before it ever regresses" is more useful than leaving it unmarked.
+
+Selecting none is a legitimate answer and doesn't need arguing with. Write exactly the bundles they
+pick, run `npm test`, and keep them in the same commit range as the feature so the PR shows the
+behaviour and its guard together.
+
+**What unit tests here won't cover:** anything needing a real browser, a real round trip, or two
+actors — a multi-step flow across a database, say. That's a different tier with its own trade-offs;
+`docs/experience.md` has *Chained-Scenario E2E Tests for Step-Triggered State Machines* if the
+project ever justifies it. Don't reach for it by default.
+
+## 5. Push
 
 Conventional, descriptive messages. `git push -u origin claude/<feature>`. Network can be flaky;
 retry with backoff.
 
-## 5. Wait for the preview
+## 6. Wait for the preview
 
 Each PR gets a Netlify Deploy Preview. The footer shows the live `build <sha>` — confirm it matches
 the commit you pushed. Poll it in-turn; don't schedule a check-in for a two-minute deploy.
@@ -75,7 +128,7 @@ the commit you pushed. Poll it in-turn; don't schedule a check-in for a two-minu
 show", it's almost always the cache — have them tap **Reload latest** in the footer, or open the URL
 in a private/incognito tab.
 
-## 6. Doc gate, then PR
+## 7. Doc gate, then PR
 
 **Before opening or finalising the PR**, pose an `AskUserQuestion` with `multiSelect: true` listing
 the four doc surfaces, asking which to update now, before merge:
@@ -120,7 +173,7 @@ merge-ready without running this gate.**
 Open the PR into `main` with a what/why/testing summary. Use the GitHub MCP tools (`mcp__github__*`)
 — there is no `gh` CLI. Keep PR comments frugal. **Do not merge** — the user merges.
 
-## 7. Hand over all three links
+## 8. Hand over all three links
 
 They can't merge what they can't find, and may never have seen a PR page. Always include the live
 site next to the preview: seeing both is what makes it concrete that their working app is untouched
@@ -143,7 +196,7 @@ renders as plain text, so all three links arrive dead — and links they can't t
 point of this step. If you also want a gate here, post the links first, then make the tool call with
 a one-line question.
 
-## 8. After the merge
+## 9. After the merge
 
 Merging to `main` triggers Netlify's production deploy of the same site. Watch it and confirm the
 live URL now shows the change.
