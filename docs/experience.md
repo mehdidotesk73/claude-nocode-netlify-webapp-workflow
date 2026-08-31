@@ -261,6 +261,53 @@ Either way the passphrase is the whole system: **lose it and every past message 
 
 One good side effect, worth stating the right way round: `using (true)` still means anyone with the URL and publishable key can list the whole table — **the encryption is what makes that normally-too-permissive default acceptable here**, since what they enumerate is ciphertext. It is not that the policy became safe.
 
+### Chained-Scenario E2E Tests for Step-Triggered State Machines
+
+For an app whose state changes only in response to an explicit user action — no scheduler, no NPC loop, no second user acting concurrently. Within that, some behaviour only appears across a *sequence* of dependent steps: create a thing, act on it as a second actor, respond as the first, then check both sides. Unit tests can't reach it — it needs a real trigger, a real round trip, and real settled state before the next step is even valid. A single "does the feature work" E2E test misses it too, because the bug lives in the interaction between steps. In practice this caught a UI bug that only appeared on the *second* modal opened in a sequence, which no single-step test or manual happy path had surfaced.
+
+**Test against the live backend, when the access model makes that safe.** If RLS is `using (true)` everywhere, a test-created row is no more exposed than any row already there, and testing the real thing catches what a mock cannot: actual query shapes, actual constraint violations, actual realtime propagation delay. Simulate separate devices with separate browser contexts (`browser.newContext()`) — anything kept in `localStorage` is shared inside one context and isolated across them, which is the guarantee two real phones would give you.
+
+**Clean up by manifest, not by tagging.** When primary keys are generated UUIDs and lookup columns are hashed rather than plain, there is nothing free to prefix with a "test data" marker without changing the schema. Instead have the harness track what it creates, using the identifier it already holds, and at teardown re-derive the same lookup the app uses and delete directly:
+
+```ts
+export interface TestManifest {
+  track(identity: GeneratedIdentity): void
+}
+
+async function cleanupIdentity(identity: GeneratedIdentity): Promise<void> {
+  const lookupTag = deriveLookupTag(identity) // the app's own derivation — import it, don't copy it
+  await supabase.from('main_table').delete().eq('owner_tag', lookupTag)
+  await supabase.from('accounts_table').delete().eq('public_key', identity.publicKey)
+}
+```
+
+**Chain steps on positive, waitable signals — never a fixed sleep.** Each step fires only once there's proof the previous one propagated: a value changing, an element appearing, a count moving. When the thing you care about has no signal of its own — "the fetch that would have populated an empty list finished" produces no marker when the list stays empty — wait on an *adjacent* signal known to complete alongside it, then assert the silent thing.
+
+**Poll and read as one operation when a value passes through an intermediate state.** If a field shows "Generating…" on its way to a real value, checking "did it change?" and then reading it separately can land the read inside the placeholder window — the placeholder satisfies "changed" without being the answer. Re-read inside the assertion on every attempt so only a settled value passes:
+
+```ts
+let value = ''
+await expect(async () => {
+  value = await input.inputValue()
+  expect(value).not.toBe(previousValue)
+  expect(value).not.toBe('Generating…')
+}).toPass({ timeout: NETWORK_TIMEOUT })
+```
+
+**Read the app's own debug log from the test.** The on-screen error capture built for phones with no console is a far better CI diagnostic than an assertion message: it holds the real thrown exception rather than "the click had no visible effect". Dumping it into the thrown error turns a silent timeout into a stack trace without a repro machine.
+
+**What it does not do:**
+
+- **It does not handle live background processes.** NPCs ticking, a scheduled job, another real user acting at the same time — there may be no stable settled state to wait for. That needs seeded randomness, a controllable clock, or a fake behind the nondeterministic part.
+- **Live-database testing is only safe under the access-control condition above.** Against a backend with real per-user isolation, a cleanup bug or a mid-suite crash leaves residue exposed to real users.
+- **It does not replace unit tests of pure logic.** It's for what unit tests structurally cannot reach, and it's far slower per assertion.
+- **Manifest cleanup has no built-in proof it deleted anything.**
+
+Two additions from reviewing it here, beyond what the originating project reported:
+
+- **Exposure and pollution are different risks.** "No more exposed than any other row" is true, and separate from the fact that test rows are *live data*: if the app lists rows rather than fetching by id, test sessions appear in real users' UI. Check whether any screen enumerates before pointing a suite at production.
+- **Fix cleanup drift by importing, not by verifying.** The stated gap — the harness's copy of the app's derivation silently going out of sync — can't be closed by re-querying after delete, since the check would use the same stale derivation and report success. **Import the derivation from the app's own source.** If it genuinely can't be imported, pin the two together with a unit test asserting both produce the same output for a fixed input; that fails loudly on the next change instead of orphaning rows in silence.
+
 ## Version History
 
 (Record major releases here as you merge features. Example format below.)
