@@ -260,3 +260,26 @@ Second instance of this exact shape in one session: `finish-setup` also pruned `
 against a hardcoded keep-list, which went stale the moment the template gained an entry and would
 have deleted good material. **Whenever a skill enumerates files or sections, ask what happens when
 the set changes** — and prefer a check over a list.
+
+### "Start a New Conversation" Is Not the Condition — the Repo Selection Is
+
+`update-skills` told the user, after a merge, to "start a new conversation whenever you're ready and
+the updates kick in there." Reported from a project as wrong, and it is: what re-reads
+`.claude/skills/` is a session opened **with that project's repo selected**. A new conversation
+still pointing at a different repo picks up nothing.
+
+Confirmed here rather than taken on trust, which is what the report asked for. Two independent
+checks: the template's own seven skills sit on disk in this container and appear in no
+available-skills list, because this session is rooted elsewhere — that's the project-root half
+live. And the earlier `/reload-skills` test recorded above covers the at-session-start half, since
+a rescan of existing roots found nothing new.
+
+The failure mode is the nasty kind: **an instruction someone can follow exactly and still not fix
+anything.** They open a new chat, the old skills are still loaded, and nothing indicates why. Same
+family as a ruleset that saves as Disabled — the action looks completed and the effect never
+happens.
+
+Worth noting the setup handoff in `CLAUDE.md` already got this right, spelling out "tap the
+repository button and pick your project *before typing*". The precision existed in one place and
+was lost in the shorthand elsewhere, which is the thing to watch for: **a condition stated
+carefully once tends to get abbreviated everywhere else it's mentioned.**
