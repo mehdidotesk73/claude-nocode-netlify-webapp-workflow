@@ -30,9 +30,11 @@ then gate on an `AskUserQuestion`:
 - **"Skip, and don't ask again this session."**
 
 **Be honest about what syncing does and doesn't do here**, because the obvious assumption is wrong:
-**skills load when a session starts, so anything pulled now does not apply to this conversation** —
-including this very skill, mid-run. Syncing first means a second PR to merge and a fresh session
-before the new behaviour is live. That's occasionally worth it, and usually not; it is never a
+**skills are read from the session's project root when the session starts, so anything pulled now
+does not apply to this conversation** — including this very skill, mid-run. Picking it up needs a
+new conversation **with this project's repo selected**; a fresh chat pointing at another repo reads
+nothing new. So syncing first means a second PR to merge *and* a restart before the new behaviour
+is live. That's occasionally worth it, and usually not; it is never a
 reason to leave a user's feature half-built while they go and merge something else.
 
 So: mention it, let them decide, and don't block on it. The one case worth actively recommending a
