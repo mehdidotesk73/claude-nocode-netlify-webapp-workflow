@@ -97,14 +97,26 @@ and nothing else; skills aren't architecture and don't have a help page.
 
 ## 4. Say when it takes effect — this is the part that confuses people
 
-**Skills load when a session starts.** Merging the PR does not change the session that merged it —
-this conversation keeps running the old skills until it ends, and `/reload-skills` won't help
-because it rescans existing roots rather than re-reading changed files.
+**Skills are discovered from the session's project root, at session start.** Two halves, and both
+matter:
 
-So close with this, not with "all updated":
+- **At session start** — merging the PR does not change the session that merged it. This
+  conversation keeps running the old skills until it ends, and `/reload-skills` won't help: it
+  rescans the roots the session already has rather than re-reading changed files.
+- **From the project root** — a *new conversation* isn't enough on its own. What re-reads
+  `.claude/skills/` is a session opened **with this project's repo selected**. A fresh conversation
+  still pointing at some other repo picks up nothing, and the same applies to `CLAUDE.md`.
 
-> Merged — you're on the latest version. One thing: I'm still running the old copy in this
-> conversation. Start a new conversation whenever you're ready and the updates kick in there.
+That second half is why the closing message has to name the repo, not just say "start a new chat" —
+otherwise someone can do exactly as told, change nothing, and be left wondering why the old
+behaviour persists:
+
+> Merged — the update is in your project. One thing: I'm still running the old copy in this
+> conversation, because the skills are read when a conversation starts.
+>
+> To pick them up, start a new conversation **with `<repo-name>` selected** — tap **+ New**, then
+> check the repository button just above the message box says `<repo-name>` before you type. If it
+> names a different project, tap it and pick this one.
 
 Don't demand they restart immediately. Whatever they're in the middle of is fine to finish on the
 old skills; the update is already safely in the repo.
