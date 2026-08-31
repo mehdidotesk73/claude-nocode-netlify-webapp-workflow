@@ -450,7 +450,13 @@ whatever they're actually asking about.
   branch ruleset requires it to pass before merge. That's a backstop, not a substitute: run
   `npm run build` locally before pushing rather than letting CI find it — a red check on the user's
   PR is noise they have to interpret.
-- There is **no test suite** yet. A passing build is the bar.
+- **Tests are added when a feature earns them, not up front.** The scaffold ships with no runner;
+  `ship-feature` step 4 assesses whether a change adds logic later features will sit on, and sets
+  up `vitest` the first time the answer is yes. Until then a passing build is the bar.
+- **If tests exist, they run inside the `build` job** — one `npm test` line in
+  `.github/workflows/ci.yml`, never a separate job. The ruleset requires a check named `build`; a
+  second job called `test` would fail without blocking anything, since the ruleset isn't watching
+  it.
 - If this project has external data dependencies (<REF:external-deps>), they're typically **not reachable from this sandbox** (host allowlist), so you
   cannot run the live app or reproduce data-dependent results here. Reason about
   algorithms from the code, and lean on the user's on-device screenshots/logs to
