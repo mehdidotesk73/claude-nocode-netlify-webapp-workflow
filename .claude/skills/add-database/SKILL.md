@@ -1,6 +1,6 @@
 ---
 name: add-database
-description: Give the app a shared database with Supabase, for state that has to stay coherent across separately running copies of the app — a list two people edit together, anything "share with a friend", data that must match on phone and laptop, live updates between users. Walks the user through creating the Supabase project and schema, then wires up the client. Not for every app that "remembers" things: work through the fork at the top first, since an app that edits a document — wherever that document lives, local or cloud — needs no database at all.
+description: Set up Supabase for an app whose separate running copies must agree — a list two people edit together, phone and laptop showing the same data, messages that must arrive for someone offline. Walks the user through creating the project and schema, then wires up the client. Assumes the decision is already made: reach this through add-statefulness, which works out whether a database is the right answer at all.
 ---
 
 # Give the app a shared database
@@ -8,67 +8,35 @@ description: Give the app a shared database with Supabase, for state that has to
 Setting this up means sending the user to a **third website** and having them run SQL. That's the
 biggest ask in this whole template, so the first job is making sure it's actually needed.
 
-## First: which kind of state is this?
+## First: confirm this is the right tool
 
-"Stateful" covers several different problems and only one of them needs a database. The line that
-matters is **whether separate running copies of the app have to agree with each other**, and it
-falls in exactly one place:
+The routing lives in **`add-statefulness`**, which assesses what kind of state an app needs and
+confirms it with the user before anything is built. If you arrived here through it, the choice is
+made — go on.
 
-**No external state.** A game you play, die, and replay; a calculator; a converter. Everything lives
-in memory and dying with the tab is correct behaviour. *Needs nothing.* Don't add persistence
-because it sounds more finished.
+If you arrived here directly, **stop and run `add-statefulness` first.** A database is the most
+expensive answer in the set: a third website, an account, and SQL, versus `localStorage` which is a
+few lines, or a document the user already owns. Getting here by default rather than by decision is
+the failure that skill exists to prevent.
 
-**Remembered on this device.** A personal checklist, saved preferences, a draft in progress. One
-browser, survives a refresh, works offline. *`localStorage`, or IndexedDB past a few megabytes.* A
-real answer, not a lesser one — reaching past it costs someone half an hour for nothing.
-
-**The app edits a document.** An accounting app over a CSV, a viewer for a data file, an editor for
-a config. The **document is the source of truth**: load it, edit in memory, save it back. The app
-stores nothing itself — reopen the document and the state returns. *Needs a way to read and write
-that document; not a database.*
-
-> **Where the document lives doesn't change what this is.** A file on the phone, a file on Google
-> Drive, a file at a URL — same behaviour, same shape, same conversation with the user. Only the
-> read/write mechanism differs, and that's an implementation detail to settle while building, not a
-> different kind of app. Don't let "it's in the cloud" promote it to the next category.
-
-**Separate copies have to agree.** Two people on one list, both editing. Your phone and your laptop
-showing the same data as it changes. A messaging app — messages are durable, need history, and have
-to arrive for someone who was offline. Something outside every copy has to hold the truth and settle
-conflicts, and *that* is what a database is for. **This skill.** Within it, **realtime** matters
-only when both people are looking at once and a stale screen would be wrong; otherwise
-sync-on-load does.
-
-> **Live is not the same as stored.** A game, a shared cursor, a drawing surface: copies must agree
-> about *now*, and a value 200ms old is worthless rather than merely stale. Nothing needs keeping,
-> so a database is the wrong tool — use Supabase **Broadcast**, which is pub/sub over the same
-> WebSocket and never touches Postgres. Messaging looks similar and isn't: the message has to
-> survive. When an app needs both, use both — tables plus `postgres_changes` for the durable part,
-> Broadcast for typing indicators and presence dots.
+The one line that decides it: **do separate running copies of the app have to agree with each
+other?** Two people on one list, phone and laptop showing the same data, messages that must arrive
+for someone who was offline — yes, and that's this skill. A game where copies must agree about
+*now* and nothing is kept is a different tool (Broadcast, not tables); a CSV the app loads and saves
+needs no server at all.
 
 Two worked patterns in `docs/experience.md` decide the table shape, so read the relevant one
 **before** writing the schema rather than retrofitting:
 
-- **Two-Party Link Apps** — when exactly two people share one thing via a link, with no accounts.
-  Covers handing someone a real credential in the URL fragment (and the third-party-script leak
-  that ruins it), and the conditional update that stops a third visitor silently taking over the
-  session. **Applies whether or not anything is encrypted.**
+- **Two-Party Link Apps** — exactly two people sharing one thing via a link, no accounts. The URL
+  fragment as a credential store (and the third-party-script leak that ruins it), plus the
+  conditional update that stops a third visitor taking over the session. **Applies whether or not
+  anything is encrypted.**
 - **End-to-End Encryption Over a Database You Don't Trust** — when the stored contents shouldn't be
   readable by whoever can read the database. Messaging is the obvious case.
 
-Beyond that sits **accounts and login** — per-user private data, real sign-in. Supabase does it,
+Beyond this sits **accounts and login** — per-user private data, real sign-in. Supabase does it,
 it's a much bigger build, scope it as its own change.
-
-**The document case is the one that gets misrouted**, because "read and write a CSV" sounds like
-storage and a database is where you put storage. It isn't the same app: routing it to a database
-means the user's document stops being the artifact, and they've acquired an account and a service
-to hold something they already owned. Saving a document to Drive is still saving a document.
-
-Two constraints to know while building that case — they decide how saving works, not which category
-it is: **the File System Access API (editing a file in place) doesn't exist in Safari, iPhone
-included**, so on this template's usual target it's load-via-file-input and save-via-download, a
-copy out rather than a write back; and a plain URL is readable with `fetch` when CORS allows but
-isn't a writable target without a host behind it. Say which you're building before you build it.
 
 ## Then: decide the sharing model, out loud
 
