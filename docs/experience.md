@@ -16,7 +16,17 @@ A PWA caches aggressively to work offline. If a user opens your app, then you de
 - Open in a private/incognito tab
 - Wait for the service worker to auto-update (can take hours)
 
-Always surface a visual "update ready" affordance so users know to reload. See `App.vue` for the implementation.
+Always surface a visual "update ready" affordance so users know to reload. The scaffold does this
+with a published `version.json` compared against the running build — see `docs/system-design.md`
+§2 "Version Checking Logic".
+
+Two traps it works around:
+- **You can't tell "up to date" from "stale" by looking at the service worker.** Without a
+  published version to compare against, "Reload latest" silently reloads into the same build and
+  the user can't tell whether it worked. Compare against `version.json` and say which it is.
+- **On iOS, `updateServiceWorker(true)` + `location.reload()` often lands on the same version** —
+  the old worker keeps control and replays the precached `index.html` and bundle. A manual reload
+  has to unregister the worker, clear Cache Storage and navigate with a cache-buster.
 
 ### ECharts Gotchas (if using charts)
 

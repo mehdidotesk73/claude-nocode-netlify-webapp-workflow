@@ -54,10 +54,22 @@ This is the shell that wraps every page/tab. It provides version checking, updat
 
 ### Version Checking Logic
 
-- On load, `useVersionCheck()` compares the loaded build ID against what's live at the origin
-- States: "current" (up to date), "update-ready" (new build is live), "checking" (in progress)
-- "Reload latest" button: checks again, then reloads if a new version exists
-- Service worker auto-updates in the background; the version check surfaces this to the user
+- **Every build publishes its identity.** The `emit-version-json` plugin in `vite.config.ts` writes
+  `version.json` (`{commit, builtAt}`) into the build root. The same id is baked into the bundle as
+  `__BUILD_ID__`: `VITE_BUILD_ID` if set, else Netlify's `COMMIT_REF`, else `git rev-parse`.
+  JSON isn't in Workbox's precache patterns, so the service worker never caches it.
+- **`useVersionCheck()`** (`src/lib/useVersionCheck.ts`) fetches `version.json` on load and every
+  60 s (cache-busted, `no-store`) and compares it with `__BUILD_ID__`. States: `current`,
+  `update-ready`, `unknown` (fetch failed — e.g. offline, or `vite dev`, which has no version.json).
+- **Footer** shows `build <id> · <time>` plus `· up to date` or `· <commit> is live`; the **header**
+  shows **Update available** only on `update-ready`, with a popover of running vs new version.
+- **"Reload latest"** re-checks first: if `current` it says "Already on the latest build ✓" instead
+  of reloading into the same version. Otherwise `reloadLatest()` (`src/pwa.ts`) unregisters the
+  service worker, deletes its caches and navigates with `?fresh=<ts>` (stripped in `main.ts`) —
+  a polite `updateServiceWorker()` proved unreliable on iOS, where the old worker replays the
+  precached bundle.
+- **Background:** `src/pwa.ts` registers the service worker itself (`injectRegister: false`),
+  calls `registration.update()` every 60 s, and auto-reloads when a new worker is ready.
 
 ### Styling
 

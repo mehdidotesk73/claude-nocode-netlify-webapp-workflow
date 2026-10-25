@@ -2,17 +2,18 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import HelpModal from './components/HelpModal.vue'
 import { debugState, logDebug, logAsText } from './debug'
-import { reloadLatest } from './pwa'
+import { setupPWAUpdates } from './pwa'
+import { useVersionCheck } from './lib/useVersionCheck'
 
 const buildId = __BUILD_ID__
 const buildTime = __BUILD_TIME__
 const showDebug = ref(false)
 const copied = ref(false)
 
-// Update available affordance: show when new build is live
+// Header "Update available" affordance: shown when the live site serves a
+// newer build than this one (per version.json).
 const showUpdatePanel = ref(false)
 const updateSlot = ref<HTMLElement>()
-const updateAvailable = ref(false)
 
 function onDocClickUpdate(e: MouseEvent) {
   if (showUpdatePanel.value && updateSlot.value && !updateSlot.value.contains(e.target as Node)) {
@@ -50,24 +51,32 @@ async function copyLog() {
   setTimeout(() => (copied.value = false), 1500)
 }
 
-// Reload to latest build
+// Keep the installed PWA current: auto-reload on new deploys, plus a manual
+// "Reload latest" that really fetches the new build.
+const { reloadLatest } = setupPWAUpdates()
+
+// Compare this build with the published one, so "Reload latest" can say
+// "already up to date" instead of silently reloading into the same version.
+const { status: versionStatus, published, checkNow } = useVersionCheck()
+const updateAvailable = computed(() => versionStatus.value === 'update-ready')
+const reloadMsg = ref('')
+
 async function onReloadLatest() {
-  logDebug('Reloading to latest build...')
+  reloadMsg.value = 'Checking…'
+  const s = await checkNow()
+  if (s === 'current') {
+    reloadMsg.value = 'Already on the latest build ✓'
+    setTimeout(() => (reloadMsg.value = ''), 2500)
+    return
+  }
+  // A newer build is live, or version.json was unreachable: force the reload.
+  reloadMsg.value = 'Updating…'
   await reloadLatest()
 }
 
 // Help modal state
 const showHelp = ref(false)
 const helpDoc = ref('default')
-
-// Simulate update detection (in real app, useVersionCheck() would do this)
-onMounted(() => {
-  // Example: check for update after 5 seconds
-  setTimeout(() => {
-    // Set updateAvailable = true if new version detected
-    // For now, it stays false until you implement version checking
-  }, 5000)
-})
 </script>
 
 <template>
@@ -87,10 +96,12 @@ onMounted(() => {
             class="update-pop"
             role="dialog"
           >
-            <div class="up-line">build {{ buildId }}</div>
+            <div class="up-line">running: {{ buildId }} · {{ buildTime }}</div>
+            <div class="up-line">new version: {{ published?.commit }} · {{ published?.builtAt }}</div>
             <button class="reload-btn update-ready" @click="onReloadLatest">
               Update ready — Reload
             </button>
+            <span v-if="reloadMsg" class="up-line">{{ reloadMsg }}</span>
           </div>
         </div>
         <h1 class="app-title">App Name</h1>
@@ -108,7 +119,12 @@ onMounted(() => {
 
     <footer class="debug">
       <div class="debug-bar">
-        <span class="build-stamp">build {{ buildId }}</span>
+        <span class="build-stamp">
+          build {{ buildId }} · {{ buildTime }}
+          <span v-if="reloadMsg" class="reload-msg">· {{ reloadMsg }}</span>
+          <span v-else-if="versionStatus === 'current'" class="reload-msg">· up to date</span>
+          <span v-else-if="updateAvailable" class="reload-msg new">· {{ published?.commit }} is live</span>
+        </span>
 
         <button
           class="reload-btn logs-btn"
@@ -270,6 +286,11 @@ onMounted(() => {
   color: var(--text-muted);
   font-size: 0.72rem;
   margin-right: auto;
+}
+
+.reload-msg.new {
+  color: var(--accent-blue);
+  font-weight: 600;
 }
 
 /* An error the user can't notice is an error they won't report — so the
