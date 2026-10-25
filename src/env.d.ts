@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
 /// <reference types="vite-plugin-pwa/client" />
+/// <reference types="vite-plugin-pwa/vue" />
 
 // Build stamps injected by `define` in vite.config.ts — surfaced in the footer.
 declare const __BUILD_ID__: string
