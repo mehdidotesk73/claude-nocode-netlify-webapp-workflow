@@ -2,17 +2,22 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import HelpModal from './components/HelpModal.vue'
 import { debugState, logDebug, logAsText } from './debug'
-import { reloadLatest } from './pwa'
+import { setupPWAUpdates } from './pwa'
+import { useVersionCheck } from './lib/useVersionCheck'
 
 const buildId = __BUILD_ID__
 const buildTime = __BUILD_TIME__
 const showDebug = ref(false)
 const copied = ref(false)
 
-// Update available affordance: show when new build is live
+const { reloadLatest } = setupPWAUpdates()
+
+// Update available affordance: shown when the origin serves a different build
+const { status: versionStatus, published, checkNow } = useVersionCheck()
+const updateAvailable = computed(() => versionStatus.value === 'update-ready')
 const showUpdatePanel = ref(false)
 const updateSlot = ref<HTMLElement>()
-const updateAvailable = ref(false)
+const alreadyLatest = ref(false)
 
 function onDocClickUpdate(e: MouseEvent) {
   if (showUpdatePanel.value && updateSlot.value && !updateSlot.value.contains(e.target as Node)) {
@@ -50,8 +55,15 @@ async function copyLog() {
   setTimeout(() => (copied.value = false), 1500)
 }
 
-// Reload to latest build
+// Reload to latest build. Ask the origin first: if we're already current,
+// say so instead of reloading into the same version. 'unknown' (offline, or
+// `vite dev`) falls through to the forced reload.
 async function onReloadLatest() {
+  if ((await checkNow()) === 'current') {
+    alreadyLatest.value = true
+    setTimeout(() => (alreadyLatest.value = false), 2000)
+    return
+  }
   logDebug('Reloading to latest build...')
   await reloadLatest()
 }
@@ -59,15 +71,6 @@ async function onReloadLatest() {
 // Help modal state
 const showHelp = ref(false)
 const helpDoc = ref('default')
-
-// Simulate update detection (in real app, useVersionCheck() would do this)
-onMounted(() => {
-  // Example: check for update after 5 seconds
-  setTimeout(() => {
-    // Set updateAvailable = true if new version detected
-    // For now, it stays false until you implement version checking
-  }, 5000)
-})
 </script>
 
 <template>
@@ -87,7 +90,8 @@ onMounted(() => {
             class="update-pop"
             role="dialog"
           >
-            <div class="up-line">build {{ buildId }}</div>
+            <div class="up-line">running {{ buildId }} · {{ buildTime }}</div>
+            <div class="up-line">live {{ published?.commit }} · {{ published?.builtAt }}</div>
             <button class="reload-btn update-ready" @click="onReloadLatest">
               Update ready — Reload
             </button>
@@ -108,7 +112,11 @@ onMounted(() => {
 
     <footer class="debug">
       <div class="debug-bar">
-        <span class="build-stamp">build {{ buildId }}</span>
+        <span class="build-stamp">
+          build {{ buildId }} · {{ buildTime }}
+          <template v-if="versionStatus === 'current'"> · up to date</template>
+          <template v-else-if="updateAvailable"> · {{ published?.commit }} is live</template>
+        </span>
 
         <button
           class="reload-btn logs-btn"
@@ -124,7 +132,13 @@ onMounted(() => {
           :class="{ 'update-ready': updateAvailable }"
           @click="onReloadLatest"
         >
-          {{ updateAvailable ? 'Update ready — Reload' : 'Reload latest' }}
+          {{
+            alreadyLatest
+              ? 'Already on the latest build ✓'
+              : updateAvailable
+                ? 'Update ready — Reload'
+                : 'Reload latest'
+          }}
         </button>
       </div>
 

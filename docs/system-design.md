@@ -54,10 +54,27 @@ This is the shell that wraps every page/tab. It provides version checking, updat
 
 ### Version Checking Logic
 
-- On load, `useVersionCheck()` compares the loaded build ID against what's live at the origin
-- States: "current" (up to date), "update-ready" (new build is live), "checking" (in progress)
-- "Reload latest" button: checks again, then reloads if a new version exists
-- Service worker auto-updates in the background; the version check surfaces this to the user
+- **Build identity.** `vite.config.ts` resolves a build id (`VITE_BUILD_ID`, else Netlify's
+  `COMMIT_REF`, else `git rev-parse --short HEAD`, else `dev`), bakes it into the bundle as
+  `__BUILD_ID__`/`__BUILD_TIME__`, and emits `version.json` (`{ commit, builtAt }`) into the build
+  root. Workbox doesn't precache `.json`, so that file always comes from the origin.
+- **`useVersionCheck()`** (`src/lib/useVersionCheck.ts`) fetches `version.json` with `no-store` on
+  mount and every 60 s, and compares its `commit` to `__BUILD_ID__`. States: `current`,
+  `update-ready`, `unknown` (no answer yet, offline, or `vite dev`, which has no `version.json`).
+  Fetch failures are logged only when reachability changes.
+- **Footer:** `build <id> · <time>`, then `· up to date` or `· <commit> is live`.
+- **Header:** "Update available" shows when the status is `update-ready`; its popover lists the
+  running build and the live one.
+- **"Reload latest"** checks again first. If `current`, it says "Already on the latest build ✓" and
+  stops. Otherwise it calls `reloadLatest()` from `src/pwa.ts`, which unregisters the service
+  worker, deletes every Cache Storage entry, and `location.replace`s with `?fresh=<ts>` (stripped
+  again in `main.ts`). A polite `updateServiceWorker(true)` + reload often replays the old bundle on
+  iOS, which is why the manual path is heavy-handed. It also drops any runtime caches an app adds;
+  an app that caches data for offline use should delete only Workbox's precache there.
+- **Background updates:** `setupPWAUpdates()` (called from `App.vue`, since `useRegisterSW` is a
+  composable) registers the worker, calls `reg.update()` every 60 s, and applies a new worker as
+  soon as it's ready. That reload doesn't wait for the user — an app with unsaved state should
+  prompt there instead.
 
 ### Styling
 

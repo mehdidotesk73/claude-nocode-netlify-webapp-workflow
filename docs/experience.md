@@ -18,6 +18,18 @@ A PWA caches aggressively to work offline. If a user opens your app, then you de
 
 Always surface a visual "update ready" affordance so users know to reload. See `App.vue` for the implementation.
 
+Two things learned the hard way, both built into the scaffold (`docs/system-design.md` §2):
+
+- **You can't tell current from stale without a published version to compare against.** Service-worker
+  state doesn't answer "is a newer build live?". The build emits `version.json`, and the app polls it
+  and compares with its own baked-in id. If the footer ever reads `build dev` on a deployed site, the
+  build id isn't resolving — Netlify provides `COMMIT_REF`; nothing sets `VITE_BUILD_ID` by default.
+- **On iOS, a polite service-worker update plus `location.reload()` often replays the old bundle** —
+  the old worker keeps control and serves the precached `index.html`. Installed PWAs also stay alive
+  long enough to miss deploys without a periodic `reg.update()`. The manual "Reload latest"
+  therefore unregisters the worker and clears caches before reloading, and only does so after
+  `version.json` confirms something newer is live.
+
 ### ECharts Gotchas (if using charts)
 
 On a **category x-axis**, `visualMap` (color ranges) and per-segment `lineStyle` colors do **not** bind as expected. If you need per-point coloring on a category axis, use a series with per-point `itemStyle` instead. Register new chart types explicitly with `echarts.use([LineChart, ...])` — ECharts doesn't auto-register components.
