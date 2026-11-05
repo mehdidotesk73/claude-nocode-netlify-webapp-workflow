@@ -26,3 +26,12 @@ which is a real piece of work and hasn't been asked for. Worth noting that the p
 prerequisite (a Playwright suite against a live backend) is a bigger commitment than most projects
 here need, so a test-setup skill should probably start with unit tests of `src/lib/` and treat the
 E2E suite as the opt-in tier.
+
+## Confirm the Deploy Preview footer shows the PR head sha
+
+`ship-feature` now tells the user which build a preview's footer should read: the PR's head commit,
+via Netlify's `COMMIT_REF`. Production footers are confirmed to show the right sha on a real phone.
+Deploy Previews are not. It's inferred from Netlify setting `COMMIT_REF` on every build, and the
+sandbox can't reach `netlify.app` to check. On the next real project PR, compare the preview footer
+with `git rev-parse --short HEAD`. If they differ, fix step 6 of `ship-feature` before another user
+is told to expect the wrong id.
