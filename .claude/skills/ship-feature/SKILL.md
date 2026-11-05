@@ -121,12 +121,22 @@ retry with backoff.
 
 ## 6. Wait for the preview
 
-Each PR gets a Netlify Deploy Preview. The footer shows the live `build <sha>` — confirm it matches
-the commit you pushed. Poll it in-turn; don't schedule a check-in for a two-minute deploy.
+Each PR gets a Netlify Deploy Preview. This sandbox usually can't reach `netlify.app`, so you can't
+open the preview yourself. Watch Netlify's check runs on the PR instead (`pull_request_read` with
+`get_check_runs`; they show up next to `build` as *Redirect rules*, *Header rules* and
+*Pages changed - <site>*). A green `build` only means CI compiled the code. It doesn't mean the
+Netlify build succeeded. Poll in-turn; don't schedule a check-in for a two-minute deploy.
+
+**Work out which build the preview should show.** The footer reads `build <sha>`, and
+`vite.config.ts` takes that sha from `COMMIT_REF`, which Netlify sets on every build. For a Deploy
+Preview it's the PR's head commit: `git rev-parse --short HEAD` after the push. You'll hand it over
+in step 8. It's how the user tells "this is the change" from "this is a cached old bundle" without
+having to judge the UI.
 
 **Service-worker caveat:** this is a PWA, so an old bundle can keep serving. If a change "doesn't
 show", it's almost always the cache — have them tap **Reload latest** in the footer, or open the URL
-in a private/incognito tab.
+in a private/incognito tab. If the footer still shows an older sha after that, the deploy hasn't
+finished.
 
 ## 7. Doc gate, then PR
 
@@ -173,6 +183,13 @@ merge-ready without running this gate.**
 Open the PR into `main` with a what/why/testing summary. Use the GitHub MCP tools (`mcp__github__*`)
 — there is no `gh` CLI. Keep PR comments frugal. **Do not merge** — the user merges.
 
+**Subscribe to the PR right after opening it, before handing over links:**
+`subscribe_pr_activity(owner, repo, pullNumber)`. Merges, closes, CI results and review comments
+then arrive in this session as events. Without the subscription you never hear about the merge or a
+red check unless the user thinks to tell you. Don't poll with `sleep` or repeated status checks;
+the events wake the session. If the tool isn't available (a local session, say), fall back to
+asking them to tell you once it's merged.
+
 ## 8. Hand over all three links
 
 They can't merge what they can't find, and may never have seen a PR page. Always include the live
@@ -180,14 +197,20 @@ site next to the preview: seeing both is what makes it concrete that their worki
 while they try the change.
 
 > **Preview (the change):** https://deploy-preview-4--<site>.netlify.app
-> — open this on your phone and check the new category filter works.
+> — open this on your phone and check the new category filter works. The footer at the bottom should
+> read **build abc1234**.
 >
 > **Live site (unchanged):** https://<site>.netlify.app
-> — still the old version, and stays that way until you merge.
+> — still the old version, and stays that way until you merge. I'll tell you its new build id as soon
+> as the merge lands.
 >
 > **Ready to merge:** https://github.com/<owner>/<repo>/pull/4
-> — open that link and click the green **Merge pull request** button, then **Confirm merge**. Tell
-> me once it's merged and I'll verify the live site.
+> — open that link and click the green **Merge pull request** button, then **Confirm merge**. I'll
+> see the merge and check the live site.
+
+**Always name the build the footer should show.** Use the real short sha from step 6, never a
+placeholder. If the footer shows something older, tell them to tap **Reload latest** or open the
+link in a private tab.
 
 Preview first — they should look before merging. Never say "merge when ready" without the URLs.
 
@@ -198,8 +221,19 @@ a one-line question.
 
 ## 9. After the merge
 
-Merging to `main` triggers Netlify's production deploy of the same site. Watch it and confirm the
-live URL now shows the change.
+Merging to `main` triggers Netlify's production deploy of the same site. The subscription from step 7
+tells you when the PR changes; react to each event without waiting for the user:
+
+- **Merged** → get the new commit on `main` from the merged PR's `merge_commit_sha`, or by fetching
+  `origin/main`. It's a different sha from the preview's, and it doesn't exist until they merge.
+  Watch the production deploy, then tell them the live site's footer should now read
+  **build <that sha>**. Unsubscribe once that's confirmed.
+- **CI failed** → read the log and push a fix before they hit a greyed-out merge button.
+- **Closed without merging** → record the abandoned branch in `docs/experience.md` (see Reverts
+  below), then unsubscribe.
+
+A matching sha proves which build is running, not that the change behaves correctly. Their look on
+the phone is still the check for that.
 
 If they report the merge button greyed out, read the reason off the PR page before changing any
 settings — usually a merge conflict, a failing `build` check, or an approval requirement that
