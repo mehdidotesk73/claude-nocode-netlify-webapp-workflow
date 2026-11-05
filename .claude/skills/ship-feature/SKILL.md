@@ -133,6 +133,11 @@ Preview it's the PR's head commit: `git rev-parse --short HEAD` after the push. 
 in step 8. It's how the user tells "this is the change" from "this is a cached old bundle" without
 having to judge the UI.
 
+**Check `vite.config.ts` falls back to `COMMIT_REF` first.** Projects created before that fallback
+existed show `build dev` on every Netlify deploy, whatever was pushed. If it's missing, don't promise
+a sha. Offer the one-line fix (`process.env.VITE_BUILD_ID || process.env.COMMIT_REF`, sliced to 7
+characters) as its own small change.
+
 **Service-worker caveat:** this is a PWA, so an old bundle can keep serving. If a change "doesn't
 show", it's almost always the cache — have them tap **Reload latest** in the footer, or open the URL
 in a private/incognito tab. If the footer still shows an older sha after that, the deploy hasn't
